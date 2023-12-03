@@ -1,12 +1,27 @@
 from django.contrib import admin
 from .models import User,Branchs,Transpose
-
+from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
 @admin.register(User)
-class UserAdmin(admin.ModelAdmin):
+class UserAdmin(BaseUserAdmin):
     list_display = ['email', 'user_name', 'phone_number', 'is_active', 'is_staff']
     search_fields = ['email', 'user_name']
     list_filter = ['email', 'user_name']
     ordering = ['email']
+    # 定义在添加和更改用户时显示的字段
+    fieldsets = (
+        ('登入帳號', {'fields': ('email', 'password')}),
+        ('使用者資訊', {'fields': ('user_name', 'phone_number', 'birthday', 'address', 'bonus_points', 'branch')}),
+        ('權限', {'fields': ('is_active', 'is_staff', 'is_superuser', 'groups', 'user_permissions')}),
+        ('日期相關', {'fields': ('last_login', 'date_joined')}),
+    )
+
+    # 定义添加用户时的字段
+    add_fieldsets = (
+        (None, {
+            'classes': ('wide',),
+            'fields': ('email', 'password1', 'password2'),
+        }),
+    )
     # 如果您有自定義的表單，您也可以在這裡設定
     # form = MyUserChangeForm
     # add_form = MyUserCreationForm

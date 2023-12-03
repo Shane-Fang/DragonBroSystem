@@ -46,7 +46,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     # last_login 也是由 AbstractBaseUser 提供
     is_active = models.BooleanField(default=True,verbose_name='啟動帳戶')
     is_staff = models.BooleanField(default=False,verbose_name='訪問後台權限')
-    date_joined = models.DateTimeField(default=timezone.now,verbose_name='最後登入')
+    date_joined = models.DateTimeField(default=timezone.now,verbose_name='加入日期')
     objects = UserManager()
     USERNAME_FIELD = 'email'    #登入帳號的欄位
     REQUIRED_FIELDS = ['user_name']     #非必要填寫欄位
