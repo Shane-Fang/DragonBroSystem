@@ -5,6 +5,7 @@ from .models import User,Branchs,Transpose
 class UserAdmin(admin.ModelAdmin):
     list_display = ['email', 'user_name', 'phone_number', 'is_active', 'is_staff']
     search_fields = ['email', 'user_name']
+    list_filter = ['email', 'user_name']
     ordering = ['email']
     # 如果您有自定義的表單，您也可以在這裡設定
     # form = MyUserChangeForm
@@ -19,12 +20,14 @@ class UserAdmin(admin.ModelAdmin):
 class BranchsAdmin(admin.ModelAdmin):
     list_display = ['Name']
     search_fields = ['Name']
+    list_filter = ['Name']
     ordering = ['Name']
 
 @admin.register(Transpose)
 class TransposeAdmin(admin.ModelAdmin):
     list_display = ['BranchsSend','BranchsReceipt','Product','Number','Time']
     search_fields = ['BranchsSend','BranchsReceipt','Product']
+    list_filter = ['BranchsSend','BranchsReceipt','Product']
     ordering = ['BranchsSend']
 
 # ['BranchsSend','BranchsReceipt','Product','Number','Time']

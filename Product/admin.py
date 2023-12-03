@@ -6,12 +6,14 @@ from .models import Categories,Products_list,ItemImage,Products
 class CategoriesAdmin(admin.ModelAdmin):
     list_display = ['Category_name','Describe']
     search_fields = ['Category_name','Describe']
+    list_filter = ['Category_name','Describe']
     ordering = ['Category_name']
 # 'Category_name','Describe'
 @admin.register(Products_list)
 class Products_listAdmin(admin.ModelAdmin):
     list_display = ['Category','Item_name','Price','Specification','Number','Sh']
     search_fields = ['Category','Item_name','Price','Specification','Number','Sh']
+    list_filter = ['Category','Item_name','Price','Specification','Number','Sh']
     ordering = ['Sh']
 
 # ['Category','Item_name','Price','Specification','Number','Sh']
@@ -20,6 +22,7 @@ class Products_listAdmin(admin.ModelAdmin):
 class ItemImageAdmin(admin.ModelAdmin):
     list_display = ['ImageID','Product_list','Image_path']
     search_fields = ['ImageID','Product_list','Image_path']
+    list_filter = ['ImageID','Product_list','Image_path']
     ordering = ['Product_list']
     
     def delete_model(self, request, obj):
@@ -39,6 +42,7 @@ class ItemImageAdmin(admin.ModelAdmin):
 class ProductsAdmin(admin.ModelAdmin):
     list_display = ['Product_list','ExpiryDate','Number','Branch']
     search_fields = ['Product_list','ExpiryDate','Number','Branch']
+    list_filter = ['Product_list','ExpiryDate','Number','Branch']
     ordering = ['Product_list']
 
 
