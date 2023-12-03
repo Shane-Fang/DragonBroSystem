@@ -18,11 +18,12 @@ class UserAdmin(admin.ModelAdmin):
 
 @admin.register(Branchs)
 class BranchsAdmin(admin.ModelAdmin):
-    list_display = ['Name']
-    search_fields = ['Name']
-    list_filter = ['Name']
+    list_display = ['Name','address','phone_number']
+    search_fields = ['Name','address','phone_number']
+    list_filter = ['Name','address','phone_number']
     ordering = ['Name']
 
+# ['Name','address','phone_number']
 @admin.register(Transpose)
 class TransposeAdmin(admin.ModelAdmin):
     list_display = ['BranchsSend','BranchsReceipt','Product','Number','Time']

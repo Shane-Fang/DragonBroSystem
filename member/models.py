@@ -6,6 +6,8 @@ from Product.models import Products
 
 class Branchs(models.Model):
     Name=models.CharField(max_length=15,verbose_name='店家名稱')
+    address = models.CharField(max_length=255,verbose_name='店家地址')
+    phone_number = models.CharField(max_length=15,verbose_name='店家電話')
     def __str__(self):
         return self.Name
     class Meta:
@@ -39,17 +41,13 @@ class User(AbstractBaseUser, PermissionsMixin):
     address = models.CharField(max_length=255,verbose_name='地址')
     bonus_points = models.IntegerField(default=0,verbose_name='點數')
     branch = models.ForeignKey(Branchs,on_delete=models.DO_NOTHING,verbose_name='店家',null=True, blank=True)
-
     # 以下是 AbstractBaseUser 已經提供的欄位
     # password 字段由 AbstractBaseUser 自動處理
     # last_login 也是由 AbstractBaseUser 提供
-
     is_active = models.BooleanField(default=True,verbose_name='啟動帳戶')
     is_staff = models.BooleanField(default=False,verbose_name='訪問後台權限')
     date_joined = models.DateTimeField(default=timezone.now,verbose_name='最後登入')
-
     objects = UserManager()
-
     USERNAME_FIELD = 'email'    #登入帳號的欄位
     REQUIRED_FIELDS = ['user_name']     #非必要填寫欄位
 
