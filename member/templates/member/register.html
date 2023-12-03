@@ -1,0 +1,54 @@
+
+{% load static %}
+{% block title %}
+<title>註冊</title>
+<link rel="stylesheet" href="{% static 'css/style.css' %}">
+<style>
+    form {
+        text-align: center;
+    }
+
+    table tr td:first-child {
+        text-align: right;
+        width: 30%;
+    }
+
+    table tr td:first-child label {
+        font-size: 24px;
+        font-weight: 600;
+    }
+
+    table tr td:nth-child(2) input {
+        width: 80%;
+        height: 32px;
+    }
+
+    table tr td:nth-child(2) select {
+        width: 80%;
+        height: 32px;
+    }
+</style>
+{% endblock %}
+
+
+<div class="bgimg text-center">
+
+    {% if error_message %}
+    <script type="text/javascript">
+        alert("{{ error_message}}");
+        window.location.href = "{% url 'member:register' %}";
+    </script>
+    {% elif success %}
+    <script type="text/javascript">
+        alert("註冊成功");
+        window.location.href = "{% url 'home' %}";
+    </script>
+    {% endif %}
+    <form action="." method="post" name='register' enctype="multipart/form-data">{% csrf_token %}
+        {{form.as_p}}
+        <input type="submit" value="註冊" style="margin-top:10px;padding: 3px 10px">
+
+    </form>
+    <hr>
+
+</div>
