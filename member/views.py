@@ -3,10 +3,30 @@ from django.contrib.auth import authenticate, login,logout
 from django.contrib.auth.hashers import make_password
 from django.contrib import messages
 from .models import User
-from .forms import RegisterModelForm
+from .forms import RegisterModelForm,UserUpdateForm
 # Create your views here.
 def index(request):
     return render(request, 'index/index.html')
+def memberprofile(request):
+    if not request.user.is_authenticated:
+        return redirect('member:login.html')
+
+    if request.method == 'POST':
+        user_form = UserUpdateForm(request.POST, instance=request.user)
+
+        if user_form.is_valid():
+            user = user_form.save()
+            return redirect('home')  # 重定向到确认页面
+
+    else:
+        user_form = UserUpdateForm(instance=request.user)
+
+
+    return render(request, 'member/memberprofile.html', {
+        'user_form': user_form,
+
+        'title':'會員資訊'
+    })
 def memberlogin(request):
     if request.method == 'POST':
         email = request.POST['email']
@@ -27,7 +47,8 @@ def memberlogin(request):
 
 def user_logout(request):
     logout(request)
-    return render(request, "member/logout.html")
+    messages.info(request, '已成功登出')
+    return redirect('member:login')
 
 
 def register(request):
@@ -41,8 +62,11 @@ def register(request):
                 return render(request, "member/register.html", {"error_message": "Email已存在"})
             user.save()
             # 根据需要处理其他逻辑，例如登录用户、发送邮件等
-            return render(request, "member/register.html", {"success": True})
+            return render(request, "member/register.html", {"success": '註冊成功'})
     else:
         form = RegisterModelForm()
-
-    return render(request, "member/register.html", {'form': form})
+    context={
+        'form': form,
+        'title':'註冊'
+    }
+    return render(request, "member/register.html",context )

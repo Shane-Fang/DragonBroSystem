@@ -38,20 +38,14 @@
         integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM"
         crossorigin="anonymous"></script>
 </head>
-{% if error_message %}
+{% if messages %}
+{% for message in messages %}
 <script type="text/javascript">
-    alert("{{ error_message }}");
-    var LoginUrl = "{% url 'member:login' %}";
-
-    window.location.href = LoginUrl;
+    alert("{{ message }}");
 </script>
-{% elif successful_message %}
-<script type="text/javascript">
-    var purchaseOrderUrl = "{% url 'PurchaseOrder:index' %}";
-    window.location.href = purchaseOrderUrl;
-</script>
-
+{% endfor %}
 {% endif %}
+
 
 
 <body style="width:100vw;height:100vh;background-color:rgb(39, 183, 123);font-family: Microsoft JhengHei;">
@@ -95,7 +89,8 @@
                         </div>
                         <br>
                         <div class="col-md-12">
-                            <a class="btn btn-primary" style="width:100%" href="{% url 'member:register' %}">註冊</a>&emsp;
+                            <a class="btn btn-primary" style="width:100%"
+                                href="{% url 'member:register' %}">註冊</a>&emsp;
                         </div>
                     </div>
                     <div class="form-group col-md-12">

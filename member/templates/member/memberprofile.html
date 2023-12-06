@@ -1,0 +1,61 @@
+{% extends 'index/base.html' %}
+{% load static %}
+{% block title %}
+<title>{{title}}</title>
+<link rel="stylesheet" href="{% static 'css/style.css' %}">
+<style>
+    form {
+        text-align: center;
+    }
+
+    table tr td:first-child {
+        text-align: right;
+        width: 30%;
+    }
+
+    table tr td:first-child label {
+        font-size: 24px;
+        font-weight: 600;
+    }
+
+    table tr td:nth-child(2) input {
+        width: 80%;
+        height: 32px;
+    }
+
+    table tr td:nth-child(2) select {
+        width: 80%;
+        height: 32px;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="bgimg text-center my-3">
+    
+    <form method="post">
+        {% csrf_token %}
+        {{ user_form.as_p }}
+        
+        <button type="submit">更新</button>
+    </form>
+    
+</div>
+<script>
+//     document.addEventListener('DOMContentLoaded', function() {
+//         var changePasswordCheckbox = document.getElementById('id_change_password');
+//         var newPasswordField = document.getElementById('id_new_password');
+//         var newPasswordConfirmField = document.getElementById('id_new_password_confirm');
+
+//         function updatePasswordFieldVisibility() {
+//             var isChecked = changePasswordCheckbox.checked;
+//             newPasswordField.style.display = isChecked ? 'block' : 'none';
+//             newPasswordConfirmField.style.display = isChecked ? 'block' : 'none';
+//         }
+
+//         changePasswordCheckbox.addEventListener('change', updatePasswordFieldVisibility);
+
+//         updatePasswordFieldVisibility();
+//     });
+// </script>
+{% endblock %}

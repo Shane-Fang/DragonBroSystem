@@ -1,7 +1,7 @@
 
 {% load static %}
 {% block title %}
-<title>註冊</title>
+<title>{{title}}</title>
 <link rel="stylesheet" href="{% static 'css/style.css' %}">
 <style>
     form {
@@ -30,20 +30,19 @@
 </style>
 {% endblock %}
 
-
+{% if error_message %}
+<script type="text/javascript">
+    alert("{{ error_message}}");
+    window.location.href = "{% url 'member:register' %}";
+</script>
+{% elif success %}
+<script type="text/javascript">
+    alert("註冊成功");
+    window.location.href = "{% url 'home' %}";
+</script>
+{% endif %}
 <div class="bgimg text-center">
 
-    {% if error_message %}
-    <script type="text/javascript">
-        alert("{{ error_message}}");
-        window.location.href = "{% url 'member:register' %}";
-    </script>
-    {% elif success %}
-    <script type="text/javascript">
-        alert("註冊成功");
-        window.location.href = "{% url 'home' %}";
-    </script>
-    {% endif %}
     <form action="." method="post" name='register' enctype="multipart/form-data">{% csrf_token %}
         {{form.as_p}}
         <input type="submit" value="註冊" style="margin-top:10px;padding: 3px 10px">

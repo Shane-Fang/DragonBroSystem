@@ -1,6 +1,43 @@
 from django import forms
 from .models import User
+from django.contrib.auth.forms import SetPasswordForm
+class UserUpdateForm(forms.ModelForm):
+    change_password = forms.BooleanField(required=False, label='更改密碼')
+    new_password = forms.CharField(widget=forms.PasswordInput(), label='新密碼', required=False)
+    new_password_confirm = forms.CharField(widget=forms.PasswordInput(), label='新密碼確認', required=False)
+    id = forms.IntegerField(disabled=True, required=False, label='ID')  # 只读 ID 字段
+    bonus_points = forms.IntegerField(disabled=True, required=False, label='積分')  # 只读积分字段
+    class Meta:
+        model = User
+        fields = ['user_name', 'phone_number', 'birthday', 'address', 'bonus_points', 'id']
+        # 可以排除 change_password, new_password 和 new_password_confirm，因为它们不是模型的一部分
 
+    def __init__(self, *args, **kwargs):
+        super(UserUpdateForm, self).__init__(*args, **kwargs)
+        self.fields['id'].initial = self.instance.id  # 设置 id 初始值
+        self.fields['bonus_points'].initial = self.instance.bonus_points  # 设置 bonus_points 初始值
+
+        # 调整字段的顺序
+        order = ['id', 'user_name', 'phone_number', 'birthday', 'address', 'bonus_points', 'change_password', 'new_password', 'new_password_confirm']
+        self.order_fields(order)
+
+    def clean(self):
+        cleaned_data = super().clean()
+        password1 = cleaned_data.get("new_password")
+        password2 = cleaned_data.get("new_password_confirm")
+
+        if password1 and password2 and password1 != password2:
+            self.add_error('new_password_confirm', "兩次輸入的密碼不一致")
+
+        return cleaned_data
+
+    def save(self, commit=True):
+        user = super(UserUpdateForm, self).save(commit=False)
+        if self.cleaned_data['change_password']:
+            user.set_password(self.cleaned_data["new_password"])
+        if commit:
+            user.save()
+        return user
 
 
 class RegisterModelForm(forms.ModelForm):
