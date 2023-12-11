@@ -34,9 +34,9 @@ class UserManager(BaseUserManager):
         return self.create_user(email, password, **extra_fields)
 
 class User(AbstractBaseUser, PermissionsMixin):
-    email = models.EmailField(unique=True,verbose_name='信箱')
+    email = models.EmailField(null=True, blank=True,unique=True,verbose_name='信箱')
     user_name = models.CharField(max_length=150,verbose_name='姓名')
-    phone_number = models.CharField(max_length=15,verbose_name='電話')
+    phone_number = models.CharField(unique=True,max_length=15,verbose_name='電話')
     birthday = models.DateField(null=True, blank=True,verbose_name='生日')
     address = models.CharField(max_length=255,verbose_name='地址')
     bonus_points = models.IntegerField(default=0,verbose_name='點數')
@@ -48,12 +48,12 @@ class User(AbstractBaseUser, PermissionsMixin):
     is_staff = models.BooleanField(default=False,verbose_name='訪問後台權限')
     date_joined = models.DateTimeField(default=timezone.now,verbose_name='加入日期')
     objects = UserManager()
-    USERNAME_FIELD = 'email'    #登入帳號的欄位
+    USERNAME_FIELD = 'phone_number'    #登入帳號的欄位
     REQUIRED_FIELDS = ['user_name']     #非必要填寫欄位
 
 
     def __str__(self):
-        return self.email
+        return self.phone_number
     class Meta:
         verbose_name = "帳號"
         verbose_name_plural = '帳號'  # 中文名稱
