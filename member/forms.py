@@ -1,6 +1,16 @@
 from django import forms
-from .models import User
+from .models import User,Address
 from django.contrib.auth.forms import SetPasswordForm
+from django.forms import inlineformset_factory
+
+AddressFormSet = inlineformset_factory(
+    User, 
+    Address, 
+    fields=('address',), 
+    extra=1, 
+    can_delete=True
+)
+
 class UserUpdateForm(forms.ModelForm):
     change_password = forms.BooleanField(required=False, label='更改密碼')
     new_password = forms.CharField(widget=forms.PasswordInput(), label='新密碼', required=False)
@@ -9,7 +19,7 @@ class UserUpdateForm(forms.ModelForm):
     bonus_points = forms.IntegerField(disabled=True, required=False, label='積分')  # 只读积分字段
     class Meta:
         model = User
-        fields = ['user_name', 'phone_number', 'birthday', 'address', 'bonus_points', 'id']
+        fields = ['user_name', 'phone_number', 'birthday',  'bonus_points', 'id']
         # 可以排除 change_password, new_password 和 new_password_confirm，因为它们不是模型的一部分
 
     def __init__(self, *args, **kwargs):
@@ -18,7 +28,7 @@ class UserUpdateForm(forms.ModelForm):
         self.fields['bonus_points'].initial = self.instance.bonus_points  # 设置 bonus_points 初始值
 
         # 调整字段的顺序
-        order = ['id', 'user_name', 'phone_number', 'birthday', 'address', 'bonus_points', 'change_password', 'new_password', 'new_password_confirm']
+        order = ['id', 'user_name', 'phone_number', 'birthday', 'bonus_points', 'change_password', 'new_password', 'new_password_confirm']
         self.order_fields(order)
 
     def clean(self):
@@ -47,7 +57,7 @@ class RegisterModelForm(forms.ModelForm):
 
     class Meta:
         model = User
-        fields = ['email', 'user_name', 'phone_number', 'birthday', 'address' ]
+        fields = ['phone_number', 'user_name', 'phone_number', 'birthday' ]
         # 根据需要调整字段的标签和其他属性
 
     def __init__(self, *args, **kwargs):
@@ -55,7 +65,7 @@ class RegisterModelForm(forms.ModelForm):
         self.fields['password1'].label = '密碼'
         self.fields['password2'].label = '確認密碼'
         # 如果需要其他字段的特殊处理，在这里添加
-        self.order_fields(['email', 'password1', 'password2', 'user_name', 'phone_number', 'birthday', 'address' ])
+        self.order_fields(['phone_number', 'password1', 'password2', 'user_name',  'birthday' ])
 
     def clean(self):
         cleaned_data = super().clean()

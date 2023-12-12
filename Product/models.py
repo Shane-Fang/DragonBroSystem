@@ -28,7 +28,10 @@ class Categories(models.Model):
         verbose_name_plural = '類別管理'  # 中文名稱
     def __str__(self):
         return self.Category_name
-class Products_list(models.Model):
+
+
+
+class Products(models.Model):
     Sh_CHOICES = (
         (0, '下架'),
         (1, '上架'),
@@ -59,11 +62,21 @@ class Products_list(models.Model):
     def __str__(self):
         return self.Item_name
 
+class Branch_Inventory(models.Model):
+    Products=models.ForeignKey(Products,on_delete=models.DO_NOTHING,verbose_name='商品')
+    Number=models.IntegerField(verbose_name="總庫存")
+    Branch=models.ForeignKey('member.Branchs',on_delete=models.DO_NOTHING,verbose_name='店家')
+    class Meta:
+        verbose_name = "進貨商品管理"
+        verbose_name_plural = '進貨商品管理'  # 中文名稱
+    def __str__(self):
+        return self.Products
+
 
 
 class ItemImage(models.Model):
     ImageID=models.AutoField(auto_created = True,primary_key=True,verbose_name='圖片id')
-    Product_list=models.ForeignKey(Products_list,on_delete=models.DO_NOTHING,verbose_name='商品')
+    Products=models.ForeignKey(Products,on_delete=models.DO_NOTHING,verbose_name='商品')
     Image_path= models.ImageField(
         upload_to=UploadToPathAndRename('image/productimage/'),
         blank=False,
@@ -108,13 +121,3 @@ class ItemImage(models.Model):
 
         super(ItemImage, self).delete(*args, **kwargs)
 
-class Products(models.Model):
-    Product_list=models.ForeignKey(Products_list,on_delete=models.DO_NOTHING,verbose_name='商品')
-    ExpiryDate=models.DateTimeField(verbose_name='有效日期')
-    Number=models.IntegerField(verbose_name="數量")
-    Branch=models.ForeignKey('member.Branchs',on_delete=models.DO_NOTHING,verbose_name='店家')
-    class Meta:
-        verbose_name = "進貨商品管理"
-        verbose_name_plural = '進貨商品管理'  # 中文名稱
-    def __str__(self):
-        return self.Product_list

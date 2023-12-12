@@ -38,7 +38,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     user_name = models.CharField(max_length=150,verbose_name='姓名')
     phone_number = models.CharField(unique=True,max_length=15,verbose_name='電話')
     birthday = models.DateField(null=True, blank=True,verbose_name='生日')
-    address = models.CharField(max_length=255,verbose_name='地址')
+    # address = models.CharField(max_length=255,verbose_name='地址')
     bonus_points = models.IntegerField(default=0,verbose_name='點數')
     branch = models.ForeignKey(Branchs,on_delete=models.DO_NOTHING,verbose_name='店家',null=True, blank=True)
     # 以下是 AbstractBaseUser 已經提供的欄位
@@ -49,7 +49,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     date_joined = models.DateTimeField(default=timezone.now,verbose_name='加入日期')
     objects = UserManager()
     USERNAME_FIELD = 'phone_number'    #登入帳號的欄位
-    REQUIRED_FIELDS = ['user_name']     #非必要填寫欄位
+    REQUIRED_FIELDS = ['email']     #非必要填寫欄位
 
 
     def __str__(self):
@@ -72,5 +72,6 @@ class Transpose(models.Model):
     def __str__(self):
         return self.BranchsSend + self.BranchsReceipt 
 
-
-
+class Address(models.Model):
+    user=models.ForeignKey(User, on_delete=models.CASCADE,verbose_name='會員' ,blank=True, null=True, default=None)
+    address = models.CharField(max_length=255,verbose_name='地址')

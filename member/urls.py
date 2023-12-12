@@ -9,6 +9,8 @@ urlpatterns = [
     path('memberprofile/', views.memberprofile, name='memberprofile'),
     path('login/', views.memberlogin,name='login'),
     path('logout/', views.user_logout, name='logout'),
+    #ajax
+    path('update_address/', views.update_address, name='update_address'),
     # path('cgmember/<str:type>/<str:username>/', views.cgmember,name='cgmember'),
     # path('cgmember/<str:type>/', views.cgmember),
 ]

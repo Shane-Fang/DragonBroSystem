@@ -4,58 +4,96 @@
 <title>{{title}}</title>
 <link rel="stylesheet" href="{% static 'css/style.css' %}">
 <style>
-    form {
-        text-align: center;
+    .address-form-row {
+        margin-bottom: 10px;
     }
 
-    table tr td:first-child {
-        text-align: right;
-        width: 30%;
-    }
-
-    table tr td:first-child label {
-        font-size: 24px;
-        font-weight: 600;
-    }
-
-    table tr td:nth-child(2) input {
-        width: 80%;
-        height: 32px;
-    }
-
-    table tr td:nth-child(2) select {
-        width: 80%;
-        height: 32px;
+    .remove-address {
+        margin-left: 10px;
     }
 </style>
 {% endblock %}
 
 {% block content %}
 <div class="bgimg text-center my-3">
-    
-    <form method="post">
+
+    <form method="post" id="address-form">
         {% csrf_token %}
         {{ user_form.as_p }}
-        
+
+        <div id="address-container">
+            {% for address in request.user.address_set.all %}
+            <div>
+                {{ address.address }}
+                <button type="button" class="remove-address" data-address-id="{{ address.id }}">-</button>
+            </div>
+            {% endfor %}
+        </div>
+
+        <button type="button" id="add-address">+</button>
         <button type="submit">更新</button>
     </form>
-    
+
 </div>
 <script>
-//     document.addEventListener('DOMContentLoaded', function() {
-//         var changePasswordCheckbox = document.getElementById('id_change_password');
-//         var newPasswordField = document.getElementById('id_new_password');
-//         var newPasswordConfirmField = document.getElementById('id_new_password_confirm');
+    //     document.addEventListener('DOMContentLoaded', function() {
+    //         var changePasswordCheckbox = document.getElementById('id_change_password');
+    //         var newPasswordField = document.getElementById('id_new_password');
+    //         var newPasswordConfirmField = document.getElementById('id_new_password_confirm');
 
-//         function updatePasswordFieldVisibility() {
-//             var isChecked = changePasswordCheckbox.checked;
-//             newPasswordField.style.display = isChecked ? 'block' : 'none';
-//             newPasswordConfirmField.style.display = isChecked ? 'block' : 'none';
-//         }
+    //         function updatePasswordFieldVisibility() {
+    //             var isChecked = changePasswordCheckbox.checked;
+    //             newPasswordField.style.display = isChecked ? 'block' : 'none';
+    //             newPasswordConfirmField.style.display = isChecked ? 'block' : 'none';
+    //         }
 
-//         changePasswordCheckbox.addEventListener('change', updatePasswordFieldVisibility);
+    //         changePasswordCheckbox.addEventListener('change', updatePasswordFieldVisibility);
 
-//         updatePasswordFieldVisibility();
-//     });
-// </script>
+    //         updatePasswordFieldVisibility();
+    //     });
+
+    document.addEventListener('DOMContentLoaded', function () {
+        document.getElementById('add-address').addEventListener('click', function () {
+            var newAddress = prompt("请输入新地址：");
+            if (newAddress) {
+                console.log(newAddress)
+                sendAddressUpdateRequest('add', newAddress, '');
+            }
+        });
+
+        document.getElementById('address-container').addEventListener('click', function (e) {
+            if (e.target.classList.contains('remove-address')) {
+                var addressId = e.target.dataset.addressId;
+                e.target.parentElement.remove();
+                sendAddressUpdateRequest('remove', '', addressId);
+            }
+        });
+    });
+
+    function sendAddressUpdateRequest(action, address, addressId) {
+        var xhr = new XMLHttpRequest();
+        xhr.open('POST', '{% url "member:update_address" %}', true);
+        xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+        xhr.setRequestHeader('X-CSRFToken', getCookie('csrftoken'));
+        xhr.send('action=' + action + '&address=' + address + '&address_id=' + addressId);
+    }
+
+    function getCookie(name) {
+    var cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+        var cookies = document.cookie.split(';');
+        for (var i = 0; i < cookies.length; i++) {
+            var cookie = cookies[i].trim();
+            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
+}
+
+
+
+</script>
 {% endblock %}

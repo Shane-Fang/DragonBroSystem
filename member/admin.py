@@ -9,8 +9,8 @@ class UserAdmin(BaseUserAdmin):
     ordering = ['email']
     # 定义在添加和更改用户时显示的字段
     fieldsets = (
-        ('登入帳號', {'fields': ('email', 'password')}),
-        ('使用者資訊', {'fields': ('user_name', 'phone_number', 'birthday', 'address', 'bonus_points', 'branch')}),
+        ('登入帳號', {'fields': ('phone_number', 'password')}),
+        ('使用者資訊', {'fields': ('user_name', 'email', 'birthday', 'bonus_points', 'branch')}),
         ('權限', {'fields': ('is_active', 'is_staff', 'is_superuser', 'groups', 'user_permissions')}),
         ('日期相關', {'fields': ('last_login', 'date_joined')}),
     )
@@ -19,7 +19,7 @@ class UserAdmin(BaseUserAdmin):
     add_fieldsets = (
         (None, {
             'classes': ('wide',),
-            'fields': ('email', 'password1', 'password2'),
+            'fields': ('phone_number', 'password1', 'password2'),
         }),
     )
     # 如果您有自定義的表單，您也可以在這裡設定

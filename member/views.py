@@ -1,37 +1,39 @@
 from django.shortcuts import render,redirect
+from django.http import JsonResponse
 from django.contrib.auth import authenticate, login,logout
 from django.contrib.auth.hashers import make_password
 from django.contrib import messages
-from .models import User
-from .forms import RegisterModelForm,UserUpdateForm
+from .models import User,Address
+from .forms import RegisterModelForm,UserUpdateForm, AddressFormSet
+from django.views.decorators.http import require_POST
+from django.contrib.auth.decorators import login_required
+
 # Create your views here.
 def index(request):
     return render(request, 'index/index.html')
 def memberprofile(request):
     if not request.user.is_authenticated:
-        return redirect('member:login.html')
+        return redirect('member:login')
+
+    user_form = UserUpdateForm(request.POST or None, instance=request.user)
+    address_formset = AddressFormSet(request.POST or None, instance=request.user)
 
     if request.method == 'POST':
-        user_form = UserUpdateForm(request.POST, instance=request.user)
-
-        if user_form.is_valid():
-            user = user_form.save()
-            return redirect('home')  # 重定向到确认页面
-
-    else:
-        user_form = UserUpdateForm(instance=request.user)
-
+        if user_form.is_valid() and address_formset.is_valid():
+            user_form.save()
+            address_formset.save()
+            return redirect('home')  # 重定向到确认页面或其他适当页面
 
     return render(request, 'member/memberprofile.html', {
         'user_form': user_form,
-
-        'title':'會員資訊'
+        'address_formset': address_formset,
+        'title': '會員資訊'
     })
 def memberlogin(request):
     if request.method == 'POST':
-        email = request.POST['email']
+        phone_number = request.POST['phone_number']
         password = request.POST['password']
-        user = authenticate(request, email=email, password=password)
+        user = authenticate(request, phone_number=phone_number, password=password)
 
         if user is not None:
             login(request, user)
@@ -39,7 +41,7 @@ def memberlogin(request):
             return redirect('home')
         else:
             # 如果用户不存在或密码错误，显示错误信息
-            messages.error(request, 'Email或密碼錯誤')
+            messages.error(request, '電話或密碼錯誤')
 
     # 如果不是 POST 请求，则显示登录表单
     return render(request, 'member/login.html')
@@ -58,8 +60,8 @@ def register(request):
             user = form.save(commit=False)
             # 密碼已在表單的 save 方法中設置，所以這裡不需要再設置
             # user.password = make_password(form.cleaned_data['password1'])
-            if User.objects.filter(email=user.email).exists():
-                return render(request, "member/register.html", {"error_message": "Email已存在"})
+            if User.objects.filter(email=user.phone_number).exists():
+                return render(request, "member/register.html", {"error_message": "電話已存在"})
             user.save()
             # 根据需要处理其他逻辑，例如登录用户、发送邮件等
             return render(request, "member/register.html", {"success": '註冊成功'})
@@ -70,3 +72,14 @@ def register(request):
         'title':'註冊'
     }
     return render(request, "member/register.html",context )
+# @login_required
+@require_POST
+def update_address(request):
+    action = request.POST.get('action')
+    address_id = request.POST.get('address_id', None)  # 获取地址 ID
+    if action == 'add':
+        Address.objects.create(user=request.user, address=request.POST.get('address'))
+    elif action == 'remove' and address_id:
+        Address.objects.filter(id=address_id, user=request.user).delete()
+
+    return JsonResponse({'status': 'success'})
