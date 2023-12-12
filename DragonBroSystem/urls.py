@@ -22,7 +22,8 @@ from member.views import index
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('member/', include(('member.urls', 'member'), namespace='member')),
-    path('', index, name='home')
+    path('Product/', include(('Product.urls', 'Product'), namespace='Product')),
+    path('', index, name='home'),
 ]
 if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
