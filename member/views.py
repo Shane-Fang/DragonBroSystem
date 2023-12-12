@@ -10,7 +10,10 @@ from django.contrib.auth.decorators import login_required
 
 # Create your views here.
 def index(request):
-    return render(request, 'index/index.html')
+    context={
+        'title':'榮哥海鮮'
+    }
+    return render(request, 'index/index.html',context)
 def memberprofile(request):
     if not request.user.is_authenticated:
         return redirect('member:login')
