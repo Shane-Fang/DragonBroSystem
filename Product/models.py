@@ -2,8 +2,23 @@ from django.db import models
 from django.utils.deconstruct import deconstructible
 import os
 import time
+from django.contrib.contenttypes.models import ContentType
+from django.contrib.contenttypes.fields import GenericForeignKey
 from django.core.files.storage import default_storage
 # from member.models import Branchs
+
+State_CHOICES = (
+        (0, '代處理'),
+        (1, '已處理'),
+    )
+Delivery_CHOICES = (
+        (0, '自取'),
+        (1, '寄送'),
+    )
+Payment_CHOICES = (
+        (0, '親自付款'),
+        (1, '貨到付款'),
+    )
 @deconstructible
 class UploadToPathAndRename(object):
     def __init__(self, path):
@@ -67,10 +82,10 @@ class Branch_Inventory(models.Model):
     Number=models.IntegerField(verbose_name="總庫存")
     Branch=models.ForeignKey('member.Branchs',on_delete=models.DO_NOTHING,verbose_name='店家')
     class Meta:
-        verbose_name = "進貨商品管理"
-        verbose_name_plural = '進貨商品管理'  # 中文名稱
+        verbose_name = "分店商品庫存"
+        verbose_name_plural = '分店商品庫存'  # 中文名稱
     def __str__(self):
-        return self.Products
+        return str(self.Products)
 
 
 
@@ -121,3 +136,47 @@ class ItemImage(models.Model):
 
         super(ItemImage, self).delete(*args, **kwargs)
 
+class Restock(models.Model):
+    Category_CHOICES=((0,'進貨'),
+                      (1,'BtoB'),
+                      (2,'BtoC'),
+                      )
+    Type_CHOICES=(
+        (0,'進貨'),
+        (1,'出貨'),
+    )
+    Category=models.IntegerField(choices=State_CHOICES,default=1,verbose_name="運送狀態",null=True, blank=True)
+    Time=models.DateTimeField(auto_now_add=True)
+    Branch=models.ForeignKey('member.Branchs', on_delete=models.DO_NOTHING,verbose_name="分店ID")
+    User=models.ForeignKey('member.User', on_delete=models.DO_NOTHING,verbose_name="後台操作的員工")
+    Type=models.IntegerField(choices=State_CHOICES,default=1,verbose_name="運送狀態",null=True, blank=True)
+    content_type = models.ForeignKey(ContentType, on_delete=models.CASCADE)
+    object_id = models.PositiveIntegerField()
+    refID = GenericForeignKey('content_type', 'object_id') # 主要是連結Order or Transpose
+    class Meta:
+        verbose_name = "進出貨管理"
+        verbose_name_plural = '進出貨管理'  # 中文名稱
+    def __str__(self):
+        return self.User
+class RestockDetail(models.Model):
+    Product=models.ForeignKey(Products,on_delete=models.DO_NOTHING,verbose_name='商品')
+    Restock=models.ForeignKey(Restock,on_delete=models.DO_NOTHING,verbose_name='交易')
+    ExpiryDate=models.DateField(verbose_name='有效日期')
+    Number=models.IntegerField(verbose_name="數量")
+    Remain=models.IntegerField(verbose_name="剩餘數量")
+    Branch=models.ForeignKey('member.Branchs', on_delete=models.DO_NOTHING,verbose_name="分店ID")
+    class Meta:
+        verbose_name = "進出貨管理明細"
+        verbose_name_plural = '進出貨管理明細'  # 中文名稱
+    def __str__(self):
+        return self.Product
+
+class RestockDetail_relation(models.Model):
+    InID=models.ForeignKey(RestockDetail,on_delete=models.DO_NOTHING,verbose_name='InID',related_name='InID')
+    OutID=models.ForeignKey(RestockDetail,on_delete=models.DO_NOTHING,verbose_name='OutID',related_name='OutID')
+    Number=models.IntegerField(verbose_name="數量")
+    class Meta:
+        verbose_name = "進出貨管理明細管理"
+        verbose_name_plural = '進出貨管理明細管理'  # 中文名稱
+    # def __str__(self):
+    #     return self.Category_name

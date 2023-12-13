@@ -3,7 +3,7 @@ from .models import User,Branchs,Transpose
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
 @admin.register(User)
 class UserAdmin(BaseUserAdmin):
-    list_display = ['email', 'user_name', 'phone_number', 'is_active', 'is_staff']
+    list_display = ['email', 'user_name','branch', 'phone_number', 'is_active', 'is_staff']
     search_fields = ['email', 'user_name']
     list_filter = ['email', 'user_name']
     ordering = ['email']

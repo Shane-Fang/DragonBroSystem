@@ -1,6 +1,6 @@
 from django.contrib import admin
-from .models import Categories,Products,ItemImage,Branch_Inventory
-
+from .models import Categories,Products,ItemImage,Branch_Inventory,Restock,RestockDetail,RestockDetail_relation
+from django.utils.html import format_html
 # Register your models here.
 @admin.register(Categories)
 class CategoriesAdmin(admin.ModelAdmin):
@@ -45,6 +45,29 @@ class Branch_InventoryAdmin(admin.ModelAdmin):
     list_filter = ['Products','Number','Branch']
     ordering = ['Products']
 
-
-
 # ['Products','ExpiryDate','Number','Branch',]
+@admin.register(Restock)
+class RestockAdmin(admin.ModelAdmin):
+    list_display = ['id', 'Category', 'Time', 'Branch', 'User', 'Type', 'content_type', 'object_id']
+    def get_form(self, request, obj=None, **kwargs):
+        form = super(RestockAdmin, self).get_form(request, obj, **kwargs)
+        if not request.user.is_superuser:
+            form.base_fields['Branch'].disabled = True  
+            form.base_fields['Branch'].initial = request.user.branch  
+            form.base_fields['User'].disabled = True  
+            form.base_fields['User'].initial = request.user
+        return form
+
+    def save_model(self, request, obj, form, change):
+        if not request.user.is_superuser:
+            obj.Branch = request.user.branch  
+            obj.User = request.user
+        super(RestockAdmin, self).save_model(request, obj, form, change)
+
+@admin.register(RestockDetail)
+class RestockDetailAdmin(admin.ModelAdmin):
+    list_display = ['id', 'Product', 'Restock', 'ExpiryDate', 'Number', 'Remain', 'Branch']
+
+@admin.register(RestockDetail_relation)
+class RestockDetailRelationAdmin(admin.ModelAdmin):
+    list_display = ['id', 'InID', 'OutID', 'Number']

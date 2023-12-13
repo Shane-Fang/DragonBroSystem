@@ -1,8 +1,7 @@
 from django.db import models
 from member.models import User,Branchs
 from Product.models import Products
-from django.contrib.contenttypes.models import ContentType
-from django.contrib.contenttypes.fields import GenericForeignKey
+
 # Create your models here.
 State_CHOICES = (
         (0, '代處理'),
@@ -66,34 +65,9 @@ class OrderLog(models.Model):
     User=models.ForeignKey(User, on_delete=models.DO_NOTHING,verbose_name="後台操作的員工")
     Time=models.DateTimeField(auto_now_add=True)
     Delivery_state=models.IntegerField(choices=State_CHOICES,default=1,verbose_name="運送狀態",null=True, blank=True)
-    
-class Restock(models.Model):
-    Category_CHOICES=((0,'進貨'),
-                      (1,'BtoB'),
-                      (2,'BtoC'),
-                      )
-    Type_CHOICES=(
-        (0,'進貨'),
-        (1,'出貨'),
-    )
-    Category=models.IntegerField(choices=State_CHOICES,default=1,verbose_name="運送狀態",null=True, blank=True)
-    Time=models.DateTimeField(auto_now_add=True)
-    Branch=models.ForeignKey(Branchs, on_delete=models.DO_NOTHING,verbose_name="分店ID")
-    User=models.ForeignKey(User, on_delete=models.DO_NOTHING,verbose_name="後台操作的員工")
-    Type=models.IntegerField(choices=State_CHOICES,default=1,verbose_name="運送狀態",null=True, blank=True)
-    content_type = models.ForeignKey(ContentType, on_delete=models.CASCADE)
-    object_id = models.PositiveIntegerField()
-    refID = GenericForeignKey('content_type', 'object_id') # 主要是連結Order or Transpose
+    class Meta:
+        verbose_name = "訂單紀錄"
+        verbose_name_plural = '訂單紀錄'  # 中文名稱
+    def __str__(self):
+        return self.Category_name
 
-class RestockDetail(models.Model):
-    Product=models.ForeignKey(Products,on_delete=models.DO_NOTHING,verbose_name='商品')
-    Restock=models.ForeignKey(Restock,on_delete=models.DO_NOTHING,verbose_name='交易')
-    ExpiryDate=models.DateField(verbose_name='有效日期')
-    Number=models.IntegerField(verbose_name="數量")
-    Remain=models.IntegerField(verbose_name="剩餘數量")
-    Branch=models.ForeignKey(Branchs, on_delete=models.DO_NOTHING,verbose_name="分店ID")
-
-class RestockDetail_relation(models.Model):
-    InID=models.ForeignKey(RestockDetail,on_delete=models.DO_NOTHING,verbose_name='交易',related_name='InID')
-    OutID=models.ForeignKey(RestockDetail,on_delete=models.DO_NOTHING,verbose_name='交易',related_name='OutID')
-    Number=models.IntegerField(verbose_name="數量")
