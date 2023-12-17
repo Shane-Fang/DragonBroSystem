@@ -75,13 +75,6 @@ class RestockDetailInline(admin.TabularInline):  # 或者使用 admin.StackedInl
                     formset.form.base_fields[form].initial = request.user.branch
         return formset
 
-    def save_formset(self, request, form, formset, change):
-        instances = formset.save(commit=False)
-        for instance in instances:
-            if not request.user.is_superuser:
-                instance.Branch = request.user.branch
-            instance.save()
-        formset.save_m2m()
 @admin.register(Restock)
 class RestockAdmin(admin.ModelAdmin):
     form = RestockForm
@@ -108,7 +101,6 @@ class RestockAdmin(admin.ModelAdmin):
             obj.object_id = form.cleaned_data['object_id']
         else:
             obj.object_id = None
-    
         obj.save()
 
 

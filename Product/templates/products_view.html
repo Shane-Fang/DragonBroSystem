@@ -4,11 +4,27 @@
 <title>{{title}}</title>
 {% endblock %}
 {% block content %}
-<div  class="row">
+<div class="row">
     <div>
         <label for="productSearch">產品搜尋:</label>
         <input type="text" id="productSearch" name="productSearch">
         <button onclick="filterProducts()">搜尋</button>
+    </div>
+    <div class="container">
+        <div class="row">
+            {% for product in products %}
+            <div class="col-md-4 mb-4 "> <!-- 每个卡片占用4列，底部边距为4 -->
+                <div class="card text-center">
+                    <img src="..." class="card-img-top" alt="...">
+                    <div class="card-body">
+                        <h5 class="card-title">{{ product.Products.Item_name }}</h5>
+                        <p class="card-text">{{ product.Products.Specification }}</p>
+                        <a href="#" class="btn btn-primary">加入购物车</a>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
     </div>
 </div>
 

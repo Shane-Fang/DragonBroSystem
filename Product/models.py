@@ -170,7 +170,22 @@ class RestockDetail(models.Model):
         verbose_name_plural = '進出貨管理明細'  # 中文名稱
     def __str__(self):
         return str(self.Product)
-
+    def save(self, *args, **kwargs):
+        # 先存檔RestockDetail資料
+        super(RestockDetail, self).save(*args, **kwargs)
+        # Restock的Category為0
+        if self.Restock.Category == 0:
+            # 創建或更新Branch_Inventory資料表
+            inventory, created = Branch_Inventory.objects.get_or_create(
+                Products=self.Product, 
+                Branch=self.Branch,
+                defaults={'Number': self.Number}
+            )
+            if created:
+                inventory.Number = self.Number
+            else:
+                inventory.Number += self.Number
+            inventory.save()
 class RestockDetail_relation(models.Model):
     InID=models.ForeignKey(RestockDetail,on_delete=models.DO_NOTHING,verbose_name='InID',related_name='InID')
     OutID=models.ForeignKey(RestockDetail,on_delete=models.DO_NOTHING,verbose_name='OutID',related_name='OutID')
