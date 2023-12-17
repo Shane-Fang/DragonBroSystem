@@ -75,7 +75,7 @@ class Products(models.Model):
         verbose_name = "商品管理"
         verbose_name_plural = '商品管理'  # 中文名稱
     def __str__(self):
-        return self.Item_name
+        return str(self.Item_name)
 
 class Branch_Inventory(models.Model):
     Products=models.ForeignKey(Products,on_delete=models.DO_NOTHING,verbose_name='商品')
@@ -145,31 +145,31 @@ class Restock(models.Model):
         (0,'進貨'),
         (1,'出貨'),
     )
-    Category=models.IntegerField(choices=State_CHOICES,default=1,verbose_name="運送狀態",null=True, blank=True)
+    Category=models.IntegerField(choices=Category_CHOICES,default=1,verbose_name="進貨狀態",null=True, blank=True)
     Time=models.DateTimeField(auto_now_add=True)
     Branch=models.ForeignKey('member.Branchs', on_delete=models.DO_NOTHING,verbose_name="分店ID")
     User=models.ForeignKey('member.User', on_delete=models.DO_NOTHING,verbose_name="後台操作的員工")
-    Type=models.IntegerField(choices=State_CHOICES,default=1,verbose_name="運送狀態",null=True, blank=True)
-    content_type = models.ForeignKey(ContentType, on_delete=models.CASCADE)
-    object_id = models.PositiveIntegerField()
+    Type=models.IntegerField(choices=Type_CHOICES,default=1,verbose_name="進出貨",null=True, blank=True)
+    content_type = models.ForeignKey(ContentType, on_delete=models.CASCADE,null=True, blank=True,verbose_name="分店/訂單")
+    object_id = models.PositiveIntegerField(null=True, blank=True,verbose_name="分店/訂單的ID")
     refID = GenericForeignKey('content_type', 'object_id') # 主要是連結Order or Transpose
     class Meta:
         verbose_name = "進出貨管理"
         verbose_name_plural = '進出貨管理'  # 中文名稱
     def __str__(self):
-        return self.User
+        return str(self.User)
 class RestockDetail(models.Model):
     Product=models.ForeignKey(Products,on_delete=models.DO_NOTHING,verbose_name='商品')
     Restock=models.ForeignKey(Restock,on_delete=models.DO_NOTHING,verbose_name='交易')
     ExpiryDate=models.DateField(verbose_name='有效日期')
     Number=models.IntegerField(verbose_name="數量")
-    Remain=models.IntegerField(verbose_name="剩餘數量")
+    Remain=models.IntegerField(null=True, blank=True,verbose_name="剩餘數量")
     Branch=models.ForeignKey('member.Branchs', on_delete=models.DO_NOTHING,verbose_name="分店ID")
     class Meta:
         verbose_name = "進出貨管理明細"
         verbose_name_plural = '進出貨管理明細'  # 中文名稱
     def __str__(self):
-        return self.Product
+        return str(self.Product)
 
 class RestockDetail_relation(models.Model):
     InID=models.ForeignKey(RestockDetail,on_delete=models.DO_NOTHING,verbose_name='InID',related_name='InID')
