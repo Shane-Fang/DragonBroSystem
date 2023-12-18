@@ -11,9 +11,9 @@ class ShoppingCartAdmin(admin.ModelAdmin):
 # ['User','Total']
 @admin.register(ShoppingCartDetails)
 class ShoppingCartDetailsAdmin(admin.ModelAdmin):
-    list_display = ['id', 'Product', 'Number', 'Time', 'Price', 'Total']
-    search_fields = ['id', 'Product', 'Number', 'Time', 'Price', 'Total']
-    list_filter = ['id', 'Product', 'Number', 'Time', 'Price', 'Total']
+    list_display = ['id', 'Product', 'Number', 'Time']
+    search_fields = ['id', 'Product', 'Number', 'Time']
+    list_filter = ['id', 'Product', 'Number', 'Time']
     ordering = ['Time']
 
 # ['Product','Number','Time','Price','Total']

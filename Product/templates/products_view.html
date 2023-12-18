@@ -19,7 +19,7 @@
                     <div class="card-body">
                         <h5 class="card-title">{{ product.Products.Item_name }}</h5>
                         <p class="card-text">{{ product.Products.Specification }}</p>
-                        <a href="#" class="btn btn-primary">加入购物车</a>
+                        <a href="{% url 'Product:detail' branch=branch.id detail=product.id  %}" class="btn btn-primary">商品資訊</a>
                     </div>
                 </div>
             </div>

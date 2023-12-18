@@ -25,10 +25,11 @@ class ShoppingCart(models.Model):
         return self.pk
 class ShoppingCartDetails(models.Model):
     Product=models.ForeignKey(Products,on_delete=models.DO_NOTHING,verbose_name='商品')
-    Number=models.IntegerField(verbose_name="數量")
+    ShoppingCart = models.ForeignKey(ShoppingCart, on_delete=models.CASCADE, related_name='details', verbose_name='購物車')
+    Number=models.IntegerField(null=True, blank=True,verbose_name="數量")
     Time=models.DateTimeField(auto_now_add=True)
-    Price=models.IntegerField(null=False,verbose_name='價格')
-    Total=models.IntegerField(null=False,verbose_name='總價格')
+    Price=models.IntegerField(null=True,verbose_name='價格')
+    Total=models.IntegerField(null=True,verbose_name='總價格')
     def __str__(self):
         return self.Product
     class Meta:
