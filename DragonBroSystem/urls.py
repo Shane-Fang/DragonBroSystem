@@ -23,7 +23,7 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('member/', include(('member.urls', 'member'), namespace='member')),
     path('Product/', include(('Product.urls', 'Product'), namespace='Product')),
-    # path('OrderManagement/', include(('OrderManagement.urls', 'OrderManagement'), namespace='OrderManagement')),
+    path('OrderManagement/', include(('OrderManagement.urls', 'OrderManagement'), namespace='OrderManagement')),
     path('', index, name='home'),
 ]
 if settings.DEBUG:

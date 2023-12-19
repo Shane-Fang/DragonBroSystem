@@ -36,25 +36,22 @@ def add_to_cart_view(request, product_id):
     if request.method == 'POST':
         quantity = request.POST.get('quantity', 1)
         user = request.user
-
-        # 添加到购物车的逻辑
+        # 新增購物車function
         add_to_cart(user, product_id, quantity)
 
-        # 添加成功后重定向到某个页面，例如购物车页面或商品页面
-        return redirect('some-view-name')
+        return redirect('OrderManagement:cart')
 
-    # 如果不是 POST 请求，重定向到其他页面
-    return redirect('another-view-name')
+    return redirect('OrderManagement:cart')
 def add_to_cart(user, product_id, quantity):
-    # 获取或创建购物车
+
     cart, cart_created = ShoppingCart.objects.get_or_create(User=user, defaults={'Total': 0})
 
-    # 获取或创建购物车明细项
-    product = Products.objects.get(id=product_id)  # 获取商品对象
+
+    product = Products.objects.get(id=product_id) 
     detail, created = ShoppingCartDetails.objects.get_or_create(ShoppingCart=cart, Product=product)
     if created:
-        # 新商品，设置数量
         detail.Number = int(quantity)
+        detail.Price = product.Price
     else:
         # 商品已存在，增加数量
         if detail.Number is None:
@@ -62,7 +59,8 @@ def add_to_cart(user, product_id, quantity):
         detail.Number += int(quantity)
 
     # 更新商品明细的价格和总价
-    detail.Price = product.Price  # 假设 Products 模型有一个 Price 字段
+    detail.Price = product.Price  
+    detail.Total = detail.Number * detail.Price
     detail.save()
 
     # 更新购物车总价

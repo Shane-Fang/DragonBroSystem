@@ -1,0 +1,100 @@
+{% extends 'index/base.html' %}
+{% load static %}
+{% block title %}
+<title>購物車</title>
+<style>
+    .addtocart_inner {
+        width: 80%;
+        margin: auto;
+    }
+</style>
+{% endblock %}
+{% block content %}
+<div class="addtocart_outer">
+    <div class="addtocart_inner">
+        <table class="table table-striped">
+            <tr>
+                <th>取消</th>
+                <th>商品名稱</th>
+                <th>商品單價</th>
+                <th>商品數量</th>
+                <th>金額</th>
+
+            </tr>
+            {% for product in cartlist %}
+            <tr>
+                <td><button class='btn btn-danger' onclick="deleteItem({{ product.pk }})">删除</button></td>
+                <td>{{ product.Product }}</td>
+                <td>{{ product.Price }}</td>
+                <td>
+                    <input type="number" class="cart-quantity" data-detail-id="{{ product.id }}" value="{{ product.Number }}">
+                </td>
+                <td id="total-price-{{ product.id }}" class="item-price">{{ product.Total }}</td>
+            </tr>
+            {% endfor %}
+            <tr>
+                <td class="text-center" colspan="2">共購買{{ cartlist.count }}件商品</td>
+                {% comment %} <td id="localshipping" class="text-center" colspan="1">運費：$0</td> {% endcomment %}
+                <td></td>
+                <td class="text-end">和計：$</td>
+                <td id="grandtotal" class="text-start">{{ total }}</td>
+            </tr>
+        </table>
+        <div class="d-flex justify-content-around my-3">
+            {% comment %} <a href="{% url 'PurchaseOrder:index' %}" class="btn btn-dark">繼續購物</a>
+            <a href="{% url 'PurchaseOrder:addtocart' 'empty' %}" class="btn btn-dark">清空購物車</a>
+            <a href="{% url 'PurchaseOrder:cartorder' %}" class="btn btn-dark btn-checkout">我要結帳</a> {% endcomment %}
+        </div>
+    </div>
+</div>
+
+<!-- JavaScript 代码 -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+    function deleteItem(detailId) {
+        $.ajax({
+            url: '{% url 'OrderManagement:delete_from_cart' %}',
+            type: 'POST',
+            data: {
+                'detail_id': detailId,
+                'csrfmiddlewaretoken': '{{ csrf_token }}'
+            },
+            success: function(response) {
+                if (response.status === 'success') {
+                    $('#cart-item-' + detailId).remove();
+                    alert('刪除成功')
+                    location.reload()
+                } else {
+                    alert('删除失败: ' + response.error);
+                }
+            }
+        });
+    }
+    $('.cart-quantity').on('change', function() {
+        var detailId = $(this).data('detail-id');
+        var newQuantity = $(this).val();
+    
+        $.ajax({
+            url: '{% url 'OrderManagement:update_cart_item'%}',
+            type: 'POST',
+            data: {
+                'detail_id': detailId,
+                'quantity': newQuantity,
+                'csrfmiddlewaretoken': '{{ csrf_token }}'
+            },
+            success: function(response) {
+                if (response.status === 'success') {
+                    console.log('更新成功');
+                    console.log(detailId);
+                    $('#total-price-' + detailId).text(response.new_total);
+                    $('#grandtotal').text(response.carttotal);
+                } else {
+                    console.log('更新失败');
+                }
+            }
+        });
+    });
+</script>
+
+
+{% endblock %}

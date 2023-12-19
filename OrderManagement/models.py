@@ -1,7 +1,7 @@
 from django.db import models
 from member.models import User,Branchs
 from Product.models import Products
-
+from django.db.models import Sum
 # Create your models here.
 State_CHOICES = (
         (0, '代處理'),
@@ -22,7 +22,7 @@ class ShoppingCart(models.Model):
         verbose_name = "購物車"
         verbose_name_plural = '購物車'  # 中文名稱
     def __str__(self):
-        return self.pk
+        return str(self.pk)
 class ShoppingCartDetails(models.Model):
     Product=models.ForeignKey(Products,on_delete=models.DO_NOTHING,verbose_name='商品')
     ShoppingCart = models.ForeignKey(ShoppingCart, on_delete=models.CASCADE, related_name='details', verbose_name='購物車')
@@ -32,6 +32,21 @@ class ShoppingCartDetails(models.Model):
     Total=models.IntegerField(null=True,verbose_name='總價格')
     def __str__(self):
         return self.Product
+    def save(self, *args, **kwargs):
+        # 先存ShoppingCartDetails
+        super(ShoppingCartDetails, self).save(*args, **kwargs)
+
+        # 後更新ShoppingCart價格
+        total = self.ShoppingCart.details.aggregate(Sum('Total'))['Total__sum'] or 0
+        self.ShoppingCart.Total = total
+        self.ShoppingCart.save()
+    def delete(self, *args, **kwargs):
+        cart = self.ShoppingCart  # 保存关联的购物车
+        super(ShoppingCartDetails, self).delete(*args, **kwargs)  
+        
+        total = cart.details.aggregate(Sum('Total'))['Total__sum'] or 0
+        cart.Total = total
+        cart.save()
     class Meta:
         verbose_name = "購物車明細"
         verbose_name_plural = '購物車明細'  # 中文名稱
