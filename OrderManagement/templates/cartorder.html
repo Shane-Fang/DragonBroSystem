@@ -1,0 +1,107 @@
+{% extends 'index/base.html' %}
+{%load static%}
+{% block title %}
+<title>{{title}}</title>
+<style>
+  .cartorder_inner {
+    background-color: #4f4040;
+  }
+
+  .form-label {
+    color: #dfd1d1;
+  }
+</style>
+{% endblock %}
+{% block content %}
+
+<div class="container-fluid text-center cartorder_outer">
+  <form action="{%url 'OrderManagement:cartok' %}" method="post">
+    {% csrf_token %}
+    <div class="row">
+      <div class="col-12 col-md-6">
+        <div class="badge text-wrap cartorder_inner my-3" style="width: 100%;">
+          <h4>購物清單</h4>
+        </div>
+        <table class="table table-striped">
+          <tr>
+            <th>商品名稱</th>
+            <th>商品單價</th>
+            <th>商品數量</th>
+            <th>金額</th>
+          </tr>
+          {% for product in cartlist %}
+          <tr>
+            <td>{{ product.Product }}</td>
+            <td>{{product.Price}}</td>
+            <td>{{product.Number}}</td>
+            <td>{{product.Total}}</td>
+          </tr>
+          {% endfor%}
+          <tr>
+            <td class="text-center" colspan="3">金額小計</td>
+            <td>{{total}}</td>
+          </tr>
+          <!-- <tr>
+            <td class="text-center" colspan="4">運費</td>
+            <td>{{shipping}}</td>
+          </tr> -->
+          <!-- <tr>
+            <td class="text-center" colspan="3">和計</td>
+            <td>{{grandtotal}}</td>
+          </tr> -->
+        </table>
+      </div>
+      <div class="col-12 col-md-6">
+        <div class="badge text-wrap cartorder_inner my-3" style="width: 100%;">
+          <h4>訂購資訊</h4>
+        </div>
+        <h5 class="form-label text-start">會員</h5>
+        <div class="input-group input-group-sm mb-3">
+          <input type="text" class="form-control" name='customername' aria-label="Sizing example input"
+            aria-describedby="customername" readonly="readonly" value="{{user.user_name}}">
+
+        </div>
+        <h5 class="form-label text-start">電話</h5>
+        <div class="input-group input-group-sm mb-3">
+          <input type="text" class="form-control" name="customerphone" aria-label="Sizing example input"
+            aria-describedby="customerphone" readonly="readonly" value="{{user.phone_number}}">
+
+
+        </div>
+        <h5 class="form-label text-start">電子郵件</h5>
+        <div class="input-group input-group-sm mb-3">
+          <input type="text" class="form-control" name="customeremail" aria-label="Sizing example input"
+            aria-describedby="customeremail" readonly="readonly" value="{{user.email}}">
+        </div>
+        <h5 class="form-label text-start">地址</h5>
+        <div class="input-group input-group-sm mb-3">
+          <select class="form-control" name="address" aria-label="Sizing example input" aria-describedby="customeraddress">
+              {% for address in addresses %}
+                  <option value="{{ address }}" {% if address == user.Address %} selected {% endif %}>{{ address }}</option>
+              {% endfor %}
+          </select>
+      </div>
+
+        <div class="d-flex form-label">
+          物流方式：
+          <select name="Delivery" id="Delivery">
+            <option value="0">自取</option>
+            <option value="1">寄送</option>
+          </select>  
+          付款方式：
+          <select name="Payment_method" id="Payment_method">
+            <option value="0">親自付款</option>
+            <option value="1">貨到付款</option>
+          </select>  
+        </div>
+        <button type="button" class="btn btn-danger" onclick="location.href='{% url 'home' %}'">繼續購物</button>
+        <button type="button" class="btn btn-danger"
+          onclick="location.href='{% url 'OrderManagement:cart' %}'">修改購物車內容</button>
+        <div>
+          <button type="submit" class="mt-3 btn btn-danger" style="width: 100%;">送出</button>
+        </div>
+      </div>
+    </div>
+  </form>
+</div>
+{% endblock %}

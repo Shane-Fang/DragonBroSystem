@@ -1,0 +1,97 @@
+{% extends 'index/base.html' %}
+{%load static%}
+{% block title %}
+<title>{{title}}</title>
+<style>
+    /* .cartok{
+        background-image: ;
+    } */
+    #tb_order {
+        border-spacing: 2px;
+        border: 2px solid lightgray;
+    }
+
+    #tb_order tr th {
+        background: black;
+        color: white;
+        border: 2px solid white;
+    }
+
+    #dv_money {
+        text-align: right;
+        background-color: lightgrey;
+        padding: 10px;
+        border-radius: 10px;
+    }
+</style>
+{% endblock %}
+{% block content %}
+<div class="cartok mb-10">
+    <div class="container">
+        <div class="row d-flex align-items-center">
+            <div class="col-md-12" style="border: 1px solid lightgrey;padding:10px;margin-bottom:10px;margin-top:30px;">
+                <div class="row">
+                    <div style="color:red;font-weight:600">[收件人資料]</div>
+                    <div class="col-md-6">
+                        姓名：{{user.user_name}}
+                    </div>
+                    <div class="col-md-6">
+                        行動電話：{{user.phone_number}}
+                    </div>
+
+                    <div class="col-md-12">
+                        地址：{{order.Address}}
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-12" style="border: 1px solid lightgrey;padding:10px;">
+                <div class="row">
+                    <div style="color: red; font-weight: 600">[訂購明細]</div>
+                    <div class="col-md-6">
+                        訂單編號：{{order.id}}
+                    </div>
+                    <div class="col-md-6">
+                        訂購日期：{{order.Time}}
+                    </div>
+                    <div class="col-md-6">
+                        付款方式：{{ Payment_method }}
+                    </div>
+                    <div class="col-md-6">
+                        寄送方式：{{ Delivery_method }}
+                    </div>
+                    <div class="col-md-12">
+                        <table id="tb_order" class="table" cellpadding="10">
+                            <thead>
+                                <tr>
+                                    <th>商品名稱</th>
+                                    <th>數量</th>
+                                    <th>金額</th>
+                                    <th>總價</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+
+                                {% for product in order_detail %}
+                                <tr>
+                                    <td>{{ product.Product }}</td>
+                                    <td>{{product.Price}}</td>
+                                    <td>{{product.Number}}</td>
+                                    <td>{{product.Total}}</td>
+                                </tr>
+                                {% endfor %}
+
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+
+                <div class="col-md-12" id="dv_money">
+                    本次訂單金額：{{order.Total}}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

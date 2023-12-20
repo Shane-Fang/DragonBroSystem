@@ -41,9 +41,9 @@
             </tr>
         </table>
         <div class="d-flex justify-content-around my-3">
-            {% comment %} <a href="{% url 'PurchaseOrder:index' %}" class="btn btn-dark">繼續購物</a>
-            <a href="{% url 'PurchaseOrder:addtocart' 'empty' %}" class="btn btn-dark">清空購物車</a>
-            <a href="{% url 'PurchaseOrder:cartorder' %}" class="btn btn-dark btn-checkout">我要結帳</a> {% endcomment %}
+            <a href="{% url 'home' %}" class="btn btn-dark">繼續購物</a>
+            {% comment %} <a href="{% url 'PurchaseOrder:addtocart' 'empty' %}" class="btn btn-dark">清空購物車</a> {% endcomment %}
+            <a href="{% url 'OrderManagement:cartorder' %}" class="btn btn-dark btn-checkout">我要結帳</a>
         </div>
     </div>
 </div>
@@ -73,7 +73,6 @@
     $('.cart-quantity').on('change', function() {
         var detailId = $(this).data('detail-id');
         var newQuantity = $(this).val();
-    
         $.ajax({
             url: '{% url 'OrderManagement:update_cart_item'%}',
             type: 'POST',

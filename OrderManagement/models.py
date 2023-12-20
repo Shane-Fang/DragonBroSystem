@@ -52,11 +52,23 @@ class ShoppingCartDetails(models.Model):
         verbose_name_plural = '購物車明細'  # 中文名稱
 
 class Orders(models.Model):
+    State_CHOICES = (
+        (0, '代處理'),
+        (1, '已處理'),
+    )
+    Delivery_CHOICES = (
+        (0, '自取'),
+        (1, '寄送'),
+    )
+    Payment_CHOICES = (
+        (0, '親自付款'),
+        (1, '貨到付款'),
+    )
     User=models.ForeignKey(User, on_delete=models.DO_NOTHING,verbose_name="類別")
     Time=models.DateTimeField(auto_now_add=True)
     Delivery_method=models.IntegerField(choices=Delivery_CHOICES,default=1,verbose_name="運送方式",null=True, blank=True)
     Delivery_state=models.IntegerField(choices=State_CHOICES,default=1,verbose_name="運送狀態",null=True, blank=True)
-    Payment_method=models.IntegerField(choices=State_CHOICES,default=1,verbose_name="付款方式",null=True, blank=True)
+    Payment_method=models.IntegerField(choices=Payment_CHOICES,default=1,verbose_name="付款方式",null=True, blank=True)
     Payment_time=models.DateTimeField(null=True, blank=True,verbose_name='付款時間')
     Address = models.CharField(max_length=255,verbose_name='地址')
     Total=models.IntegerField(null=False,verbose_name='總價格')
@@ -64,8 +76,9 @@ class Orders(models.Model):
         verbose_name = "訂單"
         verbose_name_plural = '訂單'  # 中文名稱
     def __str__(self):
-        return self.pk
+        return str(self.pk)
 class OrderDetails(models.Model):
+    Order = models.ForeignKey(Orders, on_delete=models.CASCADE,verbose_name='訂單編號')
     Product=models.ForeignKey(Products,on_delete=models.DO_NOTHING,verbose_name='商品')
     Number=models.IntegerField(verbose_name="數量")
     Price=models.IntegerField(null=False,verbose_name='價格')

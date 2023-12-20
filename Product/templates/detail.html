@@ -34,7 +34,6 @@
       <!-- <h3>商品介紹</h3> -->
       <h5>備註： {{product.Products.Specification}}</h5>
       <h5>庫存： {{product.Number}}</h5>
-      {{product.id}}
       <form action="{% url 'Product:add_to_cart_view' product_id=product.id %}" method="post">
         {% csrf_token %}
 
