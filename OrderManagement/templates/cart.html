@@ -24,7 +24,7 @@
             {% for product in cartlist %}
             <tr>
                 <td><button class='btn btn-danger' onclick="deleteItem({{ product.pk }})">删除</button></td>
-                <td>{{ product.Product }}</td>
+                <td>{{ product.Branch_Inventory.Products }}</td>
                 <td>{{ product.Price }}</td>
                 <td>
                     <input type="number" class="cart-quantity" data-detail-id="{{ product.id }}" value="{{ product.Number }}">

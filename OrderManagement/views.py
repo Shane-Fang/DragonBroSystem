@@ -16,8 +16,8 @@ def cart(request):
     else:
         cart_details=None
         total=0
+
     context={
-        'title':'榮哥海鮮',
         'cartlist':cart_details,
         'total':total
     }
@@ -28,8 +28,6 @@ def cartorder(request):
     if request.user.is_authenticated:
         current_user = request.user
         member_Orders = Orders.objects.filter(User=current_user).first() or None
-        print(member_Orders)
-        print(member_Orders.get_Payment_method_display())
         member_cart = ShoppingCart.objects.filter(User=current_user).first() or None
         if member_cart:
             cart_details = member_cart.details.all()
@@ -50,7 +48,7 @@ def cartok(request):
     if request.user.is_authenticated:
         current_user = request.user
         latest_order = Orders.objects.latest('id')
-        print(latest_order.Address)
+
         order_detail = OrderDetails.objects.filter(Order=latest_order)
         Payment_method_display = latest_order.get_Payment_method_display()
         Delivery_method_display = latest_order.get_Delivery_method_display()
@@ -75,7 +73,6 @@ def submit_order(request):
 
         try:
             with transaction.atomic():
-
                 order = Orders(
                     User=current_user,
                     Delivery_method=request.POST['Delivery'],
@@ -87,7 +84,7 @@ def submit_order(request):
                 order.save()
                 for item in ShoppingCartDetails.objects.filter(ShoppingCart=shopping_cart):
                     OrderDetails(
-                        Product=item.Product,
+                        Branch_Inventory=item.Branch_Inventory,
                         Number=item.Number,
                         Price=item.Price,
                         Total=item.Total,

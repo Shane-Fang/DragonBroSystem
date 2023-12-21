@@ -23,7 +23,8 @@ def detail(request,branch=None,detail=None):
     if request.user.is_authenticated:
         # current_user = request.user
         # loginuser = current_user.username
-        product=Branch_Inventory.objects.get(Products=detail)
+
+        product=Branch_Inventory.objects.get(pk=detail)
         context={
             'product':product,
             'branch':branch,
@@ -35,7 +36,7 @@ def detail(request,branch=None,detail=None):
 def add_to_cart_view(request, product_id):
     if request.method == 'POST':
         quantity = request.POST.get('quantity', 1)
-        user = request.user
+        user = request.user 
         # 新增購物車function
         add_to_cart(user, product_id, quantity)
 
@@ -43,15 +44,13 @@ def add_to_cart_view(request, product_id):
 
     return redirect('OrderManagement:cart')
 def add_to_cart(user, product_id, quantity):
-
     cart, cart_created = ShoppingCart.objects.get_or_create(User=user, defaults={'Total': 0})
 
-
-    product = Products.objects.get(id=product_id) 
-    detail, created = ShoppingCartDetails.objects.get_or_create(ShoppingCart=cart, Product=product)
+    product = Branch_Inventory.objects.get(id=product_id) 
+    detail, created = ShoppingCartDetails.objects.get_or_create(ShoppingCart=cart, Branch_Inventory=product)
     if created:
         detail.Number = int(quantity)
-        detail.Price = product.Price
+        detail.Price = product.Products.Price
     else:
         # 商品已存在，增加数量
         if detail.Number is None:
@@ -59,7 +58,7 @@ def add_to_cart(user, product_id, quantity):
         detail.Number += int(quantity)
 
     # 更新商品明细的价格和总价
-    detail.Price = product.Price  
+    detail.Price = product.Products.Price
     detail.Total = detail.Number * detail.Price
     detail.save()
 

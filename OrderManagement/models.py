@@ -1,7 +1,8 @@
 from django.db import models
 from member.models import User,Branchs
-from Product.models import Products
+from Product.models import Products,Branch_Inventory
 from django.db.models import Sum
+from django.core.exceptions import ValidationError
 # Create your models here.
 State_CHOICES = (
         (0, '代處理'),
@@ -24,7 +25,7 @@ class ShoppingCart(models.Model):
     def __str__(self):
         return str(self.pk)
 class ShoppingCartDetails(models.Model):
-    Product=models.ForeignKey(Products,on_delete=models.DO_NOTHING,verbose_name='商品')
+    Branch_Inventory=models.ForeignKey(Branch_Inventory,on_delete=models.DO_NOTHING,verbose_name='商品')
     ShoppingCart = models.ForeignKey(ShoppingCart, on_delete=models.CASCADE, related_name='details', verbose_name='購物車')
     Number=models.IntegerField(null=True, blank=True,verbose_name="數量")
     Time=models.DateTimeField(auto_now_add=True)
@@ -79,15 +80,27 @@ class Orders(models.Model):
         return str(self.pk)
 class OrderDetails(models.Model):
     Order = models.ForeignKey(Orders, on_delete=models.CASCADE,verbose_name='訂單編號')
-    Product=models.ForeignKey(Products,on_delete=models.DO_NOTHING,verbose_name='商品')
+    Branch_Inventory=models.ForeignKey(Branch_Inventory,on_delete=models.DO_NOTHING,verbose_name='商品')
     Number=models.IntegerField(verbose_name="數量")
     Price=models.IntegerField(null=False,verbose_name='價格')
     Total=models.IntegerField(null=False,verbose_name='總價格')
     def __str__(self):
-        return self.Product
+        return self.Branch_Inventory
     class Meta:
         verbose_name = "訂單明細"
         verbose_name_plural = '訂單明細'  # 中文名稱
+    def save(self, *args, **kwargs):
+        # 如果是新建或更新數量，則更新庫存
+        if not self.pk or 'Number' in kwargs.get('update_fields', []):
+            product = Branch_Inventory.objects.get(pk=self.Branch_Inventory.pk)  # 根據實際情況調整字段名
+            new_quantity = product.Number - self.Number
+            if new_quantity < 0:
+                raise ValidationError("庫存不足，無法完成訂單")
+            else:
+                product.Number = new_quantity
+
+            product.save()
+        super(OrderDetails, self).save(*args, **kwargs)
 
 class OrderLog(models.Model):
     Order = models.ForeignKey(Orders, on_delete=models.DO_NOTHING,verbose_name="訂單")
