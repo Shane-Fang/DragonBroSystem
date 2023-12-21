@@ -5,6 +5,7 @@ from member.models import Address
 from django.http import JsonResponse
 from django.views.decorators.http import require_POST
 from django.db import transaction
+from django.views.decorators.csrf import csrf_exempt
 # Create your views here.
 def cart(request):
     current_user = request.user  
@@ -26,7 +27,6 @@ def cartorder(request):
 
     if request.user.is_authenticated:
         current_user = request.user
-
         member_Orders = Orders.objects.filter(User=current_user).first() or None
         print(member_Orders)
         print(member_Orders.get_Payment_method_display())
@@ -47,48 +47,63 @@ def cartorder(request):
         }
         return render(request, 'cartorder.html',context )
 def cartok(request):
-    if request.user.is_authenticated and request.method=='POST':
+    if request.user.is_authenticated:
         current_user = request.user
+        latest_order = Orders.objects.latest('id')
+        print(latest_order.Address)
+        order_detail = OrderDetails.objects.filter(Order=latest_order)
+        Payment_method_display = latest_order.get_Payment_method_display()
+        Delivery_method_display = latest_order.get_Delivery_method_display()
+        context={
+            'title':'訂單完成',
+            'user':current_user,
+            'Payment_method':Payment_method_display,
+            'Delivery_method':Delivery_method_display,
+            'order_detail':order_detail,
+            'order':latest_order
+        }
+        return render(request, 'cartok.html',context )
+@csrf_exempt
+def submit_order(request):
+    if request.method == 'POST':
+
+        current_user = request.user
+        address = request.POST.get('address')
+        delivery_method = request.POST.get('Delivery')
+        payment_method = request.POST.get('Payment_method')
         shopping_cart = ShoppingCart.objects.get(User=current_user)
 
-        with transaction.atomic():
-            # 創建新的訂單
-            order = Orders(
-                User=current_user,
-                Delivery_method=request.POST['Delivery'],
-                Delivery_state=0,
-                Payment_method=request.POST['Payment_method'],
-                Address=request.POST['address'],
-                Total=shopping_cart.Total
-            )
-            order.save()
+        try:
+            with transaction.atomic():
 
-            # 遍歷購物車中的每一個項目，並為每個項目創建訂單細節
-            for item in ShoppingCartDetails.objects.filter(ShoppingCart=shopping_cart):
-                OrderDetails(
-                    Product=item.Product,
-                    Number=item.Number,
-                    Price=item.Price,
-                    Total=item.Total,
-                    Order=order  # 關聯到剛創建的訂單
-                ).save()
+                order = Orders(
+                    User=current_user,
+                    Delivery_method=request.POST['Delivery'],
+                    Delivery_state=0,
+                    Payment_method=request.POST['Payment_method'],
+                    Address=request.POST['address'],
+                    Total=shopping_cart.Total
+                )
+                order.save()
+                for item in ShoppingCartDetails.objects.filter(ShoppingCart=shopping_cart):
+                    OrderDetails(
+                        Product=item.Product,
+                        Number=item.Number,
+                        Price=item.Price,
+                        Total=item.Total,
+                        Order=order  
+                    ).save()
 
-            # 清空或刪除購物車
-            ShoppingCartDetails.objects.filter(ShoppingCart=shopping_cart).delete()
-            shopping_cart.delete()
-            latest_order = Orders.objects.latest('id')
-            order_detail = OrderDetails.objects.filter(Order=latest_order)
-            Payment_method_display = latest_order.get_Payment_method_display()
-            Delivery_method_display = latest_order.get_Delivery_method_display()
-            context={
-                'title':'訂單完成',
-                'user':current_user,
-                'order':order,
-                'Payment_method':Payment_method_display,
-                'Delivery_method':Delivery_method_display,
-                'order_detail':order_detail,
-            }
-            return render(request, 'cartok.html',context )
+                ShoppingCartDetails.objects.filter(ShoppingCart=shopping_cart).delete()
+                shopping_cart.delete()
+                latest_order = Orders.objects.latest('id')
+                order_detail = OrderDetails.objects.filter(Order=latest_order)
+                Payment_method_display = latest_order.get_Payment_method_display()
+                Delivery_method_display = latest_order.get_Delivery_method_display()
+                return JsonResponse({'status': 'success', 'message': 'Order submitted successfully.'})
+        except Exception as e:
+            return JsonResponse({'status': 'error', 'message': str(e)})
+    return JsonResponse({'status': 'error', 'message': 'Invalid request'})
 @require_POST
 def delete_from_cart(request):
     detail_id = request.POST.get('detail_id')

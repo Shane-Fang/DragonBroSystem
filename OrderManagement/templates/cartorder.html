@@ -75,33 +75,83 @@
         </div>
         <h5 class="form-label text-start">地址</h5>
         <div class="input-group input-group-sm mb-3">
-          <select class="form-control" name="address" aria-label="Sizing example input" aria-describedby="customeraddress">
-              {% for address in addresses %}
-                  <option value="{{ address }}" {% if address == user.Address %} selected {% endif %}>{{ address }}</option>
-              {% endfor %}
+          <select class="form-control" name="address" aria-label="Sizing example input"
+            aria-describedby="customeraddress">
+            {% for address in addresses %}
+            <option value="{{ address }}" {% if address == user.Address %} selected {% endif %}>{{ address }}</option>
+            {% endfor %}
           </select>
-      </div>
+        </div>
 
         <div class="d-flex form-label">
           物流方式：
           <select name="Delivery" id="Delivery">
             <option value="0">自取</option>
             <option value="1">寄送</option>
-          </select>  
+          </select>
           付款方式：
           <select name="Payment_method" id="Payment_method">
             <option value="0">親自付款</option>
             <option value="1">貨到付款</option>
-          </select>  
+          </select>
         </div>
         <button type="button" class="btn btn-danger" onclick="location.href='{% url 'home' %}'">繼續購物</button>
         <button type="button" class="btn btn-danger"
           onclick="location.href='{% url 'OrderManagement:cart' %}'">修改購物車內容</button>
         <div>
-          <button type="submit" class="mt-3 btn btn-danger" style="width: 100%;">送出</button>
+          <button type="button" id="submitOrderBtn" class="mt-3 btn btn-danger" style="width: 100%;">送出</button>
         </div>
       </div>
     </div>
   </form>
 </div>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+  $(document).ready(function () {
+    $('#submitOrderBtn').click(function (e) {
+      e.preventDefault(); // 阻止按鈕的默認提交行為
+
+      var customerName = $('input[name="customername"]').val();
+      var customerPhone = $('input[name="customerphone"]').val();
+      var customerEmail = $('input[name="customeremail"]').val();
+      var address = $('select[name="address"]').val();
+      var deliveryMethod = $('#Delivery').val();
+      var paymentMethod = $('#Payment_method').val();
+
+      // 創建一個對象來保存這些數據
+      var orderData = {
+        customername: customerName,
+        customerphone: customerPhone,
+        customeremail: customerEmail,
+        address: address,
+        Delivery: deliveryMethod,
+        Payment_method: paymentMethod
+      };
+
+      // 發送 AJAX 請求
+      $.ajax({
+        type: 'POST',
+        url: '{%url 'OrderManagement:submit_order' %}',
+        data: orderData,
+        success: function (response) {
+          // 更新模態框內容並顯示
+          Swal.fire({
+            icon: 'success',
+            title: '訂單完成',
+          }).then(function () {
+            // 當彈窗關閉後進行頁面跳轉
+            window.location.href = '{% url 'OrderManagement:cartok' %}';
+          });
+        },
+        error: function (error) {
+          Swal.fire({
+            icon: 'error',
+            title: '建立訂單發生錯誤',
+          })
+
+        }
+      });
+    });
+  });
+</script>
 {% endblock %}
