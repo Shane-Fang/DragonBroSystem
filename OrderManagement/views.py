@@ -94,7 +94,7 @@ def submit_order(request):
                 order.save()
                 for item in ShoppingCartDetails.objects.filter(ShoppingCart=shopping_cart):
                     OrderDetails(
-                        Product=item.Product,
+                        Branch_Inventory=item.Branch_Inventory,
                         Number=item.Number,
                         Price=item.Price,
                         Total=item.Total,

@@ -35,7 +35,7 @@ def detail(request,branch=None,detail=None):
 def add_to_cart_view(request,branch ,product_id):
     if request.method == 'POST':
         quantity = request.POST.get('quantity', 1)
-        user = request.user
+        user = request.user 
         # 新增購物車function
         add_to_cart(user, branch,product_id, quantity)
 
@@ -49,7 +49,7 @@ def add_to_cart(user, branch,product_id, quantity):
     detail, created = ShoppingCartDetails.objects.get_or_create(ShoppingCart=cart, Product=product)
     if created:
         detail.Number = int(quantity)
-        detail.Price = product.Price
+        detail.Price = product.Products.Price
     else:
         if detail.Number is None:
             detail.Number = 0

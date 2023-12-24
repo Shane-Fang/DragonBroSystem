@@ -11,9 +11,9 @@ class ShoppingCartAdmin(admin.ModelAdmin):
 # ['User','Total']
 @admin.register(ShoppingCartDetails)
 class ShoppingCartDetailsAdmin(admin.ModelAdmin):
-    list_display = ['id', 'Product', 'Number', 'Time']
-    search_fields = ['id', 'Product', 'Number', 'Time']
-    list_filter = ['id', 'Product', 'Number', 'Time']
+    list_display = ['id', 'Branch_Inventory', 'Number', 'Time']
+    search_fields = ['id', 'Branch_Inventory', 'Number', 'Time']
+    list_filter = ['id', 'Branch_Inventory', 'Number', 'Time']
     ordering = ['Time']
 
 # ['Product','Number','Time','Price','Total']
@@ -27,10 +27,10 @@ class OrdersAdmin(admin.ModelAdmin):
 
 @admin.register(OrderDetails)
 class OrderDetailsAdmin(admin.ModelAdmin):
-    list_display = ['id', 'Product', 'Number', 'Price', 'Total']
-    search_fields = ['Product','Number','Price','Total']
-    list_filter = ['Product','Number','Price','Total']
-    ordering = ['Product']
+    list_display = ['id', 'Branch_Inventory', 'Number', 'Price', 'Total']
+    search_fields = ['Branch_Inventory','Number','Price','Total']
+    list_filter = ['Branch_Inventory','Number','Price','Total']
+    ordering = ['Branch_Inventory']
 
 # ['Product','Number','Price','Total']
 @admin.register(OrderLog)
