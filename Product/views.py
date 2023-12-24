@@ -42,11 +42,19 @@ def add_to_cart_view(request,branch ,product_id):
         return redirect('OrderManagement:cart')
 
     return redirect('OrderManagement:cart')
+<<<<<<< HEAD
 def add_to_cart(user, branch,product_id, quantity):
     Branchs_instance=Branchs.objects.get(id=branch)
     cart, cart_created = ShoppingCart.objects.get_or_create(User=user,branch=Branchs_instance ,defaults={'Total': 0})
     product = Products.objects.get(id=product_id) 
     detail, created = ShoppingCartDetails.objects.get_or_create(ShoppingCart=cart, Product=product)
+=======
+def add_to_cart(user, product_id, quantity):
+    cart, cart_created = ShoppingCart.objects.get_or_create(User=user, defaults={'Total': 0})
+
+    product = Branch_Inventory.objects.get(id=product_id) 
+    detail, created = ShoppingCartDetails.objects.get_or_create(ShoppingCart=cart, Branch_Inventory=product)
+>>>>>>> c538698e1b4a2e9800bd32f78db9e33a67095de9
     if created:
         detail.Number = int(quantity)
         detail.Price = product.Products.Price
@@ -55,7 +63,12 @@ def add_to_cart(user, branch,product_id, quantity):
             detail.Number = 0
         detail.Number += int(quantity)
 
+<<<<<<< HEAD
     detail.Price = product.Price  
+=======
+    # 更新商品明细的价格和总价
+    detail.Price = product.Products.Price
+>>>>>>> c538698e1b4a2e9800bd32f78db9e33a67095de9
     detail.Total = detail.Number * detail.Price
     detail.save()
  
