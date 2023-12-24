@@ -1,7 +1,8 @@
 from django.db import models
 from member.models import User,Branchs
-from Product.models import Products
+from Product.models import Products,Branch_Inventory
 from django.db.models import Sum
+from django.core.exceptions import ValidationError
 # Create your models here.
 State_CHOICES = (
         (0, '代處理'),
@@ -18,9 +19,10 @@ Payment_CHOICES = (
 class ShoppingCart(models.Model):
     User=models.ForeignKey(User, on_delete=models.DO_NOTHING,verbose_name="類別")
     Total=models.IntegerField(null=False,verbose_name='總價格')
+    branch = models.ForeignKey(Branchs,on_delete=models.DO_NOTHING,verbose_name='店家',null=True, blank=True)
     class Meta:
         verbose_name = "購物車"
-        verbose_name_plural = '購物車'  # 中文名稱
+        verbose_name_plural = '購物車'  #
     def __str__(self):
         return str(self.pk)
 class ShoppingCartDetails(models.Model):
@@ -31,7 +33,7 @@ class ShoppingCartDetails(models.Model):
     Price=models.IntegerField(null=True,verbose_name='價格')
     Total=models.IntegerField(null=True,verbose_name='總價格')
     def __str__(self):
-        return self.Product
+        return str(self.Product)
     def save(self, *args, **kwargs):
         # 先存ShoppingCartDetails
         super(ShoppingCartDetails, self).save(*args, **kwargs)
@@ -47,6 +49,8 @@ class ShoppingCartDetails(models.Model):
         total = cart.details.aggregate(Sum('Total'))['Total__sum'] or 0
         cart.Total = total
         cart.save()
+        if total == 0:
+            cart.delete()
     class Meta:
         verbose_name = "購物車明細"
         verbose_name_plural = '購物車明細'  # 中文名稱
@@ -65,6 +69,7 @@ class Orders(models.Model):
         (1, '貨到付款'),
     )
     User=models.ForeignKey(User, on_delete=models.DO_NOTHING,verbose_name="類別")
+    branch = models.ForeignKey(Branchs,on_delete=models.DO_NOTHING,verbose_name='店家',null=True, blank=True)
     Time=models.DateTimeField(auto_now_add=True)
     Delivery_method=models.IntegerField(choices=Delivery_CHOICES,default=1,verbose_name="運送方式",null=True, blank=True)
     Delivery_state=models.IntegerField(choices=State_CHOICES,default=1,verbose_name="運送狀態",null=True, blank=True)
@@ -74,7 +79,7 @@ class Orders(models.Model):
     Total=models.IntegerField(null=False,verbose_name='總價格')
     class Meta:
         verbose_name = "訂單"
-        verbose_name_plural = '訂單'  # 中文名稱
+        verbose_name_plural = '訂單'
     def __str__(self):
         return str(self.pk)
 class OrderDetails(models.Model):
@@ -87,7 +92,21 @@ class OrderDetails(models.Model):
         return self.Product
     class Meta:
         verbose_name = "訂單明細"
-        verbose_name_plural = '訂單明細'  # 中文名稱
+        verbose_name_plural = '訂單明細'  
+    def save(self, *args, **kwargs):
+        if not self.pk or 'Number' in kwargs.get('update_fields', []):
+            branch_inventory = Branch_Inventory.objects.filter(Products=self.Product).first()
+            if branch_inventory: 
+                new_quantity = branch_inventory.Number - self.Number
+                if new_quantity < 0:
+                    raise ValidationError("庫存不足，無法完成訂單")
+                else:
+                    branch_inventory.Number = new_quantity
+                    branch_inventory.save()
+            else:
+                raise ValidationError("找不到相關的庫存記錄")
+        super().save(*args, **kwargs)
+
 
 class OrderLog(models.Model):
     Order = models.ForeignKey(Orders, on_delete=models.DO_NOTHING,verbose_name="訂單")

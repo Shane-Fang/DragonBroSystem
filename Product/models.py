@@ -78,7 +78,7 @@ class Products(models.Model):
         return str(self.Item_name)
 
 class Branch_Inventory(models.Model):
-    Products=models.ForeignKey(Products,on_delete=models.DO_NOTHING,verbose_name='商品')
+    Products=models.ForeignKey(Products,on_delete=models.DO_NOTHING,verbose_name='商品',related_name='inventory_records')
     Number=models.IntegerField(verbose_name="總庫存")
     Branch=models.ForeignKey('member.Branchs',on_delete=models.DO_NOTHING,verbose_name='店家')
     class Meta:

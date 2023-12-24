@@ -6,6 +6,6 @@ urlpatterns = [
     path('<int:branch>', views.products_view, name='products_view'),  
     path('<int:branch>/<int:detail>', views.detail, name='detail'),  
     path('get_branches/', views.get_branches, name='get_branches'),
-    path('add_to_cart_view/<int:product_id>', views.add_to_cart_view, name='add_to_cart_view'),
+    path('add_to_cart_view/<int:branch>/<int:product_id>', views.add_to_cart_view, name='add_to_cart_view'),
     # 其他 URL 配置...
 ]

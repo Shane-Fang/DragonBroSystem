@@ -1,7 +1,7 @@
 {% extends 'index/base.html' %}
 {%load static%}
 {% block title %}
-<title>商品介紹</title>
+<title>{{title}}</title>
 {% endblock %}
 {% block content %}
 <div class="container-fluid text-center">
@@ -29,12 +29,12 @@
 
     </div>
     <div class="col-12 col-md-6 my-5 text-start">
-      <h2>{{product.Products.Item_name}}</h2><br>
-      <h5>優惠價： {{product.Products.Price}}</h5>
+      <h2>{{branch.Products.Item_name}}</h2><br>
+      <h5>優惠價： {{branch.Products.Price}}</h5>
       <!-- <h3>商品介紹</h3> -->
-      <h5>備註： {{product.Products.Specification}}</h5>
-      <h5>庫存： {{product.Number}}</h5>
-      <form action="{% url 'Product:add_to_cart_view' product_id=product.id %}" method="post">
+      <h5>備註： {{branch.Products.Specification}}</h5>
+      <h5>庫存： {{branch.Number}}</h5>
+      <form action="{% url 'Product:add_to_cart_view' branch=branch.Branch.pk product_id=branch.Products.id %}" method="post">
         {% csrf_token %}
 
         <h5>數量 <input style="width: 60px;" type="number" id="quantity" name="quantity" value="1" min="1"></h5>

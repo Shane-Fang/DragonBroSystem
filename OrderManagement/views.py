@@ -1,4 +1,4 @@
-from django.shortcuts import render
+from django.shortcuts import render,redirect
 from .models import ShoppingCart,ShoppingCartDetails,Orders,OrderDetails
 from django.contrib.auth.models import User
 from member.models import Address
@@ -6,20 +6,28 @@ from django.http import JsonResponse
 from django.views.decorators.http import require_POST
 from django.db import transaction
 from django.views.decorators.csrf import csrf_exempt
+from collections import defaultdict
+from django.contrib import messages
 # Create your views here.
 def cart(request):
+    carts_by_branch = defaultdict(list)
     current_user = request.user  
-    member_cart = ShoppingCart.objects.filter(User=current_user).first() or None
+    member_cart = ShoppingCart.objects.filter(User=current_user)
     if member_cart:
-        cart_details = member_cart.details.all()
-        total=member_cart.Total
+        for cart_item in member_cart:
+            total=cart_item.Total
+            cart_details = cart_item.details.all()
+            branch = cart_item.branch
+            carts_by_branch[branch].append({'details': cart_details, 'total': total})
+
+        
     else:
         cart_details=None
         total=0
+    
     context={
         'title':'榮哥海鮮',
-        'cartlist':cart_details,
-        'total':total
+        'cartlist':dict(carts_by_branch),
     }
     return render(request, 'cart.html',context)
 
@@ -27,10 +35,10 @@ def cartorder(request):
 
     if request.user.is_authenticated:
         current_user = request.user
-        member_Orders = Orders.objects.filter(User=current_user).first() or None
-        print(member_Orders)
-        print(member_Orders.get_Payment_method_display())
-        member_cart = ShoppingCart.objects.filter(User=current_user).first() or None
+        member_cart = ShoppingCart.objects.filter(User=current_user) or None
+        if member_cart.count() > 1:
+            messages.error(request, '一次只能選一個店家，請把多的店家商品刪除')
+            return redirect('OrderManagement:cart')
         if member_cart:
             cart_details = member_cart.details.all()
             total=member_cart.Total
@@ -50,7 +58,6 @@ def cartok(request):
     if request.user.is_authenticated:
         current_user = request.user
         latest_order = Orders.objects.latest('id')
-        print(latest_order.Address)
         order_detail = OrderDetails.objects.filter(Order=latest_order)
         Payment_method_display = latest_order.get_Payment_method_display()
         Delivery_method_display = latest_order.get_Delivery_method_display()
@@ -75,14 +82,14 @@ def submit_order(request):
 
         try:
             with transaction.atomic():
-
                 order = Orders(
                     User=current_user,
                     Delivery_method=request.POST['Delivery'],
                     Delivery_state=0,
                     Payment_method=request.POST['Payment_method'],
                     Address=request.POST['address'],
-                    Total=shopping_cart.Total
+                    Total=shopping_cart.Total,
+                    branch=shopping_cart.branch
                 )
                 order.save()
                 for item in ShoppingCartDetails.objects.filter(ShoppingCart=shopping_cart):
@@ -125,8 +132,10 @@ def update_cart_item(request):
         detail.Number = new_quantity
         detail.Total = int(detail.Price) * int(detail.Number)
         detail.save()
-        carttotal=ShoppingCart.objects.get(id=detail.ShoppingCart.pk).Total
-        return JsonResponse({'status': 'success', 'new_total': detail.Total,'carttotal':carttotal})
+        cart=ShoppingCart.objects.get(id=detail.ShoppingCart.pk)
+        carttotal=cart.Total
+        cartbranch=cart.branch.pk
+        return JsonResponse({'status': 'success', 'new_total': detail.Total,'carttotal':carttotal,'branch_id':cartbranch})
     except ShoppingCartDetails.DoesNotExist:
         return JsonResponse({'status': 'failed', 'error': 'Item not found'})
     except ValueError:
