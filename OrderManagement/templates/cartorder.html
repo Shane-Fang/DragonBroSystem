@@ -31,7 +31,7 @@
           </tr>
           {% for product in cartlist %}
           <tr>
-            <td>{{ product.Branch_Inventory }}</td>
+            <td>{{ product }}</td>
             <td>{{product.Price}}</td>
             <td>{{product.Number}}</td>
             <td>{{product.Total}}</td>
@@ -41,14 +41,14 @@
             <td class="text-center" colspan="3">金額小計</td>
             <td>{{total}}</td>
           </tr>
-          <!-- <tr>
+          {% comment %} <tr>
             <td class="text-center" colspan="4">運費</td>
             <td>{{shipping}}</td>
-          </tr> -->
-          <!-- <tr>
+          </tr>
+          <tr>
             <td class="text-center" colspan="3">和計</td>
             <td>{{grandtotal}}</td>
-          </tr> -->
+          </tr> {% endcomment %}
         </table>
       </div>
       <div class="col-12 col-md-6">
@@ -78,7 +78,7 @@
           <select class="form-control" name="address" aria-label="Sizing example input"
             aria-describedby="customeraddress">
             {% for address in addresses %}
-            <option value="{{ address }}" {% if address == user.Address %} selected {% endif %}>{{ address }}</option>
+            <option value="{{ address }}" >{{ address }}</option>
             {% endfor %}
           </select>
         </div>
