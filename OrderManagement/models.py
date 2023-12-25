@@ -26,14 +26,14 @@ class ShoppingCart(models.Model):
     def __str__(self):
         return str(self.pk)
 class ShoppingCartDetails(models.Model):
-    Branch_Inventory=models.ForeignKey(Branch_Inventory,on_delete=models.DO_NOTHING,verbose_name='商品')
+    Products=models.ForeignKey(Products,on_delete=models.DO_NOTHING,verbose_name='商品')
     ShoppingCart = models.ForeignKey(ShoppingCart, on_delete=models.CASCADE, related_name='details', verbose_name='購物車')
     Number=models.IntegerField(null=True, blank=True,verbose_name="數量")
     Time=models.DateTimeField(auto_now_add=True)
     Price=models.IntegerField(null=True,verbose_name='價格')
     Total=models.IntegerField(null=True,verbose_name='總價格')
     def __str__(self):
-        return str(self.Product)
+        return str(self.Products)
     def save(self, *args, **kwargs):
         # 先存ShoppingCartDetails
         super(ShoppingCartDetails, self).save(*args, **kwargs)
@@ -84,7 +84,7 @@ class Orders(models.Model):
         return str(self.pk)
 class OrderDetails(models.Model):
     Order = models.ForeignKey(Orders, on_delete=models.CASCADE,verbose_name='訂單編號')
-    Branch_Inventory=models.ForeignKey(Branch_Inventory,on_delete=models.DO_NOTHING,verbose_name='商品')
+    Products=models.ForeignKey(Products,on_delete=models.DO_NOTHING,verbose_name='商品')
     Number=models.IntegerField(verbose_name="數量")
     Price=models.IntegerField(null=False,verbose_name='價格')
     Total=models.IntegerField(null=False,verbose_name='總價格')
