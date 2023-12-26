@@ -82,6 +82,16 @@ class Orders(models.Model):
         verbose_name_plural = '訂單'
     def __str__(self):
         return str(self.pk)
+    def save(self, *args, **kwargs):
+
+        super().save(*args, **kwargs)
+
+        OrderLog.objects.create(
+            Order=self,
+            User=self.User, 
+            Delivery_state=self.Delivery_state
+        )
+
 class OrderDetails(models.Model):
     Order = models.ForeignKey(Orders, on_delete=models.CASCADE,verbose_name='訂單編號')
     Products=models.ForeignKey(Products,on_delete=models.DO_NOTHING,verbose_name='商品')
@@ -116,6 +126,6 @@ class OrderLog(models.Model):
     class Meta:
         verbose_name = "訂單紀錄"
         verbose_name_plural = '訂單紀錄'  # 中文名稱
-    def __str__(self):
-        return self.Category_name
+    # def __str__(self):
+    #     return self.Time
 
