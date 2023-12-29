@@ -1,8 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, PermissionsMixin
 from django.utils import timezone
-from Product.models import Products
-
+from Product.models import Products,ContentType,Restock,RestockDetail
 
 class Branchs(models.Model):
     Name=models.CharField(max_length=15,verbose_name='店家名稱')
@@ -50,8 +49,6 @@ class User(AbstractBaseUser, PermissionsMixin):
     objects = UserManager()
     USERNAME_FIELD = 'phone_number'    #登入帳號的欄位
     REQUIRED_FIELDS = ['email']     #非必要填寫欄位
-
-
     def __str__(self):
         return self.phone_number
     class Meta:
@@ -63,6 +60,7 @@ class User(AbstractBaseUser, PermissionsMixin):
 class Transpose(models.Model):
     BranchsSend=models.ForeignKey(Branchs,on_delete=models.DO_NOTHING,verbose_name='寄送方', related_name='send_transposes')
     BranchsReceipt=models.ForeignKey(Branchs,on_delete=models.DO_NOTHING,verbose_name='收獲方', related_name='receipt_transposes')
+    User=models.ForeignKey(User, on_delete=models.CASCADE,verbose_name='會員' ,blank=True, null=True, default=None)
     Product=models.ForeignKey(Products,on_delete=models.DO_NOTHING,verbose_name='商品')
     Number=models.IntegerField(verbose_name="數量")
     Time=models.DateTimeField(auto_now_add=True)
@@ -70,7 +68,22 @@ class Transpose(models.Model):
         verbose_name = "運送"
         verbose_name_plural = '運送'  # 中文名稱
     def __str__(self):
-        return self.BranchsSend + self.BranchsReceipt 
+        return str(self.User)
+    # def save(self, *args, **kwargs):
+    #     super().save(*args, **kwargs)
+    #     content_type_obj = ContentType.objects.get(id=8)
+    #     Restock.objects.create(
+    #         Category=1,
+    #         Branch=self.User.branch,
+    #         User=self.User, 
+    #         Type=1,
+    #         content_type=content_type_obj,
+    #         object_id=self.id
+    #     )
+    #     RestockDetail.objects.create(
+            
+    #     )
+
 
 class Address(models.Model):
     user=models.ForeignKey(User, on_delete=models.CASCADE,verbose_name='會員' ,blank=True, null=True, default=None)

@@ -1,6 +1,22 @@
 from django.contrib import admin
 from .models import User,Branchs,Transpose
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
+from Product.models import RestockDetail,Restock
+
+# class RestockDetailInline(admin.TabularInline):  # 或者使用 admin.StackedInline
+#     model = RestockDetail
+    
+#     extra = 1
+#     def get_fields(self, request, obj=None):
+#         return ['Product', 'Restock', 'ExpiryDate', 'Number', 'Branch']
+#     def get_formset(self, request, obj=None, **kwargs):
+#         formset = super(RestockDetailInline, self).get_formset(request, obj, **kwargs)
+#         if not request.user.is_superuser:
+#             for form in formset.form.base_fields:
+#                 if form == 'Branch':
+#                     formset.form.base_fields[form].disabled = True
+#                     formset.form.base_fields[form].initial = request.user.branch
+#         return formset
 @admin.register(User)
 class UserAdmin(BaseUserAdmin):
     list_display = ['email', 'user_name','branch', 'phone_number', 'is_active', 'is_staff']
@@ -41,9 +57,17 @@ class BranchsAdmin(admin.ModelAdmin):
 # ['Name','address','phone_number']
 @admin.register(Transpose)
 class TransposeAdmin(admin.ModelAdmin):
-    list_display = ['BranchsSend','BranchsReceipt','Product','Number','Time']
-    search_fields = ['BranchsSend','BranchsReceipt','Product']
-    list_filter = ['BranchsSend','BranchsReceipt','Product']
+    list_display = ['User','BranchsSend','BranchsReceipt','Product','Number','Time']
+    search_fields = ['User','BranchsSend','BranchsReceipt','Product']
+    list_filter = ['User','BranchsSend','BranchsReceipt','Product']
     ordering = ['BranchsSend']
+    # inlines = [RestockDetailInline]
+
+    def get_form(self, request, obj=None, **kwargs):
+        form = super(TransposeAdmin, self).get_form(request, obj, **kwargs)
+        if 'User' in form.base_fields:
+            form.base_fields['User'].initial = request.user
+            form.base_fields['User'].disabled = True
+        return form
 
 # ['BranchsSend','BranchsReceipt','Product','Number','Time']

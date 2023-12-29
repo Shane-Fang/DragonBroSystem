@@ -77,31 +77,40 @@ class RestockDetailInline(admin.TabularInline):  # 或者使用 admin.StackedInl
 
 @admin.register(Restock)
 class RestockAdmin(admin.ModelAdmin):
-    form = RestockForm
-    list_display = ['id', 'Category', 'Time', 'Branch', 'User', 'Type', 'content_type', 'object_id']
+    # form = RestockForm
+    list_display = ['id', 'Category', 'Time', 'Branch', 'User', 'Type', 'content_type', 'object_id','refID']
     # change_form_template = 'admin/restock.html'
     inlines = [RestockDetailInline]
-    class Media:
-        js = ('js/restock.js',)
+    # class Media:
+    #     js = ('js/restock.js',)
     def get_form(self, request, obj=None, **kwargs):
         form = super(RestockAdmin, self).get_form(request, obj, **kwargs)
-        if not request.user.is_superuser:
+    #     if not request.user.is_superuser:
+        if 'User' in form.base_fields:
+            # 自动设置object_id为Branchs的最新ID（或其他逻辑）
+            # latest_branch = self.objects.latest('id')
             form.base_fields['Branch'].disabled = True  
             form.base_fields['Branch'].initial = request.user.branch  
             form.base_fields['User'].disabled = True  
             form.base_fields['User'].initial = request.user
+            form.base_fields['Category'].disabled = True  
+            form.base_fields['Category'].initial = 0
+            form.base_fields['content_type'].disabled = True  
+            form.base_fields['content_type'].initial = 23
+            form.base_fields['object_id'].disabled = True  
+            form.base_fields['object_id'].initial = None
         return form
-    def save_model(self, request, obj, form, change):
-        if not request.user.is_superuser:
-            obj.Branch = request.user.branch
-            obj.User = request.user
+    # def save_model(self, request, obj, form, change):
+    #     if not request.user.is_superuser:
+    #         obj.Branch = request.user.branch
+    #         obj.User = request.user
     
-        # 确保 object_id 是整数
-        if form.cleaned_data.get('object_id'):
-            obj.object_id = form.cleaned_data['object_id']
-        else:
-            obj.object_id = None
-        obj.save()
+    #     # 确保 object_id 是整数
+    #     if form.cleaned_data.get('object_id'):
+    #         obj.object_id = form.cleaned_data['object_id']
+    #     else:
+    #         obj.object_id = None
+    #     obj.save()
 
 
 

@@ -124,8 +124,6 @@ class ItemImage(models.Model):
 
     def delete(self, *args, **kwargs):
         # 打印文件路径，确认是否正确
-        print(f"Deleting file: {self.Image_path.path}")
-
         if self.Image_path:
             # 尝试删除文件
             try:
@@ -138,9 +136,9 @@ class ItemImage(models.Model):
 
 class Restock(models.Model):
     Category_CHOICES=((0,'進貨'),
-                      (1,'BtoB'),
-                      (2,'BtoC'),
-                      )
+                    (1,'BtoB'),
+                    (2,'BtoC'),
+                    )
     Type_CHOICES=(
         (0,'進貨'),
         (1,'出貨'),
@@ -156,15 +154,31 @@ class Restock(models.Model):
     class Meta:
         verbose_name = "進出貨管理"
         verbose_name_plural = '進出貨管理'  # 中文名稱
-    def __str__(self):
-        return str(self.User)
+    # def __str__(self):
+    #     return str(self.User)
+    #     def save(self, *args, **kwargs):
+    #     # 首先，正常保存Restock对象
+    #     is_new = self._state.adding  # 检查这是不是一个新对象
+    #     super().save(*args, **kwargs)
+
+    #     # 如果这是一个新创建的Restock对象，创建一个关联的RestockDetail
+    #     if is_new:
+    #         # 假设你要为新的Restock创建一个RestockDetail
+    #         RestockDetail.objects.create(
+    #             Product=...,  # 指定商品
+    #             Restock=self,  # 设置这个新创建的Restock作为外键
+    #             ExpiryDate=...,  # 设置有效日期
+    #             Number=...,  # 设置数量
+    #             Remain=...,  # 设置剩余数量
+    #             Branch=...  # 设置分店ID
+    #         )
 class RestockDetail(models.Model):
     Product=models.ForeignKey(Products,on_delete=models.DO_NOTHING,verbose_name='商品')
     Restock=models.ForeignKey(Restock,on_delete=models.DO_NOTHING,verbose_name='交易')
     ExpiryDate=models.DateField(verbose_name='有效日期')
     Number=models.IntegerField(verbose_name="數量")
     Remain=models.IntegerField(null=True, blank=True,verbose_name="剩餘數量")
-    Branch=models.ForeignKey('member.Branchs', on_delete=models.DO_NOTHING,verbose_name="分店ID")
+    Branch=models.ForeignKey('member.Branchs', on_delete=models.DO_NOTHING,verbose_name="分店ID",null=True, blank=True)
     class Meta:
         verbose_name = "進出貨管理明細"
         verbose_name_plural = '進出貨管理明細'  # 中文名稱
@@ -178,7 +192,7 @@ class RestockDetail(models.Model):
             # 創建或更新Branch_Inventory資料表
             inventory, created = Branch_Inventory.objects.get_or_create(
                 Products=self.Product, 
-                Branch=self.Branch,
+                # Branch=self.Branch,
                 defaults={'Number': self.Number}
             )
             if created:
