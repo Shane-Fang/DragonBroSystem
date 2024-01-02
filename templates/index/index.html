@@ -4,7 +4,10 @@
 <title>{{title}}</title>
 {% endblock %}
 {% block content %}
-<div class="row">
+<div class="container">
+    <div class="col-3">
+        <a href="{% url 'Product:products_view' 1 %}" class="btn btn-outline-secondary">快閃團</a>
+    </div>
     <div class="col-3">
         <a href="{% url 'Product:products_view' 1 %}" class="btn btn-outline-secondary">龜山長慶店</a>
     </div>
@@ -12,7 +15,7 @@
         <a href="{% url 'Product:products_view' 2 %}" class="btn btn-outline-secondary">三峽大學店</a>
     </div>
     <div class="col-3">
-        <a href="{% url 'Product:products_view' 3 %}" class="btn btn-outline-secondary">蘆洲希望店</a>
+        <a href="{% url 'Product:products_view' 3 %}" class="btn btn-outline-secondary">蘆洲三民店</a>
     </div>
     <div class="col-3">
         <a href="{% url 'Product:products_view' 4 %}" class="btn btn-outline-secondary">永和永利店</a>

@@ -12,9 +12,9 @@ class CategoriesAdmin(admin.ModelAdmin):
 # 'Category_name','Describe'
 @admin.register(Products)
 class ProductsAdmin(admin.ModelAdmin):
-    list_display = ['Category','Item_name','Price','Specification','Number','Sh']
-    search_fields = ['Category','Item_name','Price','Specification','Number','Sh']
-    list_filter = ['Category','Item_name','Price','Specification','Number','Sh']
+    list_display = ['Category','Item_name', 'Import_price','Price','Specification','Sh']
+    search_fields = ['Category','Item_name', 'Import_price','Price','Specification','Sh']
+    list_filter = ['Category','Item_name', 'Import_price','Price','Specification','Sh']
     ordering = ['Sh']
 
 # ['Category','Item_name','Price','Specification','Number','Sh']
