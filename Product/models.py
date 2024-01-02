@@ -54,6 +54,7 @@ class Products(models.Model):
     Category=models.ForeignKey(Categories, on_delete=models.CASCADE,verbose_name="類別",null=True, blank=True)
     Item_name=models.CharField(max_length=99,verbose_name="貨品名稱",null=True, blank=True)
     Price=models.IntegerField(verbose_name="建議售價")
+    Import_price=models.IntegerField(verbose_name="成本價")
     Specification=models.CharField(max_length=99,verbose_name="規格")
     Number=models.IntegerField(verbose_name="庫存",)
     Sh=models.IntegerField(choices=Sh_CHOICES,default=1,verbose_name="上/下架")
