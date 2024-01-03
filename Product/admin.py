@@ -3,10 +3,47 @@ from .models import Categories,Products,ItemImage,Branch_Inventory,Restock,Resto
 from django.utils.html import format_html
 from .forms import RestockForm
 from import_export.admin import ImportExportModelAdmin
+from import_export import resources, fields
+from import_export.widgets import ForeignKeyWidget
+
+class CategoriesResource(resources.ModelResource):
+    class Meta:
+        model = Categories
+        exclude = ('id',)
+        skip_unchanged = True
+        report_skipped = True
+        fields = ('Category_name', 'Describe',)
+        import_id_fields = ("Category_name",)
+
+class ProductsResource(resources.ModelResource):
+    Category  = fields.Field(
+        column_name='Category_name',
+        attribute='Category',
+        widget=ForeignKeyWidget(Categories, 'Category_name')
+    )
+    class Meta:
+        model = Products
+        exclude = ('id',)
+        fields = ('Category_name', 'Item_name', 'Price', 'Import_price', 'Specification', 'Sh')
+        import_id_fields = ("Item_name",)
+
+
+class RestockDetailResource(resources.ModelResource):
+    restock = fields.Field(
+        column_name='Restock_id',
+        attribute='restock',
+        widget=ForeignKeyWidget(Restock, 'id'))
+    
+    class Meta:
+        model = RestockDetail
+        import_id_fields = ('id',)
+        fields = ('Number', 'Product_id', 'Branch_id', 'Remain', 'ExpiryDate', 'restock',)
+
 
 # Register your models here.
 @admin.register(Categories)
 class CategoriesAdmin(ImportExportModelAdmin):
+    resource_class=CategoriesResource
     list_display = ['Category_name','Describe']
     search_fields = ['Category_name','Describe']
     list_filter = ['Category_name','Describe']
@@ -14,6 +51,7 @@ class CategoriesAdmin(ImportExportModelAdmin):
 # 'Category_name','Describe'
 @admin.register(Products)
 class ProductsAdmin(ImportExportModelAdmin):
+    resource_class=ProductsResource
     list_display = ['Category','Item_name', 'Import_price','Price','Specification','Sh']
     search_fields = ['Category','Item_name', 'Import_price','Price','Specification','Sh']
     list_filter = ['Category','Item_name', 'Import_price','Price','Specification','Sh']
@@ -79,6 +117,7 @@ class RestockDetailInline(admin.TabularInline):  # 或者使用 admin.StackedInl
 
 @admin.register(Restock)
 class RestockAdmin(ImportExportModelAdmin):
+    resource_class = RestockDetailResource
     # form = RestockForm
     list_display = ['id', 'Category', 'Time', 'Branch', 'User', 'Type', 'content_type', 'object_id','refID']
     # change_form_template = 'admin/restock.html'
@@ -113,8 +152,6 @@ class RestockAdmin(ImportExportModelAdmin):
     #     else:
     #         obj.object_id = None
     #     obj.save()
-
-
 
 @admin.register(RestockDetail)
 class RestockDetailAdmin(admin.ModelAdmin):
