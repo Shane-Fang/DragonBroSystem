@@ -2,16 +2,18 @@ from django.contrib import admin
 from .models import Categories,Products,ItemImage,Branch_Inventory,Restock,RestockDetail,RestockDetail_relation
 from django.utils.html import format_html
 from .forms import RestockForm
+from import_export.admin import ImportExportModelAdmin
+
 # Register your models here.
 @admin.register(Categories)
-class CategoriesAdmin(admin.ModelAdmin):
+class CategoriesAdmin(ImportExportModelAdmin):
     list_display = ['Category_name','Describe']
     search_fields = ['Category_name','Describe']
     list_filter = ['Category_name','Describe']
     ordering = ['Category_name']
 # 'Category_name','Describe'
 @admin.register(Products)
-class ProductsAdmin(admin.ModelAdmin):
+class ProductsAdmin(ImportExportModelAdmin):
     list_display = ['Category','Item_name', 'Import_price','Price','Specification','Sh']
     search_fields = ['Category','Item_name', 'Import_price','Price','Specification','Sh']
     list_filter = ['Category','Item_name', 'Import_price','Price','Specification','Sh']
@@ -76,7 +78,7 @@ class RestockDetailInline(admin.TabularInline):  # 或者使用 admin.StackedInl
         return formset
 
 @admin.register(Restock)
-class RestockAdmin(admin.ModelAdmin):
+class RestockAdmin(ImportExportModelAdmin):
     # form = RestockForm
     list_display = ['id', 'Category', 'Time', 'Branch', 'User', 'Type', 'content_type', 'object_id','refID']
     # change_form_template = 'admin/restock.html'
@@ -85,6 +87,7 @@ class RestockAdmin(admin.ModelAdmin):
     #     js = ('js/restock.js',)
     def get_form(self, request, obj=None, **kwargs):
         form = super(RestockAdmin, self).get_form(request, obj, **kwargs)
+
     #     if not request.user.is_superuser:
         if 'User' in form.base_fields:
             # 自动设置object_id为Branchs的最新ID（或其他逻辑）
@@ -93,12 +96,11 @@ class RestockAdmin(admin.ModelAdmin):
             form.base_fields['Branch'].initial = request.user.branch  
             form.base_fields['User'].disabled = True  
             form.base_fields['User'].initial = request.user
-            form.base_fields['Category'].disabled = True  
-            form.base_fields['Category'].initial = 0
             form.base_fields['content_type'].disabled = True  
             form.base_fields['content_type'].initial = 23
             form.base_fields['object_id'].disabled = True  
             form.base_fields['object_id'].initial = None
+
         return form
     # def save_model(self, request, obj, form, change):
     #     if not request.user.is_superuser:

@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     'member',
     'Product',
     'OrderManagement',
+    'import_export',
 ]
 
 MIDDLEWARE = [

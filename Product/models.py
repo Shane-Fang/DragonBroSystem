@@ -192,7 +192,7 @@ class RestockDetail(models.Model):
             # 創建或更新Branch_Inventory資料表
             inventory, created = Branch_Inventory.objects.get_or_create(
                 Products=self.Product, 
-                # Branch=self.Branch,
+                Branch=self.Branch,
                 defaults={'Number': self.Number}
             )
             if created:
