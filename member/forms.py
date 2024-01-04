@@ -57,7 +57,7 @@ class RegisterModelForm(forms.ModelForm):
 
     class Meta:
         model = User
-        fields = ['phone_number', 'user_name', 'phone_number', 'birthday' ]
+        fields = ['phone_number', 'user_name', 'phone_number', 'birthday']
         # 根据需要调整字段的标签和其他属性
 
     def __init__(self, *args, **kwargs):
@@ -83,3 +83,8 @@ class RegisterModelForm(forms.ModelForm):
         if commit:
             user.save()
         return user
+    
+class RegisterAddressForm(forms.ModelForm):
+    class Meta:
+        model = Address
+        fields = ['address']

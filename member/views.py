@@ -4,7 +4,7 @@ from django.contrib.auth import authenticate, login,logout
 from django.contrib.auth.hashers import make_password
 from django.contrib import messages
 from .models import User,Address
-from .forms import RegisterModelForm,UserUpdateForm, AddressFormSet
+from .forms import RegisterModelForm,UserUpdateForm, RegisterAddressForm, AddressFormSet
 from django.views.decorators.http import require_POST
 from django.contrib.auth.decorators import login_required
 
@@ -59,19 +59,25 @@ def user_logout(request):
 def register(request):
     if request.method == 'POST':
         form = RegisterModelForm(request.POST, request.FILES)
-        if form.is_valid():
+        address_form = RegisterAddressForm(request.POST, request.FILES)
+        if form.is_valid() and address_form.is_valid():
             user = form.save(commit=False)
+            address = address_form.save(commit=False)
             # 密碼已在表單的 save 方法中設置，所以這裡不需要再設置
             # user.password = make_password(form.cleaned_data['password1'])
             if User.objects.filter(email=user.phone_number).exists():
                 return render(request, "member/register.html", {"error_message": "電話已存在"})
             user.save()
+            address.user_id = user.id
+            address.save()
             # 根据需要处理其他逻辑，例如登录用户、发送邮件等
             return render(request, "member/register.html", {"success": '註冊成功'})
     else:
         form = RegisterModelForm()
+        address_form = RegisterAddressForm()
     context={
         'form': form,
+        'address_form': address_form,
         'title':'註冊'
     }
     return render(request, "member/register.html",context )
