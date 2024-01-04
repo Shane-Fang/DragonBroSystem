@@ -136,9 +136,16 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 
 MEDIA_URL = '/media/'
+CSV_URL = '/csvfile/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+CSV_ROOT = os.path.join(BASE_DIR, 'csvfile')
 
 IMPORT_EXPORT_USE_TRANSACTIONS = True
+
+FILE_UPLOAD_HANDLERS = [
+    "django.core.files.uploadhandler.MemoryFileUploadHandler",
+    "django.core.files.uploadhandler.TemporaryFileUploadHandler",
+]
 
 # LOGGING = {
 #     'version': 1,
