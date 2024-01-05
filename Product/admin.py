@@ -30,29 +30,29 @@ def import_csv_data(file_path, user_id, branch_id):
             )
             for row in reader:
                 print(row)
-                Item_name = row['Item_name']
-                number = int(row['Number'])
-                expiry_date = pd.Timestamp(row['ExpiryDate']).date()  # 假设日期格式为'YYYY-MM-DD'
+                if row['Item_name'] != '':
+                    Item_name = row['Item_name']
+                    number = int(row['Number'])
+                    expiry_date = pd.Timestamp(row['ExpiryDate']).date()  # 假设日期格式为'YYYY-MM-DD'
 
-                # 查找或创建产品记录
-                product, created = Products.objects.get_or_create(Item_name=Item_name)
+                    # 查找或创建产品记录
+                    product, created = Products.objects.get_or_create(Item_name=Item_name)
 
-                print(f'product id: {product.id}, restock id: {restock.id}')
+                    print(f'product id: {product.id}, restock id: {restock.id}')
 
-                # 创建RestockDetail记录
-                RestockDetail.objects.create(
-                    ExpiryDate=expiry_date,
-                    Number=number,
-                    Remain=number,
-                    Product_id=product.id,
-                    Restock_id=restock.id,
-                    Branch_id=branch_id
-                )
+                    # 创建RestockDetail记录
+                    RestockDetail.objects.create(
+                        ExpiryDate=expiry_date,
+                        Number=number,
+                        Remain=number,
+                        Product_id=product.id,
+                        Restock_id=restock.id,
+                        Branch_id=branch_id
+                    )
 
-                # 查找或创建Branch_Inventory记录
-                branch_inventory, _ = Branch_Inventory.objects.get_or_create(Branch_id=branch_id, Products_id=product.id)
-                branch_inventory.Number += number  # 疊加數量
-                branch_inventory.save()
+                    # 查找或创建Branch_Inventory记录
+                    branch_inventory, _ = Branch_Inventory.objects.get_or_create(Branch_id=branch_id, Products_id=product.id)
+                    branch_inventory.save()
 class CategoriesResource(resources.ModelResource):
     class Meta:
         model = Categories
