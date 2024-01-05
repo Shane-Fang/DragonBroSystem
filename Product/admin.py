@@ -100,7 +100,11 @@ class RestockResource(resources.ModelResource):
         fields = ('Item_name', 'ExpiryDate', 'Number')
         import_id_fields = ("Item_name",)
 
-
+class ItemImageDetailInline(admin.TabularInline):  # 或者使用 admin.StackedInline
+    model = ItemImage
+    extra = 1
+    def get_fields(self, request, obj=None):
+        return ['ImageID', 'Products', 'Image_path']
 # Register your models here.
 @admin.register(Categories)
 class CategoriesAdmin(ImportExportModelAdmin):
@@ -114,9 +118,10 @@ class CategoriesAdmin(ImportExportModelAdmin):
 class ProductsAdmin(ImportExportModelAdmin):
     resource_class=ProductsResource
     list_display = ['Category','Item_name', 'Import_price','Price','Specification','Sh']
-    search_fields = ['Category','Item_name', 'Import_price','Price','Specification','Sh']
+    search_fields = ['Item_name']
     list_filter = ['Category','Item_name', 'Import_price','Price','Specification','Sh']
     ordering = ['Sh']
+    inlines=[ItemImageDetailInline]
 
 # ['Category','Item_name','Price','Specification','Number','Sh']
 
@@ -163,7 +168,6 @@ class Branch_InventoryAdmin(admin.ModelAdmin):
 # ['Products','ExpiryDate','Number','Branch',]
 class RestockDetailInline(admin.TabularInline):  # 或者使用 admin.StackedInline
     model = RestockDetail
-    
     extra = 1
     def get_fields(self, request, obj=None):
         return ['Product', 'Restock', 'ExpiryDate', 'Number', 'Branch']

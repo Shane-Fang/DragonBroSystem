@@ -12,15 +12,15 @@
     </div>
     <div class="container">
         <div class="row">
-            {% for product in products %}
-            <div class="col-md-4 mb-4 "> <!-- 每个卡片占用4列，底部边距为4 -->
+            {% for product_name, info in products_detail.items %}
+            <div class="col-md-3 mb-3 "> <!-- 每个卡片占用4列，底部边距为4 -->
                 <div class="card text-center">
-                    <img src="..." class="card-img-top" alt="...">
+                    <img src="{{info.Picture.0}}" style="width: 300px;margin: auto;" class="card-img-top" alt="...">
                     <div class="card-body">
-                        <h5 class="card-title">{{ product.Products.Item_name }}</h5>
-                        <p class="card-text">{{ product.Products.Price }}</p>
-                        <p class="card-text">{{ product.Products.Specification }}</p>
-                        <a href="{% url 'Product:detail' branch=branch.id detail=product.id  %}" class="btn btn-primary">商品資訊</a>
+                        <h5 class="card-title">{{ product_name }}</h5>
+                        <p class="card-text">{{ info.Price }}</p>
+                        <p class="card-text">{{ info.Specification }}</p>
+                        <a href="{% url 'Product:detail' branch=branch.id detail=info.id  %}" class="btn btn-primary">商品資訊</a>
                     </div>
                 </div>
             </div>
