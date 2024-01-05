@@ -1,7 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, PermissionsMixin
 from django.utils import timezone
-from Product.models import Products,ContentType,Restock,RestockDetail
+# from Product.models import Products,ContentType,Restock,RestockDetail
 
 class Branchs(models.Model):
     Name=models.CharField(max_length=15,verbose_name='店家名稱')
@@ -61,8 +61,8 @@ class Transpose(models.Model):
     BranchsSend=models.ForeignKey(Branchs,on_delete=models.DO_NOTHING,verbose_name='寄送方', related_name='send_transposes')
     BranchsReceipt=models.ForeignKey(Branchs,on_delete=models.DO_NOTHING,verbose_name='收獲方', related_name='receipt_transposes')
     User=models.ForeignKey(User, on_delete=models.CASCADE,verbose_name='會員' ,blank=True, null=True, default=None)
-    Product=models.ForeignKey(Products,on_delete=models.DO_NOTHING,verbose_name='商品')
-    Number=models.IntegerField(verbose_name="數量")
+    # Product=models.ForeignKey(Products,on_delete=models.DO_NOTHING,verbose_name='商品')
+    # Number=models.IntegerField(verbose_name="數量")
     Time=models.DateTimeField(auto_now_add=True)
     class Meta:
         verbose_name = "運送"

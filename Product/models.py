@@ -5,6 +5,7 @@ import time
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.contenttypes.fields import GenericForeignKey
 from django.core.files.storage import default_storage
+from member.models import Transpose,Branchs
 # from member.models import Branchs
 
 State_CHOICES = (
@@ -143,7 +144,7 @@ class Restock(models.Model):
         (0,'進貨'),
         (1,'出貨'),
     )
-    Category=models.IntegerField(choices=Category_CHOICES,default=1,verbose_name="進貨狀態",null=True, blank=True)
+    Category=models.IntegerField(choices=Category_CHOICES,default=0,verbose_name="進貨狀態",null=True, blank=True)
     Time=models.DateTimeField(auto_now_add=True)
     Branch=models.ForeignKey('member.Branchs', on_delete=models.DO_NOTHING,verbose_name="分店ID")
     User=models.ForeignKey('member.User', on_delete=models.DO_NOTHING,verbose_name="後台操作的員工")
@@ -154,24 +155,19 @@ class Restock(models.Model):
     class Meta:
         verbose_name = "進出貨管理"
         verbose_name_plural = '進出貨管理'  # 中文名稱
-    # def __str__(self):
-    #     return str(self.User)
-    #     def save(self, *args, **kwargs):
-    #     # 首先，正常保存Restock对象
-    #     is_new = self._state.adding  # 检查这是不是一个新对象
-    #     super().save(*args, **kwargs)
+    def save(self, *args, **kwargs):
+        # 先存檔RestockDetail資料
+        super(Restock, self).save(*args, **kwargs)
+        if self.Category == 1:
+            # 創建或更新Branch_Inventory資料表
+            Receipt = Branchs.objects.get(id=self.object_id)
+            inventory, created = Transpose.objects.get_or_create(
+                BranchsSend=self.Branch,
+                BranchsReceipt=Receipt,
+                User=self.User,
+            )
+            inventory.save()
 
-    #     # 如果这是一个新创建的Restock对象，创建一个关联的RestockDetail
-    #     if is_new:
-    #         # 假设你要为新的Restock创建一个RestockDetail
-    #         RestockDetail.objects.create(
-    #             Product=...,  # 指定商品
-    #             Restock=self,  # 设置这个新创建的Restock作为外键
-    #             ExpiryDate=...,  # 设置有效日期
-    #             Number=...,  # 设置数量
-    #             Remain=...,  # 设置剩余数量
-    #             Branch=...  # 设置分店ID
-    #         )
 class RestockDetail(models.Model):
     Product=models.ForeignKey(Products,on_delete=models.DO_NOTHING,verbose_name='商品')
     Restock=models.ForeignKey(Restock,on_delete=models.DO_NOTHING,verbose_name='交易')

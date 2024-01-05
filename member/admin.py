@@ -57,9 +57,9 @@ class BranchsAdmin(admin.ModelAdmin):
 # ['Name','address','phone_number']
 @admin.register(Transpose)
 class TransposeAdmin(admin.ModelAdmin):
-    list_display = ['User','BranchsSend','BranchsReceipt','Product','Number','Time']
-    search_fields = ['User','BranchsSend','BranchsReceipt','Product']
-    list_filter = ['User','BranchsSend','BranchsReceipt','Product']
+    list_display = ['User','BranchsSend','BranchsReceipt','Time']
+    search_fields = ['User','BranchsSend','BranchsReceipt']
+    list_filter = ['User','BranchsSend','BranchsReceipt']
     ordering = ['BranchsSend']
     # inlines = [RestockDetailInline]
 

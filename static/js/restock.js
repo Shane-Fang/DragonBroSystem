@@ -1,35 +1,34 @@
 document.addEventListener('DOMContentLoaded', function () {
-    function toggleFields() {
-        var category = document.getElementById('id_Category').value;
-        var displayStyle = category == '1' ? 'block' : 'none';
-        document.getElementById('id_content_type').style.display = displayStyle;
-        document.getElementById('id_object_id').style.display = displayStyle;
-    }
-    document.getElementById('id_Category').addEventListener('change', toggleFields);
-    toggleFields();
-
-});
-document.addEventListener('DOMContentLoaded', function () {
     var categorySelect = document.getElementById('id_Category');
     var contentTypeSelect = document.getElementById('id_content_type');
     var objectIdSelect = document.getElementById('id_object_id');
+    var typeIdSelect = document.getElementById('id_Type');
 
-    function updateContentTypeOptions() {
+    function updateDisplayAndOptions() {
         var category = categorySelect.value;
 
-        if (category === '1') {  // 假設 1 代表 'BtoB'
+        // 根据category的值来隐藏或显示元素
+        var displayStyle = category === '1' ? 'block' : 'none';
+        contentTypeSelect.style.display = displayStyle;
+        objectIdSelect.style.display = displayStyle;
+
+        // 更新contentTypeSelect的选项
+        if (category === '1') {
             contentTypeSelect.innerHTML = '<option value="7">分店</option>';
+            typeIdSelect.innerHTML = '<option value="1">出貨</option>'
+        }else if(category === '0'){
+            typeIdSelect.innerHTML = '<option value="0">進貨</option>'
             
-        } else {
-            contentTypeSelect.innerHTML = '...'; // 所有選項的 HTML
-        
+        }
+        else {
+            contentTypeSelect.innerHTML = '<option value="7">分店7777777</option>'; // 所有选项的HTML
         }
     }
-    categorySelect.addEventListener('change', updateContentTypeOptions);
 
-
-    updateContentTypeOptions(); // 初始呼叫
+    categorySelect.addEventListener('change', updateDisplayAndOptions);
+    updateDisplayAndOptions();  // 初始调用来设置初始状态
 });
+
 // document.addEventListener('DOMContentLoaded', function () {
 //     var categorySelect = document.getElementById('id_Category');
 //     var objectIdSelect = document.getElementById('id_object_id');

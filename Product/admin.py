@@ -169,11 +169,10 @@ class RestockDetailInline(admin.TabularInline):  # 或者使用 admin.StackedInl
         return ['Product', 'Restock', 'ExpiryDate', 'Number', 'Branch']
     def get_formset(self, request, obj=None, **kwargs):
         formset = super(RestockDetailInline, self).get_formset(request, obj, **kwargs)
-        if not request.user.is_superuser:
-            for form in formset.form.base_fields:
-                if form == 'Branch':
-                    formset.form.base_fields[form].disabled = True
-                    formset.form.base_fields[form].initial = request.user.branch
+        for form in formset.form.base_fields:
+            if form == 'Branch':
+                formset.form.base_fields[form].disabled = True
+                formset.form.base_fields[form].initial = request.user.branch
         return formset
 
 
@@ -183,29 +182,26 @@ class CSVImportForm(forms.Form):
 @admin.register(Restock)
 class RestockAdmin(admin.ModelAdmin):
     change_list_template = "admin/Restock_changelist.html"
-    # form = RestockForm
-    list_display = ['id', 'Category', 'Time', 'Branch', 'User', 'Type', 'content_type', 'object_id','refID']
+    form = RestockForm
+    list_display = ['id', 'Category', 'Time', 'Branch', 'User', 'Type', 'content_type', 'object_id']
     # change_form_template = 'admin/restock.html'
     inlines = [RestockDetailInline]
-    # class Media:
-    #     js = ('js/restock.js',)
+    class Media:
+        js = ('js/restock.js',)
     def get_form(self, request, obj=None, **kwargs):
         form = super(RestockAdmin, self).get_form(request, obj, **kwargs)
-
-    #     if not request.user.is_superuser:
         if 'User' in form.base_fields:
-            # 自动设置object_id为Branchs的最新ID（或其他逻辑）
-            # latest_branch = self.objects.latest('id')
             form.base_fields['Branch'].disabled = True  
             form.base_fields['Branch'].initial = request.user.branch  
             form.base_fields['User'].disabled = True  
             form.base_fields['User'].initial = request.user
-            form.base_fields['content_type'].disabled = True  
-            form.base_fields['content_type'].initial = 23
-            form.base_fields['object_id'].disabled = True  
-            form.base_fields['object_id'].initial = None
+            form.base_fields['Category'].widget = forms.Select(choices=[
+                (0, '進貨'),
+                (1, 'BtoB'),
+            ])
 
         return form
+
     
     def get_urls(self):
         urls = super().get_urls()
