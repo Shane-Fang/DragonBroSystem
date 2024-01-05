@@ -174,7 +174,7 @@ class Restock(models.Model):
     #         )
 class RestockDetail(models.Model):
     Product=models.ForeignKey(Products,on_delete=models.DO_NOTHING,verbose_name='商品')
-    Restock=models.ForeignKey(Restock,on_delete=models.DO_NOTHING,verbose_name='交易')
+    Restock=models.ForeignKey(Restock,on_delete=models.CASCADE,verbose_name='交易')
     ExpiryDate=models.DateField(verbose_name='有效日期')
     Number=models.IntegerField(verbose_name="數量")
     Remain=models.IntegerField(null=True, blank=True,verbose_name="剩餘數量")
