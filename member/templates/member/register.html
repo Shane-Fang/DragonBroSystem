@@ -9,41 +9,26 @@
         text-align: center;
     }
 
-    table tr td:first-child {
-        text-align: right;
-        width: 30%;
+    .form-label {
+        font-size: 64px;
+        font-weight: 1000;
     }
 
-        table tr td:first-child label {
-            font-size: 24px;
-            font-weight: 600;
+    .form-control {
+        height: 60px;
+    }
+
+    @media (max-width: 576px) {
+        .form-label {
+            font-size: 48px;
         }
-
-    table tr td:nth-child(2) input {
-        width: 80%;
-        height: 32px;
-    }
-
-    table tr td:nth-child(2) select {
-        width: 80%;
-        height: 32px;
-    }
-
-    p > label {
-        width: 80px;
-        display: inline-block;
-        text-align: right;
-    }
-
-    p > input {
-        width: 200px;
     }
 </style>
 {% endblock %}
 
 {% if error_message %}
 <script type="text/javascript">
-    alert("{{ error_message}}");
+    alert("{{ error_message }}");
     window.location.href = "{% url 'member:register' %}";
 </script>
 {% elif success %}
@@ -52,15 +37,18 @@
     window.location.href = "{% url 'home' %}";
 </script>
 {% endif %}
-<div class="bgimg text-center">
 
-    <form action="." method="post" name='register' enctype="multipart/form-data" style="padding-top: 30px;">
-        {% csrf_token %}
-        {{form.as_p}}
-        {{ address_form.as_p }}
-        <input type="submit" value="註冊" class="btn btn-warning btn-block" style="margin-top: 10px; padding: 3px 10px; width: 100px; margin: auto;">
-
-    </form>
-
-
+<div class="container mt-5">
+    <div class="row">
+        <div class="col-md-6 offset-md-3">
+            <form action="." method="post" name='register' enctype="multipart/form-data" class="container" style="padding-top: 30px;">
+                {% csrf_token %}
+                <div class="col-md-8 offset-md-2">
+                    {{ form.as_p}}
+                    {{ address_form.as_p }}
+                    <input type="submit" value="註冊" class="btn btn-warning btn-block" style="margin-top: 10px;">
+                </div>
+            </form>
+        </div>
+    </div>
 </div>

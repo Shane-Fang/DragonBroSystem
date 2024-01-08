@@ -11,9 +11,16 @@
         <button onclick="filterProducts()">搜尋</button>
     </div>
     <div class="container" style="margin-top: 30px;">
+        <button class="category-all-btn"> 全部 </button>
+        {% for category in categories %}
+            <button class="category-btn" data-category="{{ category.id }}">{{ category.Category_name }}</button>
+        {% endfor %}
+    </div>
+
+    <div class="container" style="margin-top: 30px;">
         <div class="row">
             {% for product_name, info in products_detail.items %}
-            <div class="col-lg-3 col-md-4 mb-4"> <!-- 每个卡片占用4列，底部边距为4 -->
+            <div class="col-lg-3 col-md-4 mb-4" data-category-id="{{ info.Category_id }}"> <!-- 每个卡片占用4列，底部边距为4 -->
                 <div class="card text-center">
                     <img src="{{info.Picture.0}}" style="margin: auto;" class="card-img-top" alt="...">
                     <div class="card-body">
@@ -30,3 +37,30 @@
 </div>
 
 {% endblock %}
+
+<script>
+    const categoryBtns = document.querySelectorAll('.category-btn');
+    const allBtn = document.querySelector('.category-all-btn');
+    const productCards = document.querySelectorAll('.col-lg-3');
+
+    // 显示所有商品
+    allBtn.addEventListener('click', function() {
+        productCards.forEach(card => {
+            card.style.display = 'block';
+        });
+    });
+
+    // 筛选商品
+    categoryBtns.forEach(btn => {
+        btn.addEventListener('click', function() {
+            let categoryId = this.getAttribute('data-category');
+            productCards.forEach(card => {
+                if (card.getAttribute('data-category-id') === categoryId) {
+                    card.style.display = 'block';
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+        });
+    });
+</script>

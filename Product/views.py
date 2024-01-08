@@ -1,14 +1,16 @@
 from django.shortcuts import render,redirect
 from django.contrib.auth.decorators import login_required
-from .models import Branch_Inventory,Products,ItemImage
+from .models import Branch_Inventory,Products,ItemImage, Categories
 from OrderManagement.models import ShoppingCart,ShoppingCartDetails
 from member.models import Branchs
 from django.http import JsonResponse
 
 def products_view(request,branch=None,detail=None):
+
     branch=Branchs.objects.get(pk=branch)
     products = Branch_Inventory.objects.filter(Branch_id=branch)
     products_detail = {}
+    categories = Categories.objects.all()
     for inventory_item in products:
         product = inventory_item.Products
         product_info = {}
@@ -16,6 +18,7 @@ def products_view(request,branch=None,detail=None):
         product_info['Price'] = product.Price
         product_info['Specification'] = product.Specification
         product_info['id'] = inventory_item.id
+        product_info['Category_id'] = product.Category_id
         product_images = ItemImage.objects.filter(Products=product)
         image_paths = []
         for image in product_images:
@@ -26,6 +29,7 @@ def products_view(request,branch=None,detail=None):
         'branch':branch,
         'title':f"榮哥海鮮-{branch.Name}",
         'products_detail':products_detail,
+        'categories': categories,
     }
     return render(request, 'products_view.html',context)
 
