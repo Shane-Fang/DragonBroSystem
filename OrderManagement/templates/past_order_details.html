@@ -1,0 +1,39 @@
+{% extends 'index/base.html' %} {% load static %} {% block title %}
+<title>訂單詳情</title>
+<style>
+  .addtocart_inner {
+    width: 80%;
+    margin: auto;
+  }
+</style>
+{% endblock %} {% block content %} 
+<h2>您在 {{ branch_name }} 於 {{order.Time}} 下的訂單</h2>
+
+<!-- 显示订单详情 -->
+<div class="addtocart_outer">
+    <div class="addtocart_inner">
+      <div class="table-responsive">
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>商品名稱</th>
+                    <th>單價</th>
+                    <th>數量</th>
+                    <th>總計</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in details_with_product_names %}
+                    <tr>
+                        <td>{{ item.product_name }}</td>
+                        <td>{{ item.detail.Number }}</td>
+                        <td>{{ item.detail.Price }}</td>
+                        <td>{{ item.detail.Total }}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+{% endblock %}

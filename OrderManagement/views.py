@@ -1,7 +1,8 @@
 from django.shortcuts import render,redirect
 from .models import ShoppingCart,ShoppingCartDetails,Orders,OrderDetails
 from django.contrib.auth.models import User
-from member.models import Address
+from member.models import Address, Branchs
+from Product.models import Products
 from django.http import JsonResponse
 from django.views.decorators.http import require_POST
 from django.db import transaction
@@ -19,7 +20,6 @@ def cart(request):
             cart_details = cart_item.details.all()
             branch = cart_item.branch
             carts_by_branch[branch].append({'details': cart_details, 'total': total})
-            print(cart_details)
     else:
         cart_details=None
         total=0
@@ -39,13 +39,14 @@ def cartorder(request):
             messages.error(request, '一次只能選一個店家，請把多的店家商品刪除')
             return redirect('OrderManagement:cart')
         if member_carts.count() == 1:
-            # print(member_cart)
+            
             member_cart = member_carts.first()
             cart_details = member_cart.details.all()
             total=member_cart.Total
         else:
             cart_details=None
             total=0
+
         addresses=Address.objects.filter(user=current_user)
         context={
             'title':'訂單確認',
@@ -140,3 +141,36 @@ def update_cart_item(request):
         return JsonResponse({'status': 'failed', 'error': 'Item not found'})
     except ValueError:
         return JsonResponse({'status': 'failed', 'error': 'Invalid quantity'})
+    
+def past_orders(request):
+    user_id = request.user  # 假设你使用 Django 的内置用户认证系统
+    orders = Orders.objects.filter(User_id=user_id).order_by('Time')  # 获取用户的订单，按支付时间排序
+
+    # 包括更多的订单详细信息
+    order_details = {order.id: OrderDetails.objects.filter(pk=order.id) for order in orders}
+
+    context = {
+        'orders': orders,
+        'order_details': order_details,
+    }
+    return render(request, 'past_orders.html', context)
+
+def past_order_details(request, order_id):
+    order = Orders.objects.get(id=order_id)
+    order_details = OrderDetails.objects.filter(Order_id=order.id)
+    branch_name = Branchs.objects.get(pk=order.branch_id).Name
+    
+    details_with_product_names = []
+    for detail in order_details:
+        product_name = Products.objects.get(id=detail.Products_id).Item_name
+        detail_info = {
+            'detail': detail,
+            'product_name': product_name
+        }
+        details_with_product_names.append(detail_info)
+    context = {
+        'order': order,
+        'branch_name': branch_name,
+        'details_with_product_names': details_with_product_names
+    }
+    return render(request, 'past_order_details.html', context)

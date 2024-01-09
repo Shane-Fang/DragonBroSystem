@@ -9,4 +9,6 @@ urlpatterns = [
     path('cartorder/',views.cartorder,name='cartorder'),
     path('cartok/',views.cartok,name='cartok'),
     path('submit_order/',views.submit_order,name='submit_order'),
+    path('past_orders/', views.past_orders, name='past_orders'),
+    path('past_order_details/<int:order_id>/', views.past_order_details, name='past_order_details'),
 ]

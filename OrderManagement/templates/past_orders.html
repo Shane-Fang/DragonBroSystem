@@ -1,0 +1,44 @@
+{% extends 'index/base.html' %} {% load static %} {% block title %}
+<title>歷史訂單查詢</title>
+<style>
+  .addtocart_inner {
+    width: 80%;
+    margin: auto;
+  }
+</style>
+{% endblock %} {% block content %} 
+<h2>歷史訂單查詢</h2>
+<div class="addtocart_outer">
+    <div class="addtocart_inner">
+      <div class="table-responsive">
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>訂單成立時間</th>
+                    <th>訂單支付時間</th>
+                    <th>訂單運送狀態</th>
+                    <th>詳情</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for order in orders %}
+                <tr>
+                    <td>{{ order.Time }}</td>
+                    <td>{% if order.Payment_time %}
+                            {{ order.Payment_time }}
+                        {% else %}
+                            尚未支付
+                        {% endif %}
+                    </td>
+                    <td>{{ order.get_Delivery_state_display  }}</td>
+                    <td>
+                        <a href="{% url 'OrderManagement:past_order_details' order.id %}"  class="btn btn-secondary">查看詳情</a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+{% endblock %}
