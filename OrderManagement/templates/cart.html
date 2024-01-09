@@ -9,59 +9,62 @@
 {% endblock %} {% block content %} 
 
 {% for branch, cart_items in cartlist.items %}
-<h3 class="text-center">{{ branch }}</h3>
-<div class="addtocart_outer">
-  <div class="addtocart_inner" style="overflow: auto;">
-    <table class="table table-striped">
-      <tr>
-        <th>取消</th>
-        <th>商品名稱</th>
-        <th>商品單價</th>
-        <th>商品數量</th>
-        <th>金額</th>
-      </tr>
-      {% for item in cart_items %} 
-      {% for product in item.details %}
-      <tr>
-        <td>
-          <button class="btn btn-danger" onclick="deleteItem({{ product.pk }})">
-            删除
-          </button>
-        </td>
-        <td>{{ product.Products }}</td>
-        <td>{{ product.Price }}</td>
-        <td>
-          <input
-            type="number"
-            class="cart-quantity"
-            data-detail-id="{{ product.id }}"
-            value="{{ product.Number }}"
-          />
-        </td>
-        <td class="item-price" data-detail-id="{{ product.id }}">
-          {{ product.Total }}
-
-        </td>
-      </tr>
-      {% endfor %}
-      <tr>
-        <td class="text-center" colspan="2">
-          共購買{{ item.details.count }}件商品
-
-        </td>
-        {% comment %}
-        <td id="localshipping" class="text-center" colspan="1">運費：$0</td>
-        {% endcomment %}
-        <td></td>
-        <td class="text-end">和計：$</td>
-        <td class="grandtotal" data-branch-id="{{ branch.id }}">
-          {{ item.total }}
-        </td>
-      </tr>
-    </table>
+  <h3 class="text-center">{{ branch }}</h3>
+  <div class="addtocart_outer">
+    <div class="addtocart_inner">
+      <div class="table-responsive"> <!-- 使用 Bootstrap 提供的響應式類 -->
+        <table class="table table-striped">
+          <thead>
+            <tr>
+              <th>取消</th>
+              <th>商品名稱</th>
+              <th>商品單價</th>
+              <th>商品數量</th>
+              <th>金額</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for item in cart_items %} 
+              {% for product in item.details %}
+                <tr>
+                  <td>
+                    <button class="btn btn-danger" onclick="deleteItem({{ product.pk }})">
+                      删除
+                    </button>
+                  </td>
+                  <td>{{ product.Products }}</td>
+                  <td>{{ product.Price }}</td>
+                  <td>
+                    <input
+                      type="number"
+                      class="cart-quantity"
+                      data-detail-id="{{ product.id }}"
+                      value="{{ product.Number }}"
+                    />
+                  </td>
+                  <td class="item-price" data-detail-id="{{ product.id }}">
+                    {{ product.Total }}
+                  </td>
+                </tr>
+              {% endfor %}
+              <tr>
+                <td colspan="5" class="text-center">
+                  共購買{{ item.details.count }}件商品
+                </td>
+              </tr>
+              <tr>
+                <td colspan="4" class="text-end">和計：</td>
+                <td class="grandtotal" data-branch-id="{{ branch.id }}">
+                  {{ item.total }}
+                </td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
   </div>
-  {% endfor %}
-  {% endfor %}
+{% endfor %}
   <div class="d-flex justify-content-around my-3">
     <a href="{% url 'home' %}" class="btn btn-dark">繼續購物</a>
     {% comment %}
