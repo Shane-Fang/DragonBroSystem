@@ -1,3 +1,4 @@
+import logging
 from django.shortcuts import render,redirect
 from django.contrib.auth.decorators import login_required
 from .models import Branch_Inventory,Products,ItemImage, Categories
@@ -6,7 +7,7 @@ from member.models import Branchs
 from django.http import JsonResponse
 
 def products_view(request,branch=None,detail=None):
-
+    
     branch=Branchs.objects.get(pk=branch)
     products = Branch_Inventory.objects.filter(Branch_id=branch)
     products_detail = {}

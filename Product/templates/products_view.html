@@ -11,13 +11,13 @@
         <button onclick="filterProducts()">搜尋</button>
     </div>
     <div class="container" style="margin-top: 30px;">
-        <button class="category-all-btn"> 全部 </button>
+        <button class="category-all-btn text-center mb-2 btn-info" data-category="all"> 全部 </button>
         {% for category in categories %}
-            <button class="category-btn" data-category="{{ category.id }}">{{ category.Category_name }}</button>
+            <button class="category-btn text-center mb-2 btn-info" data-category="{{ category.id }}">{{ category.Category_name }}</button>
         {% endfor %}
     </div>
 
-    <div class="container" style="margin-top: 30px;">
+     <div class="container" style="margin-top: 30px;">
         <div class="row">
             {% for product_name, info in products_detail.items %}
             <div class="col-lg-3 col-md-4 mb-4" data-category-id="{{ info.Category_id }}"> <!-- 每个卡片占用4列，底部边距为4 -->
@@ -32,35 +32,33 @@
                 </div>
             </div>
             {% endfor %}
-        </div>
+        </div> 
     </div>
 </div>
 
-{% endblock %}
-
 <script>
-    const categoryBtns = document.querySelectorAll('.category-btn');
-    const allBtn = document.querySelector('.category-all-btn');
-    const productCards = document.querySelectorAll('.col-lg-3');
+    document.addEventListener("DOMContentLoaded", function() {
+        // 選取所有類別按鈕和產品卡片
+        const categoryButtons = document.querySelectorAll('.category-btn, .category-all-btn');
+        const productCards = document.querySelectorAll('.col-lg-3');
 
-    // 显示所有商品
-    allBtn.addEventListener('click', function() {
-        productCards.forEach(card => {
-            card.style.display = 'block';
-        });
-    });
+        // 為每個類別按鈕添加點擊事件監聽器
+        categoryButtons.forEach(button => {
+            button.addEventListener('click', () => {
+                const categoryId = button.dataset.category; // 獲取按鈕的類別ID
 
-    // 筛选商品
-    categoryBtns.forEach(btn => {
-        btn.addEventListener('click', function() {
-            let categoryId = this.getAttribute('data-category');
-            productCards.forEach(card => {
-                if (card.getAttribute('data-category-id') === categoryId) {
-                    card.style.display = 'block';
-                } else {
-                    card.style.display = 'none';
-                }
+                // 根據類別ID顯示或隱藏產品卡片
+                productCards.forEach(card => {
+                    if (categoryId === 'all' || card.dataset.categoryId === categoryId) {
+                        card.style.display = ''; // 顯示卡片
+                    } else {
+                        card.style.display = 'none'; // 隱藏卡片
+                    }
+                });
             });
         });
     });
 </script>
+
+{% endblock %}
+
