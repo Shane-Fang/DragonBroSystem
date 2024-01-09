@@ -1,8 +1,9 @@
+from django.forms import ValidationError
 from django.shortcuts import render,redirect
 from .models import ShoppingCart,ShoppingCartDetails,Orders,OrderDetails
 from django.contrib.auth.models import User
 from member.models import Address, Branchs
-from Product.models import Products
+from Product.models import Products, Branch_Inventory
 from django.http import JsonResponse
 from django.views.decorators.http import require_POST
 from django.db import transaction
@@ -72,18 +73,17 @@ def cartok(request):
             'order':latest_order
         }
         return render(request, 'cartok.html',context )
+    
 @csrf_exempt
 def submit_order(request):
     if request.method == 'POST':
 
         current_user = request.user
-        address = request.POST.get('address')
-        delivery_method = request.POST.get('Delivery')
-        payment_method = request.POST.get('Payment_method')
         shopping_cart = ShoppingCart.objects.get(User=current_user)
         try:
-            with transaction.atomic():
-                order = Orders(
+            with transaction.atomic(): 
+                
+                order = Orders.objects.create(
                     User=current_user,
                     Delivery_method=request.POST['Delivery'],
                     Delivery_state=0,
@@ -95,13 +95,21 @@ def submit_order(request):
                 order.save()
                 # 你的数据库操作代码
                 for item in ShoppingCartDetails.objects.filter(ShoppingCart=shopping_cart):
-                    OrderDetails(
+                    branch_inventory = Branch_Inventory.objects.get(Products=item.Products)
+                    # if branch_inventory or (branch_inventory.Number - item.Number) < 0:
+                    #     print(f'庫存不足: {item.Products} --- {item.Number} --- {branch_inventory.Number}')
+                    #     return JsonResponse({'status': 'error',
+                    #                           'message': f'{item.Products} 商品庫存不足\n還缺{item.Number - branch_inventory.Number}份'})
+                    # else:    
+                    OrderDetails.objects.create(
                         Products=item.Products,
                         Number=item.Number,
                         Price=item.Price,
                         Total=item.Total,
                         Order=order  
                     ).save()
+                    print(f'shopping_cart2: {shopping_cart}')
+                    
                 ShoppingCartDetails.objects.filter(ShoppingCart=shopping_cart).delete()
                 shopping_cart.delete()
                 latest_order = Orders.objects.latest('id')
@@ -109,8 +117,12 @@ def submit_order(request):
                 Payment_method_display = latest_order.get_Payment_method_display()
                 Delivery_method_display = latest_order.get_Delivery_method_display()
                 return JsonResponse({'status': 'success', 'message': 'Order submitted successfully.'})
+        except ValidationError as e:
+            print("庫存不足，無法完成訂單111")
+            return JsonResponse({'status': 'error', 'message': str(e)})
         except Exception as e:
             return JsonResponse({'status': 'error', 'message': str(e)})
+            
     return JsonResponse({'status': 'error', 'message': 'Invalid request'})
 @require_POST
 def delete_from_cart(request):

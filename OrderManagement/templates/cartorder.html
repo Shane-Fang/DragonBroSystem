@@ -133,7 +133,7 @@
         type: 'POST',
         url: '{%url 'OrderManagement:submit_order' %}',
         data: orderData,
-        success: function (response) {
+        success: function (success) {
           // 更新模態框內容並顯示
           Swal.fire({
             icon: 'success',
@@ -144,9 +144,10 @@
           });
         },
         error: function (error) {
+          let message = error.responseJSON.message;
           Swal.fire({
             icon: 'error',
-            title: '建立訂單發生錯誤',
+            title: message,
           })
 
         }

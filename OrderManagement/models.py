@@ -116,6 +116,7 @@ class OrderDetails(models.Model):
             if branch_inventory: 
                 new_quantity = branch_inventory.Number - self.Number
                 if new_quantity < 0:
+                    print("庫存不足，無法完成訂單")
                     raise ValidationError("庫存不足，無法完成訂單")
                 else:
                     branch_inventory.Number = new_quantity
