@@ -26,7 +26,8 @@ def import_csv_data(file_path, user_id, branch_id):
                 Time=datetime.datetime.now(),  # 使用当前时间
                 Category=0,  # 固定上架类别
                 Branch_id=branch_id,
-                User_id=user_id
+                User_id=user_id,
+                Type=0,
             )
             for row in reader:
                 print(row)
