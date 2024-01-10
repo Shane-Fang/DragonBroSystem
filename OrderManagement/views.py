@@ -77,12 +77,10 @@ def cartok(request):
 @csrf_exempt
 def submit_order(request):
     if request.method == 'POST':
-
         current_user = request.user
         shopping_cart = ShoppingCart.objects.get(User=current_user)
         try:
             with transaction.atomic(): 
-                
                 order = Orders.objects.create(
                     User=current_user,
                     Delivery_method=request.POST['Delivery'],
@@ -94,8 +92,10 @@ def submit_order(request):
                 )
                 order.save()
                 # 你的数据库操作代码
+
                 for item in ShoppingCartDetails.objects.filter(ShoppingCart=shopping_cart):
-                    branch_inventory = Branch_Inventory.objects.get(Products=item.Products)
+                    # branch_inventory = Branch_Inventory.objects.get(Products=item.Products)
+                    # branch_inventories = Branch_Inventory.objects.filter(Products=item.Products)
                     # if branch_inventory or (branch_inventory.Number - item.Number) < 0:
                     #     print(f'庫存不足: {item.Products} --- {item.Number} --- {branch_inventory.Number}')
                     #     return JsonResponse({'status': 'error',
@@ -108,8 +108,7 @@ def submit_order(request):
                         Total=item.Total,
                         Order=order  
                     ).save()
-                    print(f'shopping_cart2: {shopping_cart}')
-                    
+
                 ShoppingCartDetails.objects.filter(ShoppingCart=shopping_cart).delete()
                 shopping_cart.delete()
                 latest_order = Orders.objects.latest('id')
@@ -118,9 +117,9 @@ def submit_order(request):
                 Delivery_method_display = latest_order.get_Delivery_method_display()
                 return JsonResponse({'status': 'success', 'message': 'Order submitted successfully.'})
         except ValidationError as e:
-            print("庫存不足，無法完成訂單111")
-            return JsonResponse({'status': 'error', 'message': str(e)})
+            return JsonResponse({'status': 'error', 'message': str('庫存不足，無法完成訂單')}, status=400)  
         except Exception as e:
+            print(e)
             return JsonResponse({'status': 'error', 'message': str(e)})
             
     return JsonResponse({'status': 'error', 'message': 'Invalid request'})
