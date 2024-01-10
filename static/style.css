@@ -8,6 +8,17 @@ label{
     padding-top: 5px;
 }
 
+.navbar-dark .navbar-brand {
+    color: black;
+}
+
+.navbar-dark .navbar-nav .nav-link.active, .navbar-dark .navbar-nav .show > .nav-link {
+    color: black;
+}
+.navbar-dark .navbar-nav .nav-link {
+    color: black;
+}
+
 @media (max-width: 768px) {
 
     .control-label {
