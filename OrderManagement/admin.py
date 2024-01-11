@@ -18,6 +18,19 @@ class ShoppingCartDetailsAdmin(admin.ModelAdmin):
     list_filter = ['id', 'Products', 'Number', 'Time']
     ordering = ['Time']
 
+class OrderDetailsInline(admin.TabularInline):  # 或者使用 admin.StackedInline
+    model = OrderDetails
+    extra = 1
+    def get_fields(self, request, obj=None):
+        return ['Products', 'Price', 'Total']
+    def get_formset(self, request, obj=None, **kwargs):
+        formset = super(OrderDetailsInline, self).get_formset(request, obj, **kwargs)
+        for form in formset.form.base_fields:
+            if form == 'Branch':
+                formset.form.base_fields[form].disabled = True
+                formset.form.base_fields[form].initial = request.user.branch
+        return formset
+
 # ['Product','Number','Time','Price','Total']
 @admin.register(Orders)
 class OrdersAdmin(admin.ModelAdmin):
@@ -26,6 +39,7 @@ class OrdersAdmin(admin.ModelAdmin):
     list_filter = ['User','Time','Delivery_method','Delivery_state','Payment_method','Payment_time','Total']
     readonly_fields = ('User', 'Time', 'Delivery_method','Payment_method','Total')  
     ordering = ['Time']
+    inlines = [OrderDetailsInline]
     def detail_info(self, obj):
         details = OrderDetails.objects.filter(Order=obj)
         # 格式化顯示資料

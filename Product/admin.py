@@ -75,32 +75,6 @@ class ProductsResource(resources.ModelResource):
         fields = ('Category_name', 'Item_name', 'Price', 'Import_price', 'Specification', 'Sh')
         import_id_fields = ("Item_name",)
 
-
-class RestockResource(resources.ModelResource):
-    product_name = fields.Field(
-        column_name='product_name',
-        attribute='Product',
-        widget=ForeignKeyWidget(Products, 'product_name')
-    )
-
-    user_id = fields.Field(
-        column_name='user_id',
-        attribute='User',
-        widget=ForeignKeyWidget(User, 'id')
-    )
-
-    branch_id = fields.Field(
-        column_name='branch_id',
-        attribute='Brunchs',
-        widget=ForeignKeyWidget(Branchs, 'id')
-    )
-    
-    class Meta:
-        model = RestockDetail
-        import_id_fields = ('id',)
-        fields = ('Item_name', 'ExpiryDate', 'Number')
-        import_id_fields = ("Item_name",)
-
 class ItemImageDetailInline(admin.TabularInline):  # 或者使用 admin.StackedInline
     model = ItemImage
     extra = 1
