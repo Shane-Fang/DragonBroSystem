@@ -1,0 +1,30 @@
+label{
+    margin: 0px;
+}
+
+.control-label{
+    text-align: right;
+    font-weight: 600;
+    padding-top: 5px;
+}
+
+.navbar-dark .navbar-brand {
+    color: black;
+}
+
+.navbar-dark .navbar-nav .nav-link.active, .navbar-dark .navbar-nav .show > .nav-link {
+    color: black;
+}
+.navbar-dark .navbar-nav .nav-link {
+    color: black;
+}
+
+@media (max-width: 768px) {
+
+    .control-label {
+        text-align: left;
+        font-weight: 600;
+        padding-top: 5px;
+    }
+
+}
