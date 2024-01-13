@@ -33,7 +33,7 @@
       <h5>價格： {{branch.Products.Price}}</h5>
       <!-- <h3>商品介紹</h3> -->
       <h5>備註： {{branch.Products.Specification}}</h5>
-      <h5>庫存： {{branch.Number}}</h5>
+      {% comment %} <h5>庫存： {{branch.Number}}</h5> {% endcomment %}
       <form action="{% url 'Product:add_to_cart_view' branch=branch.Branch.pk product_id=branch.Products.id %}" method="post">
         {% csrf_token %}
 

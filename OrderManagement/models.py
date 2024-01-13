@@ -112,15 +112,15 @@ class OrderDetails(models.Model):
         verbose_name_plural = '訂單明細'  
     def save(self, *args, **kwargs):
         if not self.pk or 'Number' in kwargs.get('update_fields', []):
-            branch_inventory = Branch_Inventory.objects.filter(Products=self.Products).first()
+            branch_inventory = Branch_Inventory.objects.filter(Products=self.Products,Branch=self.Order.branch).first()
             if branch_inventory: 
                 new_quantity = branch_inventory.Number - self.Number
-                if new_quantity < 0:
-                    print("庫存不足，無法完成訂單")
-                    raise ValidationError("庫存不足，無法完成訂單")
-                else:
-                    branch_inventory.Number = new_quantity
-                    branch_inventory.save()
+                # if new_quantity < 0:
+                #     print("庫存不足，無法完成訂單")
+                #     raise ValidationError("庫存不足，無法完成訂單")
+                # else:
+                branch_inventory.Number = new_quantity
+                branch_inventory.save()
             else:
                 raise ValidationError("找不到相關的庫存記錄")
         super().save(*args, **kwargs)
