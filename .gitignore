@@ -1,0 +1,12 @@
+sql/**
+csvfile/**
+
+*.log
+*.csv
+*.xlsx
+*.root
+*.zip
+*.7z
+*.png
+*.jpg
+*.sqlite3
