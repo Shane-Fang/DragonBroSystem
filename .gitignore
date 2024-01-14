@@ -10,4 +10,4 @@ csvfile/**
 *.png
 *.jpg
 *.sqlite3
-*.sql
+db.sqlite3
