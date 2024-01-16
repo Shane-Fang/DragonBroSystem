@@ -25,7 +25,9 @@ SECRET_KEY = 'django-insecure-h434spky+u3h_83)ctbp@%0lylg9^^ol(%h7o_u&31m1y*uf-)
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 # DEBUG = False
-ALLOWED_HOSTS = ['34.80.162.79']# , 'bathue88.com', 'www.bathue88.com' , 'google.com']
+ALLOWED_HOSTS = ['35.221.252.0', '34.111.22.133' , 'bathue88.com', 'www.bathue88.com' , 'google.com', '127.0.0.1']
+CSRF_TRUSTED_ORIGINS = [ 'https://bathue88.com', ]
+CORS_ORIGIN_WHITELIST = ['http://bathue88.com',]
 # ALLOWED_HOSTS = ['*']
 # AUTH_USER_MODEL = 'member.User'
 
