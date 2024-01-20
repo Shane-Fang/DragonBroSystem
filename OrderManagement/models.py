@@ -57,8 +57,13 @@ class ShoppingCartDetails(models.Model):
 
 class Orders(models.Model):
     State_CHOICES = (
-        (0, '代處理'),
-        (1, '已處理'),
+        (0, '未處理'),
+        (1, '待出貨'),
+        (2, '待付款'),
+        (3, '代收貨'),
+        (4, '完成訂單'),
+        (5, '退貨'),
+        (6, '退款'),
     )
     Delivery_CHOICES = (
         (0, '自取'),
@@ -100,11 +105,32 @@ class Orders(models.Model):
         )
 
 class OrderDetails(models.Model):
+    State_CHOICES = (
+        (0, '未處理'),
+        (1, '待出貨'),
+        (2, '待付款'),
+        (3, '代收貨'),
+        (4, '完成訂單'),
+        (5, '退貨'),
+        (6, '退款'),
+    )
+    Delivery_CHOICES = (
+        (0, '自取'),
+        (1, '寄送'),
+    )
+    Payment_CHOICES = (
+        (0, '親自付款'),
+        (1, '貨到付款'),
+    )
     Order = models.ForeignKey(Orders, on_delete=models.CASCADE,verbose_name='訂單編號')
     Products=models.ForeignKey(Products,on_delete=models.DO_NOTHING,verbose_name='商品')
     Number=models.IntegerField(verbose_name="數量")
     Price=models.IntegerField(null=False,verbose_name='價格')
     Total=models.IntegerField(null=False,verbose_name='總價格')
+    Delivery_method=models.IntegerField(choices=Delivery_CHOICES,default=1,verbose_name="運送方式",null=True, blank=True)
+    Delivery_state=models.IntegerField(choices=State_CHOICES,default=1,verbose_name="運送狀態",null=True, blank=True)
+    Payment_method=models.IntegerField(choices=Payment_CHOICES,default=1,verbose_name="付款方式",null=True, blank=True)
+    Payment_time=models.DateTimeField(null=True, blank=True,verbose_name='付款時間')
     def __str__(self):
         return str(self.pk)
     class Meta:

@@ -106,7 +106,10 @@ def submit_order(request):
                         Number=item.Number,
                         Price=item.Price,
                         Total=item.Total,
-                        Order=order  
+                        Order=order,
+                        Delivery_method=request.POST['Delivery'],
+                        Delivery_state=0,
+                        Payment_method=request.POST['Payment_method'],  
                     ).save()
 
                 ShoppingCartDetails.objects.filter(ShoppingCart=shopping_cart).delete()
@@ -119,7 +122,6 @@ def submit_order(request):
         except ValidationError as e:
             return JsonResponse({'status': 'error', 'message': str('庫存不足，無法完成訂單')}, status=400)  
         except Exception as e:
-            print(e)
             return JsonResponse({'status': 'error', 'message': str(e)})
             
     return JsonResponse({'status': 'error', 'message': 'Invalid request'})

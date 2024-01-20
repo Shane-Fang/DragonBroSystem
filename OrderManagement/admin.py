@@ -18,11 +18,12 @@ class ShoppingCartDetailsAdmin(admin.ModelAdmin):
     list_filter = ['id', 'Products', 'Number', 'Time']
     ordering = ['Time']
 
-class OrderDetailsInline(admin.TabularInline):  # 或者使用 admin.StackedInline
+class OrderDetailsInline(admin.TabularInline):# 或者使用 admin.StackedInline
     model = OrderDetails
     extra = 1
+    # max_num = 0
     def get_fields(self, request, obj=None):
-        return ['Products', 'Price', 'Total']
+        return ['Products', 'Delivery_method', 'Delivery_state', 'Payment_method', 'Payment_time', 'Price', 'Total']
     def get_formset(self, request, obj=None, **kwargs):
         formset = super(OrderDetailsInline, self).get_formset(request, obj, **kwargs)
         for form in formset.form.base_fields:
@@ -30,6 +31,12 @@ class OrderDetailsInline(admin.TabularInline):  # 或者使用 admin.StackedInli
                 formset.form.base_fields[form].disabled = True
                 formset.form.base_fields[form].initial = request.user.branch
         return formset
+
+    def has_delete_permission(self, request, obj=None):
+        return False
+
+    def get_readonly_fields(self, request, obj=None):
+        return ['Products', 'Price', 'Total']
 
 # ['Product','Number','Time','Price','Total']
 @admin.register(Orders)
