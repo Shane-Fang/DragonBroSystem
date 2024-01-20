@@ -1,8 +1,70 @@
 from django.contrib import admin
 from .models import ShoppingCart,ShoppingCartDetails,Orders,OrderDetails,OrderLog
+from Product.models import Products
 from django.utils.html import format_html,format_html_join
 from django.utils.safestring import mark_safe
+from import_export.admin import ExportMixin
+from import_export import resources, fields
+import tablib
+from django.http import HttpResponse
+import datetime
+from django.utils.translation import gettext_lazy as _
 # Register your models here.
+class MonthFilter(admin.SimpleListFilter):
+    title = _('month')  # 顯示的標題
+    parameter_name = 'month'  # URL 參數名稱
+    def lookups(self, request, model_admin):
+        return (
+            ('1', _('January')),
+            ('2', _('February')),
+            ('3', _('March')),
+            ('4', _('April')),
+            ('5', _('May')),
+            ('6', _('June')),
+            ('7', _('July')),
+            ('8', _('August')),
+            ('9', _('September')),
+            ('10', _('October')),
+            ('11', _('November')),
+            ('12', _('December')),
+        )
+
+    def queryset(self, request, queryset):
+        if self.value():
+            year = datetime.date.today().year
+            return queryset.filter(Time__year=year, Time__month=self.value())
+        return queryset
+def export_to_excel(modeladmin, request, queryset):
+    dataset = tablib.Dataset()
+    dataset.headers = ['Order ID', 'User', 'Order Time', 'Delivery Method', 'Order Total', 'Product', 'Price', 'Quantity', 'Detail Total','成本價']
+
+    total_price = 0  # 初始化總計變量
+
+    for order in queryset:
+        # 確保時間沒有時區信息
+        time_no_tz = order.Time.replace(tzinfo=None) if order.Time else order.Time
+
+        details = OrderDetails.objects.filter(Order=order)
+        if details:
+            for detail in details:
+                # product = Products.objects.filter(Item_name=detail.Products)
+                dataset.append([order.id, order.User, time_no_tz, order.Delivery_method, order.Total, detail.Products, detail.Price, detail.Number, detail.Total,detail.Products.Import_price])
+                total_price += detail.Price  # 累加 Price
+        else:
+            dataset.append([order.id, order.User, time_no_tz, order.Delivery_method, order.Total, '', '', '', ''])
+
+    # 在數據集最後添加總計行
+    dataset.append(['', '', '', '', 'Total Price:', total_price, '', '', '', ''])
+
+    response = HttpResponse(dataset.xlsx, content_type='application/vnd.ms-excel')
+    response['Content-Disposition'] = 'attachment; filename="orders_with_details.xlsx"'
+    return response
+
+export_to_excel.short_description = "Export selected orders and details to Excel"
+
+
+
+
 @admin.register(ShoppingCart)
 class ShoppingCartAdmin(admin.ModelAdmin):
     list_display = ['id', 'User', 'Total']
@@ -40,13 +102,15 @@ class OrderDetailsInline(admin.TabularInline):# 或者使用 admin.StackedInline
 
 # ['Product','Number','Time','Price','Total']
 @admin.register(Orders)
-class OrdersAdmin(admin.ModelAdmin):
+class OrdersAdmin(ExportMixin, admin.ModelAdmin):
     list_display =  ['id', 'User', 'Time', 'Delivery_method', 'Delivery_state', 'Payment_method', 'Payment_time', 'Address', 'Total','detail_info']
     search_fields = ['User','Time','Delivery_method','Delivery_state','Payment_method','Payment_time','Total']
-    list_filter = ['User','Time','Delivery_method','Delivery_state','Payment_method','Payment_time','Total']
+    # list_filter = ['User','Time','Delivery_method','Delivery_state','Payment_method','Payment_time','Total']
+    list_filter = (MonthFilter,) 
     readonly_fields = ('User', 'Time', 'Delivery_method','Payment_method','Total')  
     ordering = ['Time']
     inlines = [OrderDetailsInline]
+    actions = [export_to_excel]
     def detail_info(self, obj):
         details = OrderDetails.objects.filter(Order=obj)
         # 格式化顯示資料
