@@ -36,31 +36,59 @@ class MonthFilter(admin.SimpleListFilter):
         return queryset
 def export_to_excel(modeladmin, request, queryset):
     dataset = tablib.Dataset()
-    dataset.headers = ['Order ID', 'User', 'Order Time', 'Delivery Method', 'Order Total', 'Product', 'Price', 'Quantity', 'Detail Total','成本價']
-
+       
     total_price = 0  # 初始化總計變量
-
+    total_profit=0
     for order in queryset:
         # 確保時間沒有時區信息
         time_no_tz = order.Time.replace(tzinfo=None) if order.Time else order.Time
-
         details = OrderDetails.objects.filter(Order=order)
         if details:
             for detail in details:
                 # product = Products.objects.filter(Item_name=detail.Products)
-                dataset.append([order.id, order.User, time_no_tz, order.Delivery_method, order.Total, detail.Products, detail.Price, detail.Number, detail.Total,detail.Products.Import_price])
-                total_price += detail.Price  # 累加 Price
-        else:
-            dataset.append([order.id, order.User, time_no_tz, order.Delivery_method, order.Total, '', '', '', ''])
-
-    # 在數據集最後添加總計行
-    dataset.append(['', '', '', '', 'Total Price:', total_price, '', '', '', ''])
-
+                if request.user.is_superuser:
+                    profit=(detail.Price-detail.Products.Import_price)*detail.Number
+                    dataset.append([order.id,
+                                    order.User,
+                                    time_no_tz,
+                                    order.get_Delivery_method_display(),
+                                    order.get_Payment_method_display(),
+                                    order.get_Delivery_state_display(),
+                                    detail.Products,
+                                    detail.Price,
+                                    detail.Number,
+                                    detail.Total,
+                                    detail.Products.Import_price,
+                                    order.branch,
+                                    profit])
+                    total_price += detail.Total  # 累加 Price
+                    total_profit +=  profit
+                else:
+                    dataset.append([order.id,
+                                    order.User,
+                                    time_no_tz,
+                                    order.get_Delivery_method_display(),
+                                    order.get_Payment_method_display(),
+                                    order.get_Delivery_state_display(),
+                                    detail.Products,
+                                    detail.Price,
+                                    detail.Number,
+                                    detail.Total,
+                                    detail.Products.Import_price,
+                                    order.branch
+                                    ])
+                    total_price += detail.Total  # 累加 Price
+    if request.user.is_superuser:
+        dataset.headers = ['訂單編號', '客戶', '下單時間', '運送方式','付款方式','訂單狀態', '商品名稱', '商品價格', '訂單數量', '總價','成本價','店名','利潤']
+        dataset.append(['', '', '', '', '', '', '', '', '總價：', total_price, '', '利潤：', total_profit])
+    else:
+        dataset.headers = ['訂單編號', '客戶', '下單時間', '運送方式','付款方式','訂單狀態', '商品名稱', '商品價格', '訂單數量', '總價','成本價','店名']
+        dataset.append(['', '', '', '', '', '', '', '', '總價：', total_price, '', ''])
     response = HttpResponse(dataset.xlsx, content_type='application/vnd.ms-excel')
     response['Content-Disposition'] = 'attachment; filename="orders_with_details.xlsx"'
     return response
 
-export_to_excel.short_description = "Export selected orders and details to Excel"
+export_to_excel.short_description = "報表下載"
 
 
 
@@ -120,6 +148,11 @@ class OrdersAdmin(ExportMixin, admin.ModelAdmin):
             ((detail.Products, detail.Price, detail.Number, detail.Total) for detail in details)
         ) if details else 'No details'
     detail_info.short_description = '訂單明細'
+    def get_queryset(self, request):
+        qs = super().get_queryset(request)
+        if request.user.is_superuser:
+            return qs  # 如果是超级用户，返回所有订单
+        return qs.filter(branch=request.user.branch) 
 # ['User','Time','Delivery_method','Delivery_state','Payment_method','Payment_time','Total']
 
 @admin.register(OrderDetails)
