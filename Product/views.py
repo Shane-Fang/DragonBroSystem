@@ -29,7 +29,6 @@ def products_view(request,branch=None,detail=None):
         product_info['Picture'] = image_paths
         products_detail[product.Item_name] = product_info
         products_detail_list = list(products_detail.values())
-        print(products_detail_list)
         paginator = Paginator(products_detail_list, 24) #每页显示 2 条数据
         # paginator = Paginator(products_detail_list, 5)
         page_number = request.GET.get('page')
