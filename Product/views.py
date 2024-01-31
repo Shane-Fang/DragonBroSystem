@@ -5,6 +5,7 @@ from .models import Branch_Inventory,Products,ItemImage, Categories
 from OrderManagement.models import ShoppingCart,ShoppingCartDetails
 from member.models import Branchs
 from django.http import JsonResponse
+from django.core.paginator import Paginator
 
 def products_view(request,branch=None,detail=None):
     
@@ -15,6 +16,7 @@ def products_view(request,branch=None,detail=None):
     for inventory_item in products:
         product = inventory_item.Products
         product_info = {}
+        product_info['Product'] = product
         product_info['Number'] = inventory_item.Number
         product_info['Price'] = product.Price
         product_info['Specification'] = product.Specification
@@ -26,11 +28,19 @@ def products_view(request,branch=None,detail=None):
             image_paths.append(image.Image_path.url)
         product_info['Picture'] = image_paths
         products_detail[product.Item_name] = product_info
+        products_detail_list = list(products_detail.values())
+        print(products_detail_list)
+        paginator = Paginator(products_detail_list, 24) #每页显示 2 条数据
+        # paginator = Paginator(products_detail_list, 5)
+        page_number = request.GET.get('page')
+        page_obj = paginator.get_page(page_number)
     context={
         'branch':branch,
         'title':f"榮哥海鮮-{branch.Name}",
         'products_detail':products_detail,
         'categories': categories,
+        'page_number': page_number,
+        'page_obj': page_obj,
     }
     return render(request, 'products_view.html',context)
 
