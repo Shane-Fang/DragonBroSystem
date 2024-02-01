@@ -91,7 +91,6 @@ def submit_order(request):
                     Total=shopping_cart.Total,
                     branch=shopping_cart.branch
                 )
-                order.save()
                 # 你的数据库操作代码
                 content_type_obj = ContentType.objects.get(id=16)                
                 restock = Restock.objects.create(
@@ -103,7 +102,7 @@ def submit_order(request):
                     object_id=order,
                     refID=order,
                 )
-                restock.save()
+                print(ShoppingCartDetails.objects.filter(ShoppingCart=shopping_cart))
                 for item in ShoppingCartDetails.objects.filter(ShoppingCart=shopping_cart):
                     OrderDetails.objects.create(
                         Order=order,
@@ -114,14 +113,13 @@ def submit_order(request):
                         Delivery_method=request.POST['Delivery'],
                         Delivery_state=0,
                         Payment_method=request.POST['Payment_method'],  
-                    ).save()
+                    )
                     RestockDetail.objects.create(
                         Product=item.Products,
                         Restock=restock,
                         Number=item.Number,
                         Branch=shopping_cart.branch,
-                    ).save()
-                    # print(item.Products)
+                    )
                 ShoppingCartDetails.objects.filter(ShoppingCart=shopping_cart).delete()
                 shopping_cart.delete()
                 latest_order = Orders.objects.latest('id')

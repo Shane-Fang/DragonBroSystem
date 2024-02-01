@@ -30,7 +30,6 @@ def import_csv_data(file_path, user_id, branch_id):
                 Type=0,
             )
             for row in reader:
-                print(row)
                 if row['Item_name'] != '':
                     Item_name = row['Item_name']
                     number = int(row['Number'])
@@ -39,7 +38,7 @@ def import_csv_data(file_path, user_id, branch_id):
                     # 查找或创建产品记录
                     product, created = Products.objects.get_or_create(Item_name=Item_name)
 
-                    print(f'product id: {product.id}, restock id: {restock.id}')
+                    # print(f'product id: {product.id}, restock id: {restock.id}')
 
                     # 创建RestockDetail记录
                     RestockDetail.objects.create(

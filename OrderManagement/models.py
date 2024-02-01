@@ -138,8 +138,8 @@ class OrderDetails(models.Model):
                 #     print("庫存不足，無法完成訂單")
                 #     raise ValidationError("庫存不足，無法完成訂單")
                 # else:
-                branch_inventory.Number = new_quantity
-                branch_inventory.save()
+                # branch_inventory.Number = new_quantity
+                # branch_inventory.save()
             else:
                 raise ValidationError("找不到相關的庫存記錄")
         super().save(*args, **kwargs)
