@@ -3,13 +3,14 @@ from django.shortcuts import render,redirect
 from .models import ShoppingCart,ShoppingCartDetails,Orders,OrderDetails
 from django.contrib.auth.models import User
 from member.models import Address, Branchs
-from Product.models import Products, Branch_Inventory
+from Product.models import Products, Branch_Inventory,Restock,RestockDetail
 from django.http import JsonResponse
 from django.views.decorators.http import require_POST
 from django.db import transaction
 from django.views.decorators.csrf import csrf_exempt
 from collections import defaultdict
 from django.contrib import messages
+from django.contrib.contenttypes.models import ContentType
 # Create your views here.
 def cart(request):
     carts_by_branch = defaultdict(list)
@@ -92,26 +93,35 @@ def submit_order(request):
                 )
                 order.save()
                 # 你的数据库操作代码
-
+                content_type_obj = ContentType.objects.get(id=16)                
+                restock = Restock.objects.create(
+                    Category=2,
+                    Branch=shopping_cart.branch,
+                    User=shopping_cart.User,
+                    Type=1,
+                    content_type=content_type_obj,
+                    object_id=order,
+                    refID=order,
+                )
+                restock.save()
                 for item in ShoppingCartDetails.objects.filter(ShoppingCart=shopping_cart):
-                    # branch_inventory = Branch_Inventory.objects.get(Products=item.Products)
-                    # branch_inventories = Branch_Inventory.objects.filter(Products=item.Products)
-                    # if branch_inventory or (branch_inventory.Number - item.Number) < 0:
-                    #     print(f'庫存不足: {item.Products} --- {item.Number} --- {branch_inventory.Number}')
-                    #     return JsonResponse({'status': 'error',
-                    #                           'message': f'{item.Products} 商品庫存不足\n還缺{item.Number - branch_inventory.Number}份'})
-                    # else:    
                     OrderDetails.objects.create(
+                        Order=order,
                         Products=item.Products,
                         Number=item.Number,
                         Price=item.Price,
                         Total=item.Total,
-                        Order=order,
                         Delivery_method=request.POST['Delivery'],
                         Delivery_state=0,
                         Payment_method=request.POST['Payment_method'],  
                     ).save()
-
+                    RestockDetail.objects.create(
+                        Product=item.Products,
+                        Restock=restock,
+                        Number=item.Number,
+                        Branch=shopping_cart.branch,
+                    ).save()
+                    # print(item.Products)
                 ShoppingCartDetails.objects.filter(ShoppingCart=shopping_cart).delete()
                 shopping_cart.delete()
                 latest_order = Orders.objects.latest('id')

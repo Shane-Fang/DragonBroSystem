@@ -162,7 +162,7 @@ class CSVImportForm(forms.Form):
 class RestockAdmin(admin.ModelAdmin):
     change_list_template = "admin/Restock_changelist.html"
     form = RestockForm
-    list_display = ['id', 'Category', 'Time', 'Branch', 'User', 'Type', 'content_type', 'object_id']
+    list_display = ['id', 'Category', 'Time', 'Branch', 'User', 'Type', 'content_type', 'object_id','refID']
     # change_form_template = 'admin/restock.html'
     inlines = [RestockDetailInline]
     class Media:

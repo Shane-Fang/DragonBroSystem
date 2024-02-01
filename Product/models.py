@@ -171,7 +171,7 @@ class Restock(models.Model):
 class RestockDetail(models.Model):
     Product=models.ForeignKey(Products,on_delete=models.DO_NOTHING,verbose_name='商品')
     Restock=models.ForeignKey(Restock,on_delete=models.CASCADE,verbose_name='交易')
-    ExpiryDate=models.DateField(verbose_name='有效日期')
+    ExpiryDate=models.DateField(verbose_name='有效日期',null=True, blank=True)
     Number=models.IntegerField(verbose_name="數量")
     Remain=models.IntegerField(null=True, blank=True,verbose_name="剩餘數量")
     Branch=models.ForeignKey('member.Branchs', on_delete=models.DO_NOTHING,verbose_name="分店ID",null=True, blank=True)
@@ -196,6 +196,23 @@ class RestockDetail(models.Model):
             else:
                 inventory.Number += self.Number
             inventory.save()
+        branch_Inventory = Branch_Inventory.objects.filter(Branch=self.Branch,Products=self.Product).first()
+        if self.Restock.Type == 0 and branch_Inventory.Number<0:
+            latest_expiry_restock_detail = RestockDetail.objects.filter(Product=self.Product).order_by('-ExpiryDate').first()
+            if latest_expiry_restock_detail:
+                restocks = Restock.objects.filter(Type=1)
+                restock_detail_ids = RestockDetail.objects.filter(Restock__in=restocks).order_by('-pk').first()
+                if self.Number>restock_detail_ids.Number:
+                    number=restock_detail_ids.Number
+                elif self.Number<restock_detail_ids.Number:
+                    number=self.Number
+                inventory = RestockDetail_relation(
+                    InID=self.pk,
+                    OutID=restock_detail_ids.pk,
+                    Number=number
+                )
+                inventory.save()
+
 class RestockDetail_relation(models.Model):
     InID=models.ForeignKey(RestockDetail,on_delete=models.DO_NOTHING,verbose_name='InID',related_name='InID')
     OutID=models.ForeignKey(RestockDetail,on_delete=models.DO_NOTHING,verbose_name='OutID',related_name='OutID')
@@ -205,3 +222,6 @@ class RestockDetail_relation(models.Model):
         verbose_name_plural = '進出貨管理明細管理'  # 中文名稱
     # def __str__(self):
     #     return self.Category_name
+    # def save(self, *args, **kwargs):
+    #     # 先存檔RestockDetail資料
+    #     super(RestockDetail_relation, self).save(*args, **kwargs)

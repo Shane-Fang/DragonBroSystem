@@ -1,6 +1,6 @@
 from django.db import models
 from member.models import User,Branchs
-from Product.models import Products,Branch_Inventory,Restock,ContentType
+from Product.models import Products,Branch_Inventory,Restock,ContentType,RestockDetail
 from django.db.models import Sum
 from django.core.exceptions import ValidationError
 # Create your models here.
@@ -94,15 +94,8 @@ class Orders(models.Model):
             User=self.User, 
             Delivery_state=self.Delivery_state
         )
-        content_type_obj = ContentType.objects.get(id=16)
-        Restock.objects.create(
-            Category=2,
-            Branch=self.branch,
-            User=self.User, 
-            Type=1,
-            content_type=content_type_obj,
-            object_id=self.id
-        )
+
+
 
 class OrderDetails(models.Model):
     State_CHOICES = (
@@ -150,6 +143,7 @@ class OrderDetails(models.Model):
             else:
                 raise ValidationError("找不到相關的庫存記錄")
         super().save(*args, **kwargs)
+
 
 
 class OrderLog(models.Model):
