@@ -11,6 +11,7 @@ from django.views.decorators.csrf import csrf_exempt
 from collections import defaultdict
 from django.contrib import messages
 from django.contrib.contenttypes.models import ContentType
+
 # Create your views here.
 def cart(request):
     carts_by_branch = defaultdict(list)
@@ -119,6 +120,7 @@ def submit_order(request):
                         Restock=restock,
                         Number=item.Number,
                         Branch=shopping_cart.branch,
+                        Remain= -(item.Number),
                     )
                 ShoppingCartDetails.objects.filter(ShoppingCart=shopping_cart).delete()
                 shopping_cart.delete()
@@ -195,3 +197,4 @@ def past_order_details(request, order_id):
         'details_with_product_names': details_with_product_names
     }
     return render(request, 'past_order_details.html', context)
+

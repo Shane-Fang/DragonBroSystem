@@ -50,9 +50,6 @@ def import_csv_data(file_path, user_id, branch_id):
                         Branch_id=branch_id
                     )
 
-                    # 查找或创建Branch_Inventory记录
-                    branch_inventory, _ = Branch_Inventory.objects.get_or_create(Branch_id=branch_id, Products_id=product.id)
-                    branch_inventory.save()
 class CategoriesResource(resources.ModelResource):
     class Meta:
         model = Categories
