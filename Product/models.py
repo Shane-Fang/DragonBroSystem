@@ -203,8 +203,10 @@ class RestockDetail(models.Model):
 
         elif self.Restock.Category == 0 and branch_Inventory.Number<0: # 進貨且庫存欠貨邏輯
             print(f'進貨且庫存欠貨邏輯')
-            import_product = RestockDetail.objects.filter(Product=self.Product).order_by('-Remain').first()
-            print(f'import product: {import_product}')
+            RD = RestockDetail.objects.filter(Product=self.Product).order_by('pk')
+            for item in RD:
+                if Restock.objects.get(pk=item.Restock.id).Type == 1: # 只與出貨Restock計算
+                    print(f'{self} 出貨有效日期:{item.ExpiryDate} 出貨數量:{self.Number} 匹配前進貨remain:{item.Remain} 匹配完進貨remain:{0} relation i o N:{self.id} {item.id} {item.Remain}')
 
         elif self.Restock.Category == 2 and branch_Inventory.Number>0: # 出貨且庫存有貨邏輯
             print(f'出貨且庫存有貨邏輯')
@@ -218,8 +220,8 @@ class RestockDetail(models.Model):
                     if n > item.Remain: # 出貨number > 進貨remain --> 進貨remain歸零, 進貨remain寫進relation, 出貨number-進貨remain, inventory number-進貨remain
                         print(f'{self} 進貨有效日期:{item.ExpiryDate} 出貨數量:{self.Number} 匹配前進貨remain:{item.Remain} 匹配完進貨remain:{0} relation i o N:{self.id} {item.id} {item.Remain}')
                         Rr = RestockDetail_relation.objects.create(
-                            InID=self,
-                            OutID=item,
+                            InID=item,
+                            OutID=self,
                             Number=item.Remain
                         )
                         n = n - item.Remain
@@ -230,8 +232,8 @@ class RestockDetail(models.Model):
                     if n <= item.Remain: # 出貨number < 進貨remain --> 出貨number寫進relation, 進貨remain-出貨number, inventory number-出貨number
                         print(f'{self} 進貨有效日期:{item.ExpiryDate} 出貨數量:{self.Number} 匹配前進貨remain:{item.Remain} 匹配完進貨remain:{item.Remain-n}')
                         Rr = RestockDetail_relation.objects.create(
-                            InID=self,
-                            OutID=item,
+                            InID=item,
+                            OutID=self,
                             Number=n
                         )
                         item.Remain = item.Remain-n
@@ -257,7 +259,7 @@ class RestockDetail(models.Model):
         elif self.Restock.Category == 2 and branch_Inventory.Number<=0: # 出貨且庫存沒貨邏輯
             print(f'出貨且庫存沒貨邏輯')
             latest_expiry_restock_detail = RestockDetail.objects.filter(Product=self.Product).order_by('ExpiryDate') # 有效日期排序
-            item = latest_expiry_restock_detail.last()
+            item = latest_expiry_restock_detail.last() # 找最新的進貨有效日期並將remain - 進貨number
             print(f'{self} 進貨有效日期:{item.ExpiryDate} 出貨數量:{self.Number} 匹配前進貨remain:{item.Remain}')
             item.Remain = item.Remain - self.Number
             item.save()
