@@ -1,7 +1,7 @@
 import logging
 from django.shortcuts import render,redirect
 from django.contrib.auth.decorators import login_required
-from .models import Branch_Inventory,Products,ItemImage, Categories
+from .models import Branch_Inventory,Products,ItemImage, Categories,RestockDetail
 from OrderManagement.models import ShoppingCart,ShoppingCartDetails
 from member.models import Branchs
 from django.http import JsonResponse
@@ -105,3 +105,7 @@ def update_cart_total(cart):
         total += number * price
     cart.Total = total
     cart.save()
+def get_products_by_branch(request, branch_id):
+    data = list(RestockDetail.objects.filter(Branch_id=branch_id, Remain__gt=0)
+                .values('id', 'Product__Item_name', 'ExpiryDate', 'Remain','Product'))
+    return JsonResponse(data, safe=False)
