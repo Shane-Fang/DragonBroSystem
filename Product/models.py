@@ -211,7 +211,7 @@ class RestockDetail(models.Model):
             for item in RD:
                 if Restock.objects.get(pk=item.Restock.id).Type == 1: # 只與出貨Restock計算
                     
-                    if n > -(item.Remain):
+                    if n >= -(item.Remain):
                         print('進貨remain > 出貨remain')
                         print(f'{self} 進貨有效日期:{self.ExpiryDate} 匹配前進貨remain:{self.Remain} 匹配前出貨remain:{item.Remain} {item}')
                         
