@@ -68,7 +68,7 @@ class ProductsResource(resources.ModelResource):
     class Meta:
         model = Products
         exclude = ('id',)
-        fields = ('Category_name', 'Item_name', 'Price', 'Import_price', 'Specification', 'Sh')
+        fields = ('Category_name', 'Item_name', 'Price',  'Specification', 'Sh')
         import_id_fields = ("Item_name",)
 
 class ItemImageDetailInline(admin.TabularInline):  # 或者使用 admin.StackedInline
@@ -88,9 +88,9 @@ class CategoriesAdmin(ImportExportModelAdmin):
 @admin.register(Products)
 class ProductsAdmin(ImportExportModelAdmin):
     resource_class=ProductsResource
-    list_display = ['Category','Item_name', 'Import_price','Price','Specification','Sh']
+    list_display = ['Category','Item_name', 'Price','Specification','Sh']
     search_fields = ['Item_name']
-    list_filter = ['Category','Item_name', 'Import_price','Price','Specification','Sh']
+    list_filter = ['Category','Item_name', 'Price','Specification','Sh']
     ordering = ['Sh']
     inlines=[ItemImageDetailInline]
 
@@ -217,7 +217,7 @@ class RestockAdmin(admin.ModelAdmin):
 
 @admin.register(RestockDetail)
 class RestockDetailAdmin(admin.ModelAdmin):
-    list_display = ['id', 'Product', 'Restock', 'ExpiryDate', 'Number', 'Remain', 'Branch']
+    list_display = ['id', 'Product', 'Restock', 'ExpiryDate', 'Number', 'Remain', 'Branch','Import_price']
 
 @admin.register(RestockDetail_relation)
 class RestockDetailRelationAdmin(admin.ModelAdmin):

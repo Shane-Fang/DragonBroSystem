@@ -5,8 +5,13 @@ from django.db.models import Sum
 from django.core.exceptions import ValidationError
 # Create your models here.
 State_CHOICES = (
-        (0, '代處理'),
-        (1, '已處理'),
+        (0, '未處理'),
+        (1, '待出貨'),
+        (2, '待付款'),
+        (3, '代收貨'),
+        (4, '完成訂單'),
+        (5, '退貨'),
+        (6, '退款'),
     )
 Delivery_CHOICES = (
         (0, '自取'),
@@ -56,15 +61,7 @@ class ShoppingCartDetails(models.Model):
         verbose_name_plural = '購物車明細'  # 中文名稱
 
 class Orders(models.Model):
-    State_CHOICES = (
-        (0, '未處理'),
-        (1, '待出貨'),
-        (2, '待付款'),
-        (3, '代收貨'),
-        (4, '完成訂單'),
-        (5, '退貨'),
-        (6, '退款'),
-    )
+
     Delivery_CHOICES = (
         (0, '自取'),
         (1, '寄送'),
@@ -143,12 +140,16 @@ class OrderDetails(models.Model):
             else:
                 raise ValidationError("找不到相關的庫存記錄")
         super().save(*args, **kwargs)
-
+        OrderDetailsLog.objects.create(
+            OrderDetails=self,
+            User=self.Order.User, 
+            Delivery_state=self.Delivery_state
+        )
 
 
 class OrderLog(models.Model):
     Order = models.ForeignKey(Orders, on_delete=models.DO_NOTHING,verbose_name="訂單")
-    User=models.ForeignKey(User, on_delete=models.DO_NOTHING,verbose_name="後台操作的員工")
+    User=models.ForeignKey(User, on_delete=models.DO_NOTHING,verbose_name="下單者")
     Time=models.DateTimeField(auto_now_add=True)
     Delivery_state=models.IntegerField(choices=State_CHOICES,default=1,verbose_name="運送狀態",null=True, blank=True)
     class Meta:
@@ -157,3 +158,12 @@ class OrderLog(models.Model):
     # def __str__(self):
     #     return self.Time
 
+
+class OrderDetailsLog(models.Model):
+    OrderDetails = models.ForeignKey(OrderDetails, on_delete=models.DO_NOTHING,verbose_name="訂單")
+    User=models.ForeignKey(User, on_delete=models.DO_NOTHING,verbose_name="下單者")
+    Time=models.DateTimeField(auto_now_add=True)
+    Delivery_state=models.IntegerField(choices=State_CHOICES,default=1,verbose_name="運送狀態",null=True, blank=True)
+    class Meta:
+        verbose_name = "訂單明細紀錄"
+        verbose_name_plural = '訂單明細紀錄'  # 中文名稱

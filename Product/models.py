@@ -66,7 +66,6 @@ class Products(models.Model):
     Category=models.ForeignKey(Categories, on_delete=models.CASCADE,verbose_name="類別",null=True, blank=True)
     Item_name=models.CharField(max_length=99,verbose_name="貨品名稱",null=True, blank=True)
     Price=models.IntegerField(verbose_name="建議售價")
-    Import_price=models.IntegerField(verbose_name="成本價")
     Specification=models.CharField(max_length=99,verbose_name="規格",null=True, blank=True)
     Sh=models.IntegerField(choices=Sh_CHOICES,default=1,verbose_name="上/下架")
     # def save(self, *args, **kwargs):
@@ -186,6 +185,7 @@ class RestockDetail(models.Model):
     ExpiryDate=models.DateField(verbose_name='有效日期',null=True, blank=True)
     Number=models.IntegerField(verbose_name="數量")
     Remain=models.IntegerField(null=True, blank=True,verbose_name="剩餘數量")
+    Import_price=models.IntegerField(verbose_name="成本價")
     Branch=models.ForeignKey('member.Branchs', on_delete=models.DO_NOTHING,verbose_name="分店ID",null=True, blank=True)
     class Meta:
         verbose_name = "進出貨管理明細"

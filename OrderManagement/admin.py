@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import ShoppingCart,ShoppingCartDetails,Orders,OrderDetails,OrderLog
+from .models import ShoppingCart,ShoppingCartDetails,Orders,OrderDetails,OrderLog,OrderDetailsLog
 from Product.models import Products
 from django.utils.html import format_html,format_html_join
 from django.utils.safestring import mark_safe
@@ -168,4 +168,8 @@ class OrderDetailsAdmin(admin.ModelAdmin):
 class OrderLogAdmin(admin.ModelAdmin):
     list_display = ['id', 'Order', 'User', 'Time', 'Delivery_state']
     readonly_fields = ('Order', 'User', 'Time','Delivery_state')  
+@admin.register(OrderDetailsLog)
+class OrderDetailsLogAdmin(admin.ModelAdmin):
+    list_display = ['id', 'OrderDetails', 'User', 'Time', 'Delivery_state']
+    readonly_fields = ('OrderDetails', 'User', 'Time','Delivery_state')  
 
