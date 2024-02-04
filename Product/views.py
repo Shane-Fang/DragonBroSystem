@@ -107,5 +107,5 @@ def update_cart_total(cart):
     cart.save()
 def get_products_by_branch(request, branch_id):
     data = list(RestockDetail.objects.filter(Branch_id=branch_id, Remain__gt=0)
-                .values('id', 'Product__Item_name', 'ExpiryDate', 'Remain','Product'))
+                .values('id', 'Product__Item_name', 'ExpiryDate', 'Remain','Product', 'Import_price'))
     return JsonResponse(data, safe=False)

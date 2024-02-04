@@ -19,34 +19,41 @@ from django.core.files.storage import FileSystemStorage
 
 def import_csv_data(file_path, user_id, branch_id):
         
-        with open(file_path, 'r', encoding='utf-8-sig') as csvfile:
-            reader = csv.DictReader(csvfile)
-            print(f'csv: {file_path}, user id: {user_id}, branch id: {branch_id}')
-            restock = Restock.objects.create(
+        if 'xlsx' in file_path:
+            data = pd.read_excel(file_path)
+        elif 'csv' in file_path:
+            data = pd.read_csv(file_path)
+        else:
+            data = pd.read_table(file_path)
+
+        restock = Restock.objects.create(
                 Time=datetime.datetime.now(),  # 使用当前时间
                 Category=0,  # 固定上架类别
                 Branch_id=branch_id,
                 User_id=user_id,
                 Type=0,
             )
-            for row in reader:
-                if row['Item_name'] != '':
-                    Item_name = row['Item_name']
-                    number = int(row['Number'])
-                    expiry_date = pd.Timestamp(row['ExpiryDate']).date()  # 假设日期格式为'YYYY-MM-DD'
+        
+        for index, row in data.iterrows():
+            if row['名稱'] != '' or row['名稱'] != pd.NA:
+                Item_Category = row['類別']
+                Item_name = row['名稱']
+                price = int(row['銷售價格'])
+                import_price = int(row['入貨成本'])
+                number = int(row['數量'])
+                expiry_date = pd.Timestamp(row['有效日期']).date()
 
-                    # 查找或创建产品记录
-                    product, created = Products.objects.get_or_create(Item_name=Item_name)
+                product = Products.objects.get(Item_name=Item_name)
 
-                    # print(f'product id: {product.id}, restock id: {restock.id}')
+                print(product.Item_name)
 
-                    # 创建RestockDetail记录
-                    RestockDetail.objects.create(
+                RestockDetail.objects.create(
                         ExpiryDate=expiry_date,
                         Number=number,
                         Remain=number,
-                        Product_id=product.id,
-                        Restock_id=restock.id,
+                        Product_id=product.pk,
+                        Restock_id=restock.pk,
+                        Import_price=import_price,
                         Branch_id=branch_id
                     )
 
@@ -141,7 +148,7 @@ class RestockDetailInline(admin.TabularInline):  # 或者使用 admin.StackedInl
     model = RestockDetail
     extra = 1
     def get_fields(self, request, obj=None):
-        return ['Product', 'Restock', 'ExpiryDate', 'Number', 'Branch']
+        return ['Product', 'Restock', 'ExpiryDate', 'Number', 'Branch', 'Import_price']
     def get_formset(self, request, obj=None, **kwargs):
         formset = super(RestockDetailInline, self).get_formset(request, obj, **kwargs)
         for form in formset.form.base_fields:

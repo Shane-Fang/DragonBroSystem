@@ -63,7 +63,7 @@ class Products(models.Model):
         (0, '下架'),
         (1, '上架'),
     )
-    Category=models.ForeignKey(Categories, on_delete=models.CASCADE,verbose_name="類別",null=True, blank=True)
+    Category=models.ForeignKey(Categories, on_delete=models.DO_NOTHING,verbose_name="類別",null=True, blank=True)
     Item_name=models.CharField(max_length=99,verbose_name="貨品名稱",null=True, blank=True)
     Price=models.IntegerField(verbose_name="建議售價")
     Specification=models.CharField(max_length=99,verbose_name="規格",null=True, blank=True)
@@ -102,7 +102,7 @@ class Branch_Inventory(models.Model):
 
 class ItemImage(models.Model):
     ImageID=models.AutoField(auto_created = True,primary_key=True,verbose_name='圖片id')
-    Products=models.ForeignKey(Products,on_delete=models.DO_NOTHING,verbose_name='商品')
+    Products=models.ForeignKey(Products,on_delete=models.CASCADE,verbose_name='商品')
     Image_path= models.ImageField(
         upload_to=UploadToPathAndRename('image/productimage/'),
         blank=False,
@@ -233,6 +233,12 @@ class RestockDetail(models.Model):
                         item.save()
                         self.Remain = 0
                         break
+
+        elif self.Restock.Category == 1:
+            print(f'BtoB 邏輯')
+            print(f'{self} -- 出貨數量:{self.Number} 出貨有效日期:{self.ExpiryDate} 匹配前出貨remain:{self.Remain}')
+            # print(f'{self} -- 出貨數量:{self.Number} 出貨有效日期:{self.ExpiryDate} 匹配前出貨remain:{self.Remain} relation i o N:{item.id} {self.id} {item.Remain}')
+            # print(f'{self} -- 出貨數量:{self.Number} 出貨有效日期:{self.ExpiryDate} 匹配前出貨remain:{self.Remain} relation i o N:{item.id} {self.id} {item.Remain}')
 
         elif self.Restock.Category == 2 and branch_Inventory.Number>0: # 出貨且庫存有貨邏輯
             print(f'出貨且庫存有貨邏輯')

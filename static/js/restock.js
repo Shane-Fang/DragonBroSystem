@@ -25,10 +25,11 @@ document.addEventListener('DOMContentLoaded', function () {
                 const productSelect = document.getElementById('id_restockdetail_set-0-Product');
                 const expiryDateField = document.getElementById('id_restockdetail_set-0-ExpiryDate');
                 const numberField = document.getElementById('id_restockdetail_set-0-Number');
+                const Import_price_Field = document.getElementById('id_restockdetail_set-0-Import_price');
                 productSelect.innerHTML = '';  // 清空现有选项
         
                 data.forEach(item => {
-                    const option = new Option(item.Product__Item_name + ' - ' + item.ExpiryDate, item.Product);
+                    const option = new Option(item.Product__Item_name + ' - ' + item.ExpiryDate, item.Product, item.Import_price);
                     productSelect.appendChild(option);
                     option.setAttribute('data-id', item.id);
                 });
@@ -38,10 +39,13 @@ document.addEventListener('DOMContentLoaded', function () {
                     
                     // 然后使用这个 itemId 来查找数据
                     const selectedProduct = data.find(item => item.id === itemId);
+                    console.log(selectedProduct);
                     if (selectedProduct) {
                         expiryDateField.value = selectedProduct.ExpiryDate;
                         numberField.value = selectedProduct.Remain;
                         numberField.setAttribute('max', selectedProduct.Remain);
+                        Import_price_Field.value = selectedProduct.Import_price;
+                        Import_price_Field.setAttribute('max', selectedProduct.Import_price);
                     }
                 });
             })
