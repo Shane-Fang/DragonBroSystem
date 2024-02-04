@@ -168,15 +168,7 @@ class Restock(models.Model):
     def save(self, *args, **kwargs):
         # 先存檔RestockDetail資料
         super(Restock, self).save(*args, **kwargs)
-        if self.Category == 1:
-            # 創建或更新Branch_Inventory資料表
-            Receipt = Branchs.objects.get(id=self.object_id)
-            inventory, created = Transpose.objects.get_or_create(
-                BranchsSend=self.Branch,
-                BranchsReceipt=Receipt,
-                User=self.User,
-            )
-            inventory.save()
+        
 
 class RestockDetail(models.Model):
     id = models.UUIDField(default=uuid.uuid4, editable=False, unique=True, primary_key=True)
@@ -185,7 +177,7 @@ class RestockDetail(models.Model):
     ExpiryDate=models.DateField(verbose_name='有效日期',null=True, blank=True)
     Number=models.IntegerField(verbose_name="數量")
     Remain=models.IntegerField(null=True, blank=True,verbose_name="剩餘數量")
-    Import_price=models.IntegerField(verbose_name="成本價")
+    Import_price=models.IntegerField(verbose_name="成本價",null=True, blank=True)
     Branch=models.ForeignKey('member.Branchs', on_delete=models.DO_NOTHING,verbose_name="分店ID",null=True, blank=True)
     class Meta:
         verbose_name = "進出貨管理明細"
@@ -197,6 +189,8 @@ class RestockDetail(models.Model):
         
         if not self.pk:
             self.pk = uuid.uuid4()
+        if not self.Remain:
+            self.Remain = self.Number
         temp_Rr = []
         branch_Inventory, created = Branch_Inventory.objects.get_or_create(Branch=self.Branch, Products=self.Product)
 
@@ -236,7 +230,55 @@ class RestockDetail(models.Model):
 
         elif self.Restock.Category == 1:
             print(f'BtoB 邏輯')
-            print(f'{self} -- 出貨數量:{self.Number} 出貨有效日期:{self.ExpiryDate} 匹配前出貨remain:{self.Remain}')
+            obj_id = Restock.objects.get(pk=self.Restock.id).object_id
+            user = Restock.objects.get(pk=self.Restock.id).User
+            BranchsReceipt = Branchs.objects.get(pk=obj_id)
+            print(f'{self.Branch} -- 出貨數量:{self.Number} 出貨有效日期:{self.ExpiryDate} 匹配前出貨remain:{self.Remain} 匹配前出貨import price:{self.Import_price} 進貨分店: {BranchsReceipt}')
+
+            transpose = Transpose.objects.create(
+                BranchsSend = self.Branch,
+                BranchsReceipt = BranchsReceipt,
+                User = user
+            )
+
+            content_type_obj = ContentType.objects.get(id=7)                
+            BranchsSend_restock = Restock.objects.create(
+                Category=2,
+                Branch=self.Branch,
+                User=user,
+                Type=1,
+                content_type=content_type_obj,
+                object_id=None,
+                refID=transpose,
+            )
+            
+            RestockDetail.objects.create(
+                        Product=self.Product,
+                        Restock=BranchsSend_restock,
+                        Number=self.Number,
+                        Branch=self.Branch,
+                        Remain= -(self.Number),
+                    )
+            
+            BranchsReceipt_restock = Restock.objects.create(
+                Category=0,
+                Branch=BranchsReceipt,
+                User=user,
+                Type=0,
+                content_type=content_type_obj,
+                object_id=None,
+                refID=transpose,
+            )
+            
+            RestockDetail.objects.create(
+                        Product=self.Product,
+                        Restock=BranchsReceipt_restock,
+                        Number=self.Number,
+                        Branch=BranchsReceipt,
+                        Remain= self.Number,
+                        Import_price=self.Import_price,
+                        ExpiryDate=self.ExpiryDate
+                    )
             # print(f'{self} -- 出貨數量:{self.Number} 出貨有效日期:{self.ExpiryDate} 匹配前出貨remain:{self.Remain} relation i o N:{item.id} {self.id} {item.Remain}')
             # print(f'{self} -- 出貨數量:{self.Number} 出貨有效日期:{self.ExpiryDate} 匹配前出貨remain:{self.Remain} relation i o N:{item.id} {self.id} {item.Remain}')
 
