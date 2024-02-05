@@ -57,18 +57,18 @@ class User(AbstractBaseUser, PermissionsMixin):
     # 這裡可以添加任何自定義方法，例如積分方法或其他業務邏輯
 
 
-class Transpose(models.Model):
-    BranchsSend=models.ForeignKey(Branchs,on_delete=models.DO_NOTHING,verbose_name='寄送方', related_name='send_transposes')
-    BranchsReceipt=models.ForeignKey(Branchs,on_delete=models.DO_NOTHING,verbose_name='收獲方', related_name='receipt_transposes')
-    User=models.ForeignKey(User, on_delete=models.CASCADE,verbose_name='會員' ,blank=True, null=True, default=None)
-    # Product=models.ForeignKey(Products,on_delete=models.DO_NOTHING,verbose_name='商品')
-    # Number=models.IntegerField(verbose_name="數量")
-    Time=models.DateTimeField(auto_now_add=True)
-    class Meta:
-        verbose_name = "運送"
-        verbose_name_plural = '運送'  # 中文名稱
-    def __str__(self):
-        return str(self.User)
+# class Transpose(models.Model):
+#     BranchsSend=models.ForeignKey(Branchs,on_delete=models.DO_NOTHING,verbose_name='寄送方', related_name='send_transposes')
+#     BranchsReceipt=models.ForeignKey(Branchs,on_delete=models.DO_NOTHING,verbose_name='收獲方', related_name='receipt_transposes')
+#     User=models.ForeignKey(User, on_delete=models.CASCADE,verbose_name='會員' ,blank=True, null=True, default=None)
+#     # Product=models.ForeignKey(Products,on_delete=models.DO_NOTHING,verbose_name='商品')
+#     # Number=models.IntegerField(verbose_name="數量")
+#     Time=models.DateTimeField(auto_now_add=True)
+#     class Meta:
+#         verbose_name = "運送"
+#         verbose_name_plural = '運送'  # 中文名稱
+#     def __str__(self):
+#         return str(self.User)
     # def save(self, *args, **kwargs):
     #     super().save(*args, **kwargs)
     #     content_type_obj = ContentType.objects.get(id=8)

@@ -6,7 +6,7 @@ import time
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.contenttypes.fields import GenericForeignKey
 from django.core.files.storage import default_storage
-from member.models import Transpose,Branchs
+from member.models import Branchs, User
 from django.db.models.signals import post_save, post_delete
 from django.dispatch import receiver
 import uuid
@@ -168,8 +168,10 @@ class Restock(models.Model):
     def save(self, *args, **kwargs):
         # 先存檔RestockDetail資料
         super(Restock, self).save(*args, **kwargs)
-        
 
+        if self.Category == 1:
+            print(self)
+        
 class RestockDetail(models.Model):
     id = models.UUIDField(default=uuid.uuid4, editable=False, unique=True, primary_key=True)
     Product=models.ForeignKey(Products,on_delete=models.DO_NOTHING,verbose_name='商品')
@@ -230,35 +232,24 @@ class RestockDetail(models.Model):
 
         elif self.Restock.Category == 1:
             print(f'BtoB 邏輯')
-            obj_id = Restock.objects.get(pk=self.Restock.id).object_id
-            user = Restock.objects.get(pk=self.Restock.id).User
+            selfRs = Restock.objects.get(pk=self.Restock.id)
+            obj_id = selfRs.object_id
+            user = selfRs.User
             BranchsReceipt = Branchs.objects.get(pk=obj_id)
             print(f'{self.Branch} -- 出貨數量:{self.Number} 出貨有效日期:{self.ExpiryDate} 匹配前出貨remain:{self.Remain} 匹配前出貨import price:{self.Import_price} 進貨分店: {BranchsReceipt}')
 
             transpose = Transpose.objects.create(
                 BranchsSend = self.Branch,
                 BranchsReceipt = BranchsReceipt,
-                User = user
+                User = user,
+                Restock = selfRs
             )
 
+            select_restockdetail = RestockDetail.objects.get(Product=self.Product, ExpiryDate=self.ExpiryDate, Import_price=self.Import_price, Branch=self.Branch)
+            select_restockdetail.Remain = select_restockdetail.Remain - self.Number
+            select_restockdetail.save()
+
             content_type_obj = ContentType.objects.get(id=7)                
-            BranchsSend_restock = Restock.objects.create(
-                Category=2,
-                Branch=self.Branch,
-                User=user,
-                Type=1,
-                content_type=content_type_obj,
-                object_id=None,
-                refID=transpose,
-            )
-            
-            RestockDetail.objects.create(
-                        Product=self.Product,
-                        Restock=BranchsSend_restock,
-                        Number=self.Number,
-                        Branch=self.Branch,
-                        Remain= -(self.Number),
-                    )
             
             BranchsReceipt_restock = Restock.objects.create(
                 Category=0,
@@ -279,6 +270,8 @@ class RestockDetail(models.Model):
                         Import_price=self.Import_price,
                         ExpiryDate=self.ExpiryDate
                     )
+            
+            self.Remain = 0
             # print(f'{self} -- 出貨數量:{self.Number} 出貨有效日期:{self.ExpiryDate} 匹配前出貨remain:{self.Remain} relation i o N:{item.id} {self.id} {item.Remain}')
             # print(f'{self} -- 出貨數量:{self.Number} 出貨有效日期:{self.ExpiryDate} 匹配前出貨remain:{self.Remain} relation i o N:{item.id} {self.id} {item.Remain}')
 
@@ -348,6 +341,20 @@ class RestockDetail_relation(models.Model):
                 "INSERT INTO Product_RestockDetail_relation (InID_id, OutID_id, Number) VALUES (%s, %s, %s)",
                 [str(InID_id), str(OutID_id), Number]
             )
+
+class Transpose(models.Model):
+    BranchsSend=models.ForeignKey(Branchs,on_delete=models.DO_NOTHING,verbose_name='寄送方', related_name='send_transposes')
+    BranchsReceipt=models.ForeignKey(Branchs,on_delete=models.DO_NOTHING,verbose_name='收獲方', related_name='receipt_transposes')
+    User=models.ForeignKey(User, on_delete=models.CASCADE,verbose_name='會員' ,blank=True, null=True, default=None)
+    Restock = models.ForeignKey(Restock, on_delete=models.CASCADE,verbose_name='進出貨' ,blank=True, null=True, default=None)
+    # Product=models.ForeignKey(Products,on_delete=models.DO_NOTHING,verbose_name='商品')
+    # Number=models.IntegerField(verbose_name="數量")
+    Time=models.DateTimeField(auto_now_add=True)
+    class Meta:
+        verbose_name = "運送"
+        verbose_name_plural = '運送'  # 中文名稱
+    # def __str__(self):
+    #     return str(self.User)
 
 @receiver([post_save, post_delete], sender=RestockDetail)
 def update_branch_inventory(sender, instance, **kwargs):

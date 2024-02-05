@@ -4,7 +4,7 @@ import os
 from django.conf import settings
 from django.contrib import admin
 import pandas as pd
-from .models import Categories,Products,ItemImage,Branch_Inventory,Restock,RestockDetail,RestockDetail_relation
+from .models import Categories,Products,ItemImage,Branch_Inventory,Restock,RestockDetail,RestockDetail_relation, Transpose
 from member.models import User, Branchs
 from django.utils.html import format_html
 from .forms import RestockForm
@@ -229,3 +229,18 @@ class RestockDetailAdmin(admin.ModelAdmin):
 @admin.register(RestockDetail_relation)
 class RestockDetailRelationAdmin(admin.ModelAdmin):
     list_display = ['id', 'InID', 'OutID', 'Number']
+
+@admin.register(Transpose)
+class TransposeAdmin(admin.ModelAdmin):
+    list_display = ['id', 'User','BranchsSend','BranchsReceipt','Restock','Time']
+    search_fields = ['id', 'User','BranchsSend','BranchsReceipt','Restock','Time']
+    list_filter = ['id', 'User','BranchsSend','BranchsReceipt','Restock','Time']
+    ordering = ['BranchsSend']
+    # inlines = [RestockDetailInline]
+
+    def get_form(self, request, obj=None, **kwargs):
+        form = super(TransposeAdmin, self).get_form(request, obj, **kwargs)
+        if 'User' in form.base_fields:
+            form.base_fields['User'].initial = request.user
+            form.base_fields['User'].disabled = True
+        return form
