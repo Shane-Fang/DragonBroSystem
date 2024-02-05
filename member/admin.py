@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import User,Branchs,Transpose
+from .models import User,Branchs
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
 from Product.models import RestockDetail,Restock
 
@@ -55,19 +55,19 @@ class BranchsAdmin(admin.ModelAdmin):
     ordering = ['Name']
 
 # ['Name','address','phone_number']
-@admin.register(Transpose)
-class TransposeAdmin(admin.ModelAdmin):
-    list_display = ['User','BranchsSend','BranchsReceipt','Time']
-    search_fields = ['User','BranchsSend','BranchsReceipt']
-    list_filter = ['User','BranchsSend','BranchsReceipt']
-    ordering = ['BranchsSend']
-    # inlines = [RestockDetailInline]
+# @admin.register(Transpose)
+# class TransposeAdmin(admin.ModelAdmin):
+#     list_display = ['User','BranchsSend','BranchsReceipt','Time']
+#     search_fields = ['User','BranchsSend','BranchsReceipt']
+#     list_filter = ['User','BranchsSend','BranchsReceipt']
+#     ordering = ['BranchsSend']
+#     # inlines = [RestockDetailInline]
 
-    def get_form(self, request, obj=None, **kwargs):
-        form = super(TransposeAdmin, self).get_form(request, obj, **kwargs)
-        if 'User' in form.base_fields:
-            form.base_fields['User'].initial = request.user
-            form.base_fields['User'].disabled = True
-        return form
+#     def get_form(self, request, obj=None, **kwargs):
+#         form = super(TransposeAdmin, self).get_form(request, obj, **kwargs)
+#         if 'User' in form.base_fields:
+#             form.base_fields['User'].initial = request.user
+#             form.base_fields['User'].disabled = True
+#         return form
 
 # ['BranchsSend','BranchsReceipt','Product','Number','Time']

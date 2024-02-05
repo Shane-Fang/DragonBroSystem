@@ -4,7 +4,7 @@ import os
 from django.conf import settings
 from django.contrib import admin
 import pandas as pd
-from .models import Categories,Products,ItemImage,Branch_Inventory,Restock,RestockDetail,RestockDetail_relation
+from .models import Categories,Products,ItemImage,Branch_Inventory,Restock,RestockDetail,RestockDetail_relation, Transpose
 from member.models import User, Branchs
 from django.utils.html import format_html
 from .forms import RestockForm
@@ -35,13 +35,17 @@ def import_csv_data(file_path, user_id, branch_id):
         )
     
     for index, row in data.iterrows():
-        if row['名稱'] != '' or row['名稱'] != pd.NA:
+        if row['名稱'] != '' or not pd.isna(row['名稱']):
             Item_Category = row['類別']
             Item_name = row['名稱']
             price = int(row['銷售價格'])
             import_price = int(row['入貨成本'])
             number = int(row['數量'])
-            expiry_date = pd.Timestamp(row['有效日期']).date()
+
+            if pd.isna(row['有效日期']):
+                expiry_date = None  # 如果是 NaT，則將日期設為 None
+            else:
+                expiry_date = pd.Timestamp(row['有效日期']).date()
 
             product = Products.objects.get(Item_name=Item_name)
 
@@ -229,3 +233,18 @@ class RestockDetailAdmin(admin.ModelAdmin):
 @admin.register(RestockDetail_relation)
 class RestockDetailRelationAdmin(admin.ModelAdmin):
     list_display = ['id', 'InID', 'OutID', 'Number']
+
+@admin.register(Transpose)
+class TransposeAdmin(admin.ModelAdmin):
+    list_display = ['id', 'User','BranchsSend','BranchsReceipt','Restock','Time']
+    search_fields = ['id', 'User','BranchsSend','BranchsReceipt','Restock','Time']
+    list_filter = ['id', 'User','BranchsSend','BranchsReceipt','Restock','Time']
+    ordering = ['BranchsSend']
+    # inlines = [RestockDetailInline]
+
+    def get_form(self, request, obj=None, **kwargs):
+        form = super(TransposeAdmin, self).get_form(request, obj, **kwargs)
+        if 'User' in form.base_fields:
+            form.base_fields['User'].initial = request.user
+            form.base_fields['User'].disabled = True
+        return form
