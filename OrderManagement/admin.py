@@ -1,6 +1,6 @@
 from django.contrib import admin
 from .models import ShoppingCart,ShoppingCartDetails,Orders,OrderDetails,OrderLog,OrderDetailsLog
-from Product.models import Products
+from Product.models import Products,RestockDetail,Restock,RestockDetail_relation
 from django.utils.html import format_html,format_html_join
 from django.utils.safestring import mark_safe
 from import_export.admin import ExportMixin
@@ -9,6 +9,7 @@ import tablib
 from django.http import HttpResponse
 import datetime
 from django.utils.translation import gettext_lazy as _
+from django.contrib.contenttypes.models import ContentType
 # Register your models here.
 class MonthFilter(admin.SimpleListFilter):
     title = _('month')  # 顯示的標題
@@ -36,48 +37,60 @@ class MonthFilter(admin.SimpleListFilter):
         return queryset
 def export_to_excel(modeladmin, request, queryset):
     dataset = tablib.Dataset()
-       
     total_price = 0  # 初始化總計變量
     total_profit=0
+    orders_content_type = ContentType.objects.get_for_model(Orders)
+    # print(orders_content_type)
     for order in queryset:
         # 確保時間沒有時區信息
         time_no_tz = order.Time.replace(tzinfo=None) if order.Time else order.Time
+        restocks = Restock.objects.filter(content_type=orders_content_type, object_id=order.id)
         details = OrderDetails.objects.filter(Order=order)
-        if details:
-            for detail in details:
+        for detail in OrderDetails.objects.filter(Order=order):
+            import_prices = []
+            numbers = []
+            for restock in restocks:
+                restock_details = RestockDetail.objects.filter(Restock=restock, Product=detail.Products)
+                for restock_detail in restock_details:
+                    restockDetail_relations = RestockDetail_relation.objects.filter(OutID=restock_detail.pk)
+                    for restockDetail_relation in restockDetail_relations:
+                        restock_detail_restocks = RestockDetail.objects.filter(InID=restockDetail_relation.pk)
+                        for restock_detail_restock in restock_detail_restocks:
+                            if restock_detail_restock.Import_price is not None:
+                                total_profit+=restock_detail_restock.Import_price*restock_detail_restock.Number
                 # product = Products.objects.filter(Item_name=detail.Products)
-                if request.user.is_superuser:
-                    profit=(detail.Price-detail.Products.Import_price)*detail.Number
-                    dataset.append([order.id,
-                                    order.User,
-                                    time_no_tz,
-                                    order.get_Delivery_method_display(),
-                                    order.get_Payment_method_display(),
-                                    order.get_Delivery_state_display(),
-                                    detail.Products,
-                                    detail.Price,
-                                    detail.Number,
-                                    detail.Total,
-                                    detail.Products.Import_price,
-                                    order.branch,
-                                    profit])
-                    total_price += detail.Total  # 累加 Price
-                    total_profit +=  profit
-                else:
-                    dataset.append([order.id,
-                                    order.User,
-                                    time_no_tz,
-                                    order.get_Delivery_method_display(),
-                                    order.get_Payment_method_display(),
-                                    order.get_Delivery_state_display(),
-                                    detail.Products,
-                                    detail.Price,
-                                    detail.Number,
-                                    detail.Total,
-                                    detail.Products.Import_price,
-                                    order.branch
-                                    ])
-                    total_price += detail.Total  # 累加 Price
+            if request.user.is_superuser:
+                profit=(detail.Price-detail.Products.Import_price)*detail.Number
+                dataset.append([order.id,
+                                order.User,
+                                time_no_tz,
+                                order.get_Delivery_method_display(),
+                                order.get_Payment_method_display(),
+                                order.get_Delivery_state_display(),
+                                detail.Products,
+                                detail.Price,
+                                detail.Number,
+                                detail.Total,
+                                total_profit,
+                                order.branch,
+                                profit])
+                total_price += detail.Total  # 累加 Price
+                total_profit +=  profit
+            else:
+                dataset.append([order.id,
+                                order.User,
+                                time_no_tz,
+                                order.get_Delivery_method_display(),
+                                order.get_Payment_method_display(),
+                                order.get_Delivery_state_display(),
+                                detail.Products,
+                                detail.Price,
+                                detail.Number,
+                                detail.Total,
+                                total_profit,
+                                order.branch
+                                ])
+                total_price += detail.Total  # 累加 Price
     if request.user.is_superuser:
         dataset.headers = ['訂單編號', '客戶', '下單時間', '運送方式','付款方式','訂單狀態', '商品名稱', '商品價格', '訂單數量', '總價','成本價','店名','利潤']
         dataset.append(['', '', '', '', '', '', '', '', '總價：', total_price, '', '利潤：', total_profit])
