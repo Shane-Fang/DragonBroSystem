@@ -44,7 +44,7 @@ jQuery(document).ready(function($) {
                         numberField.value = selectedProduct.Remain;
                         numberField.setAttribute('max', selectedProduct.Remain);
                         Import_price_Field.value = selectedProduct.Import_price;
-                        Import_price_Field.setAttribute('max', selectedProduct.Import_price);
+                        Import_price_Field.setAttribute('readonly', true);
                     }
                 });
                 $(document).on('formset:added', function(event) {
@@ -75,7 +75,7 @@ jQuery(document).ready(function($) {
         const productSelect = $row.find('[id$="-Product"]')[0];
         const expiryDateField = $row.find('[id$="-ExpiryDate"]')[0];
         const numberField = $row.find('[id$="-Number"]')[0];
-        const importPriceField = $row.find('[id$="-Import_price"]')[0];
+        const Import_price_Field = $row.find('[id$="-Import_price"]')[0];
         // console.log(productSelect)
         console.log(data)
         // 清空并填充产品选择下拉列表
@@ -97,8 +97,8 @@ jQuery(document).ready(function($) {
                 expiryDateField.value = selectedProduct.ExpiryDate;
                 numberField.value = selectedProduct.Remain;
                 numberField.setAttribute('max', selectedProduct.Remain);
-                importPriceField.value = selectedProduct.Import_price;
-                importPriceField.setAttribute('max', selectedProduct.Import_price);
+                Import_price_Field.value = selectedProduct.Import_price;
+                Import_price_Field.setAttribute('readonly', true);
             }
         });
     
