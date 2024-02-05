@@ -35,13 +35,17 @@ def import_csv_data(file_path, user_id, branch_id):
         )
     
     for index, row in data.iterrows():
-        if row['名稱'] != '' or row['名稱'] != pd.NA:
+        if row['名稱'] != '' or not pd.isna(row['名稱']):
             Item_Category = row['類別']
             Item_name = row['名稱']
             price = int(row['銷售價格'])
             import_price = int(row['入貨成本'])
             number = int(row['數量'])
-            expiry_date = pd.Timestamp(row['有效日期']).date()
+
+            if pd.isna(row['有效日期']):
+                expiry_date = None  # 如果是 NaT，則將日期設為 None
+            else:
+                expiry_date = pd.Timestamp(row['有效日期']).date()
 
             product = Products.objects.get(Item_name=Item_name)
 
