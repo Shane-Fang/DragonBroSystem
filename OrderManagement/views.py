@@ -165,18 +165,50 @@ def update_cart_item(request):
     except ValueError:
         return JsonResponse({'status': 'failed', 'error': 'Invalid quantity'})
     
-def past_orders(request):
+def past_orders(request,stateId=None):
     user_id = request.user  # 假设你使用 Django 的内置用户认证系统
     orders = Orders.objects.filter(User_id=user_id).order_by('Time')  # 获取用户的订单，按支付时间排序
-
-    # 包括更多的订单详细信息
-    order_details = {order.id: OrderDetails.objects.filter(pk=order.id) for order in orders}
-
+    orders_with_details = {}
+    for order in orders:
+        # order_details = OrderDetails.objects.filter(Order=order) 
+        if stateId:
+            order_details = OrderDetails.objects.filter(Order=order,Delivery_state=stateId).values('Products__Item_name', 'Number', 'Price','Total')
+        else:
+            order_details = OrderDetails.objects.filter(Order=order).values('Products__Item_name', 'Number', 'Price','Total')
+        orders_with_details[order.id] = list(order_details)
+    print(orders_with_details)
+    State_CHOICES = (
+        (0, '未處理'),
+        (1, '待出貨'),
+        (2, '待付款'),
+        (3, '代收貨'),
+        (4, '完成訂單'),
+        (5, '退貨'),
+        (6, '退款'),
+        # (7, '全部'),
+    )
+    
     context = {
-        'orders': orders,
-        'order_details': order_details,
+        'orders_with_details': orders_with_details,
+        'State_CHOICES': State_CHOICES,
     }
     return render(request, 'past_orders.html', context)
+
+def order_status(request, stateId):
+    if not request.user.is_authenticated:
+        return JsonResponse({'error': 'Unauthorized'}, status=401)
+    user_id = request.user  
+
+    orders = Orders.objects.filter(User_id=user_id).order_by('Time')
+    order_details = OrderDetails.objects.filter(Order__in=orders,Delivery_state=stateId).values('Order__id', 'Delivery_state')
+    response_data = [
+        {
+            'order_id': detail['Order__id'],
+            'delivery_state': OrderDetails.State_CHOICES[detail['Delivery_state']][1]
+        } for detail in order_details
+    ]
+
+    return JsonResponse(response_data, safe=False) 
 
 def past_order_details(request, order_id):
     order = Orders.objects.get(id=order_id)
