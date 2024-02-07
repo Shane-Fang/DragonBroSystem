@@ -9,6 +9,23 @@
 {% endblock %} {% block content %} 
 <h2>您在 {{ branch_name }} 於 {{order.Time}} 下的訂單</h2>
 
+<script>
+    function refresh_item_state(state) {
+        $('#tb_item tr').each(function(e){
+            if ($(this).data('delivery') == state) $(this).show()
+            else $(this).hide()
+        })
+    }
+</script>
+
+<button onclick="refresh_item_state(0)">未處理</button>
+<button onclick="refresh_item_state(1)">待出貨</button>
+<button onclick="refresh_item_state(2)">待付款</button>
+<button onclick="refresh_item_state(3)">代收貨</button>
+<button onclick="refresh_item_state(4)">完成訂單</button>
+<button onclick="refresh_item_state(5)">退貨</button>
+<button onclick="refresh_item_state(6)">退款</button>
+
 <!-- 显示订单详情 -->
 <div class="addtocart_outer">
     <div class="addtocart_inner">
@@ -22,9 +39,9 @@
                     <th>總計</th>
                 </tr>
             </thead>
-            <tbody>
+            <tbody id="tb_item">
                 {% for item in details_with_product_names %}
-                    <tr>
+                    <tr data-delivery="{{item.detail.Delivery_state}}">
                         <td>{{ item.product_name }}</td>
                         <td>{{ item.detail.Number }}</td>
                         <td>{{ item.detail.Price }}</td>

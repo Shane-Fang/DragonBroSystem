@@ -19,6 +19,15 @@
         height: 45px; /* 適應觸摸操作的大小 */
     }
 
+    p > label {
+        width: 80px;
+    }
+
+    p > input {
+        width: 200px;
+        border: 1px solid #767676;
+    }
+
     @media (max-width: 768px) { /* 针对平板和手机的媒体查询 */
         .form-label {
             font-size: 24px; /* 小螢幕的字體大小 */
@@ -37,10 +46,6 @@
         /* 可以進一步調整其他元素的大小和布局 */
     }
 
-    p > input {
-        width: 200px;
-        border: 1px solid #767676;
-    }
 </style>
 {% endblock %}
 

@@ -7,18 +7,13 @@
     }
 </style>
 {% endblock %} {% block content %}
-<h2>歷史訂單查詢</h2>
 <div class="addtocart_outer">
     <div class="addtocart_inner">
         <div class="table-responsive">
-            <ul class="nav">
-                {% for state in State_CHOICES %}
-                <li class="nav-item">
-                    <a class="nav-link" href="{% url 'OrderManagement:past_orders' stateId=state.0 %}">{{ state.1 }}</a>
-                    
-                </li>
-                {% endfor %}
-            </ul>
+            <h2>歷史訂單查詢</h2>
+            {% for state in State_CHOICES %}
+            <a class="btn btn-info" href="{% url 'OrderManagement:past_orders' stateId=state.0 %}">{{ state.1 }}</a>
+            {% endfor %}
             <table id="orderStatusTable" class="table table-striped">
                 <thead>
                     <tr>
@@ -34,17 +29,17 @@
                     <tr>
                         <td colspan="4">訂單編號: {{ order_id }}</td>
                     </tr>
-                        <!-- 仅当有订单详情时，才渲染这部分 -->
-                        {% for order_detail in details %}
-                        <tr>
-                            <td>{{ order_detail.Products__Item_name }}</td>
-                            <td>{{ order_detail.Price }}</td>
-                            <td>{{ order_detail.Number }}</td>
-                            <td>{{ order_detail.Total }}</td>
-                        </tr>
-                        {% endfor %}
+                    <!-- 仅当有订单详情时，才渲染这部分 -->
+                    {% for order_detail in details %}
+                    <tr>
+                        <td>{{ order_detail.Products__Item_name }}</td>
+                        <td>{{ order_detail.Price }}</td>
+                        <td>{{ order_detail.Number }}</td>
+                        <td>{{ order_detail.Total }}</td>
+                    </tr>
+                    {% endfor %}
                     {% endif %}
-                {% endfor %}
+                    {% endfor %}
             </table>
 
         </div>
