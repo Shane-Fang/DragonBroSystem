@@ -38,7 +38,7 @@ class MonthFilter(admin.SimpleListFilter):
 def export_to_excel(modeladmin, request, queryset):
     dataset = tablib.Dataset()
     total_price = 0  # 初始化總計變量
-    total_profit=0
+    
     orders_content_type = ContentType.objects.get_for_model(Orders)
     # print(orders_content_type)
     for order in queryset:
@@ -49,6 +49,7 @@ def export_to_excel(modeladmin, request, queryset):
         for detail in OrderDetails.objects.filter(Order=order):
             import_prices = []
             numbers = []
+            total_profit=0
             for restock in restocks:
                 restock_details = RestockDetail.objects.filter(Restock=restock, Product=detail.Products)
                 for restock_detail in restock_details:
@@ -57,7 +58,7 @@ def export_to_excel(modeladmin, request, queryset):
                         restock_detail_restocks = RestockDetail.objects.filter(InID=restockDetail_relation.pk)
                         for restock_detail_restock in restock_detail_restocks:
                             if restock_detail_restock.Import_price is not None:
-                                total_profit+=restock_detail_restock.Import_price*restock_detail_restock.Number
+                                total_profit+=restock_detail_restock.Import_price*restockDetail_relation.Number
                 # product = Products.objects.filter(Item_name=detail.Products)
             if request.user.is_superuser:
                 profit=(detail.Price-detail.Products.Import_price)*detail.Number

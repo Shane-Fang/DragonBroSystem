@@ -291,11 +291,11 @@ class RestockDetail(models.Model):
                             Number=item.Remain
                         )
                         self.Remain = self.Remain + item.Remain
-                        item.Remain = 0
+                        item.Remain = item.Remain - item.Remain
                         item.save()
                         print(f'出貨數量:{self.Number} 匹配後出貨remain:{self.Remain} 進貨有效日期:{item.ExpiryDate} 匹配後進貨remain:{item.Remain} relation i o N:{item.id} {self.id} {item.Remain}')
 
-                    if -(self.Remain) <= item.Remain: # 出貨number < 進貨remain --> 出貨number寫進relation, 進貨remain-出貨number, inventory number-出貨number
+                    elif -(self.Remain) <= item.Remain: # 出貨number < 進貨remain --> 出貨number寫進relation, 進貨remain-出貨number, inventory number-出貨number
                         print('出貨number < 進貨remain')
                         print(f'出貨數量:{self.Number} 匹配前出貨remain:{self.Remain} 進貨有效日期:{item.ExpiryDate} 匹配前進貨remain:{item.Remain} relation i o N:{item.id} {self.id} {item.Remain}')
                         Rr = RestockDetail_relation.objects.create(
