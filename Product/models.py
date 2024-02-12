@@ -191,7 +191,8 @@ class RestockDetail(models.Model):
         
         if not self.pk:
             self.pk = uuid.uuid4()
-        if not self.Remain:
+        if self.Remain is None or self.Remain == "":
+            print(f'Remain 為: {self.Remain}')
             self.Remain = self.Number
         temp_Rr = []
         branch_Inventory, created = Branch_Inventory.objects.get_or_create(Branch=self.Branch, Products=self.Product)
@@ -294,6 +295,7 @@ class RestockDetail(models.Model):
                         item.Remain = item.Remain - item.Remain
                         item.save()
                         print(f'出貨數量:{self.Number} 匹配後出貨remain:{self.Remain} 進貨有效日期:{item.ExpiryDate} 匹配後進貨remain:{item.Remain} relation i o N:{item.id} {self.id} {item.Remain}')
+                        item.save()
 
                     elif -(self.Remain) <= item.Remain: # 出貨number < 進貨remain --> 出貨number寫進relation, 進貨remain-出貨number, inventory number-出貨number
                         print('出貨number < 進貨remain')
