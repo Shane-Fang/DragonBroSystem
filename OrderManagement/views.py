@@ -171,12 +171,11 @@ def past_orders(request,stateId=None):
     orders_with_details = {}
     for order in orders:
         # order_details = OrderDetails.objects.filter(Order=order) 
-        if stateId:
+        if stateId is not None:
             order_details = OrderDetails.objects.filter(Order=order,Delivery_state=stateId).values('Products__Item_name', 'Number', 'Price','Total')
         else:
             order_details = OrderDetails.objects.filter(Order=order).values('Products__Item_name', 'Number', 'Price','Total')
         orders_with_details[order.id] = list(order_details)
-    print(orders_with_details)
     State_CHOICES = (
         (0, '未處理'),
         (1, '待出貨'),
@@ -187,7 +186,6 @@ def past_orders(request,stateId=None):
         (6, '退款'),
         # (7, '全部'),
     )
-    
     context = {
         'orders_with_details': orders_with_details,
         'State_CHOICES': State_CHOICES,
