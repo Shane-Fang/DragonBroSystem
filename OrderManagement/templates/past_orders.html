@@ -11,6 +11,7 @@
     <div class="addtocart_inner">
         <div class="table-responsive">
             <h2>歷史訂單查詢</h2>
+            <a class="btn btn-info" href="{% url 'OrderManagement:past_orders' %}">全部</a>
             {% for state in State_CHOICES %}
             <a class="btn btn-info" href="{% url 'OrderManagement:past_orders' stateId=state.0 %}">{{ state.1 }}</a>
             {% endfor %}
