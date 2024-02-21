@@ -203,8 +203,16 @@ class RestockAdmin(admin.ModelAdmin):
         if request.method == "POST":
             csv_file = request.FILES["csv_file"]
 
+            now = datetime.datetime.now()
+            date_time = now.strftime("%Y%m%d_%H%M%S")
+
+            # 取得原始檔案副檔名
+            _, file_extension = os.path.splitext(csv_file.name)
+
+            # 組合新檔案名稱
+            filename = f"{branch_id}_{user_id}_{date_time}{file_extension}"
             fs = FileSystemStorage(location=os.path.join(settings.CSV_ROOT, 'restock'))
-            filename = fs.save(csv_file.name, csv_file)
+            filename = fs.save(filename, csv_file)
             file_path = fs.path(filename)
 
             import_csv_data(file_path, user_id, branch_id)
