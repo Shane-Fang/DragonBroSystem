@@ -86,13 +86,16 @@
         <div class="d-flex form-label">
           物流方式：
           <select name="Delivery" id="Delivery">
-            <option value="0">自取</option>
-            <option value="1">寄送</option>
+            {% for key,value in Delivery_list %}
+            <option value="{{key}}">{{value}}</option>
+            {% endfor %}
           </select>
           付款方式：
           <select name="Payment_method" id="Payment_method">
-            <option value="0">親自付款</option>
-            <option value="1">貨到付款</option>
+            {% for key,value in Pay_list %}
+            <option value="{{key}}">{{value}}</option>
+      
+            {% endfor %}
           </select>
         </div>
         <button type="button" class="btn btn-danger" onclick="location.href='{% url 'home' %}'">繼續購物</button>

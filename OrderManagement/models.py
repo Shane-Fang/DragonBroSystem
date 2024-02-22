@@ -7,8 +7,8 @@ from django.core.exceptions import ValidationError
 State_CHOICES = (
         (0, '未處理'),
         (1, '待出貨'),
-        (2, '待付款'),
-        (3, '代收貨'),
+        (2, '已到貨'),
+        (3, '已釋出'),
         (4, '完成訂單'),
         (5, '退貨'),
         (6, '退款'),
@@ -17,9 +17,11 @@ Delivery_CHOICES = (
         (0, '自取'),
         (1, '寄送'),
     )
+
 Payment_CHOICES = (
-        (0, '親自付款'),
-        (1, '貨到付款'),
+        (0, '現金'),
+        (1, 'LINEPAY'),
+        (2, '轉帳'),
     )
 class ShoppingCart(models.Model):
     User=models.ForeignKey(User, on_delete=models.DO_NOTHING,verbose_name="類別")
@@ -95,23 +97,7 @@ class Orders(models.Model):
 
 
 class OrderDetails(models.Model):
-    State_CHOICES = (
-        (0, '未處理'),
-        (1, '待出貨'),
-        (2, '待付款'),
-        (3, '代收貨'),
-        (4, '完成訂單'),
-        (5, '退貨'),
-        (6, '退款'),
-    )
-    Delivery_CHOICES = (
-        (0, '自取'),
-        (1, '寄送'),
-    )
-    Payment_CHOICES = (
-        (0, '親自付款'),
-        (1, '貨到付款'),
-    )
+
     Order = models.ForeignKey(Orders, on_delete=models.CASCADE,verbose_name='訂單編號')
     Products=models.ForeignKey(Products,on_delete=models.DO_NOTHING,verbose_name='商品')
     Number=models.IntegerField(verbose_name="數量")

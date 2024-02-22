@@ -13,6 +13,9 @@ def products_view(request,branch=None,detail=None):
     products = Branch_Inventory.objects.filter(Branch_id=branch)
     products_detail = {}
     categories = Categories.objects.all()
+    page_number=None
+    page_obj=None
+
     for inventory_item in products:
         product = inventory_item.Products
         product_info = {}
