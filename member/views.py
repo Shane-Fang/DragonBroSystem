@@ -84,6 +84,7 @@ def register(request):
 # @login_required
 @require_POST
 def update_address(request):
+    print(request)
     action = request.POST.get('action')
     address_id = request.POST.get('address_id', None)  # 获取地址 ID
     if action == 'add':

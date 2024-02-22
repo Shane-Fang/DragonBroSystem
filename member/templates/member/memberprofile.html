@@ -56,7 +56,6 @@
         document.getElementById('add-address').addEventListener('click', function () {
             var newAddress = prompt("请输入新地址：");
             if (newAddress) {
-                console.log(newAddress)
                 sendAddressUpdateRequest('add', newAddress, '');
             }
         });

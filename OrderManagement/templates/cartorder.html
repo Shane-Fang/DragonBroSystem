@@ -100,7 +100,8 @@
         </div>
         <button type="button" class="btn btn-danger" onclick="location.href='{% url 'home' %}'">繼續購物</button>
         <button type="button" class="btn btn-danger"
-          onclick="location.href='{% url 'OrderManagement:cart' %}'">修改購物車內容</button>
+        onclick="location.href='{% url 'OrderManagement:cart' %}'">修改購物車內容</button>
+        <button type="button" id="add-address" class="btn btn-danger">新增地址</button>
         <div>
           <button type="button" id="submitOrderBtn" class="mt-3 btn btn-danger" style="width: 100%;">送出</button>
         </div>
@@ -157,5 +158,36 @@
       });
     });
   });
+  document.addEventListener('DOMContentLoaded', function () {
+        document.getElementById('add-address').addEventListener('click', function () {
+            var newAddress = prompt("请输入新地址：");
+            if (newAddress) {
+              // console.log(newAddress)
+                sendAddressUpdateRequest('add', newAddress, '');
+                location.reload()
+            }
+        });
+    function sendAddressUpdateRequest(action, address, addressId) {
+        var xhr = new XMLHttpRequest();
+        xhr.open('POST', '{% url "member:update_address" %}', true);
+        xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+        xhr.setRequestHeader('X-CSRFToken', getCookie('csrftoken'));
+        xhr.send('action=' + action + '&address=' + address + '&address_id=' + addressId);
+    }})
+    function getCookie(name) {
+    var cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+        var cookies = document.cookie.split(';');
+        for (var i = 0; i < cookies.length; i++) {
+            var cookie = cookies[i].trim();
+            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
+}
+
 </script>
 {% endblock %}
