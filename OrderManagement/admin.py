@@ -53,7 +53,7 @@ class TodayFilter(admin.SimpleListFilter):
             today_end = today_start + datetime.timedelta(days=1)
             return queryset.filter(Time__range=(today_start, today_end))
 def calculate_profit(restocks, detail):
-    total_profit = 0
+    profit = 0
     for restock in restocks:
         restock_details = RestockDetail.objects.filter(Restock=restock, Product=detail.Products)
         for restock_detail in restock_details:
@@ -62,20 +62,21 @@ def calculate_profit(restocks, detail):
                 restock_detail_restocks = RestockDetail.objects.filter(InID=restockDetail_relation.pk)
                 for restock_detail_restock in restock_detail_restocks:
                     if restock_detail_restock.Import_price is not None:
-                        total_profit += restock_detail_restock.Import_price * restockDetail_relation.Number
-    return total_profit
-def prepare_row_data(order, detail, total_profit, is_superuser):
+                        profit = restock_detail_restock.Import_price
+                        # print(restockDetail_relation.Number)
+    return profit
+def prepare_row_data(order, detail, profit, is_superuser):
     time_no_tz = order.Time.replace(tzinfo=None) if order.Time else order.Time
-    profit = (detail.Price - total_profit) * detail.Number
+    total_profit = (detail.Price - profit) * detail.Number
     row = [
         order.id, order.User, time_no_tz, order.get_Delivery_method_display(),
         order.get_Payment_method_display(), order.get_Delivery_state_display(),
-        detail.Products, detail.Price, detail.Number, detail.Total, total_profit,
+        detail.Products, detail.Price, detail.Number, detail.Total, profit,
         order.branch
     ]
     if is_superuser:
-        row.append(profit)
-    return row, detail.Total, profit if is_superuser else 0
+        row.append(total_profit)
+    return row, detail.Total, total_profit if is_superuser else 0
 def export_to_excel(modeladmin, request, queryset):
     dataset = tablib.Dataset()
     total_price = 0
@@ -84,7 +85,6 @@ def export_to_excel(modeladmin, request, queryset):
 
     for order in queryset:
         restocks = Restock.objects.filter(content_type=orders_content_type, object_id=order.id)
-        print(OrderDetails.objects.filter(Order=order,Delivery_state=4))
         for detail in OrderDetails.objects.filter(Order=order,Delivery_state=4):
             total_profit = calculate_profit(restocks, detail)
             row, price, profit = prepare_row_data(order, detail, total_profit, request.user.is_superuser)
