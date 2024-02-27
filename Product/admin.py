@@ -49,7 +49,7 @@ def import_csv_data(file_path, user_id, branch_id):
 
             product = Products.objects.get(Item_name=Item_name)
 
-            print(product.Item_name)
+            # print(product.Item_name)
 
             RestockDetail.objects.create(
                     ExpiryDate=expiry_date,
@@ -129,7 +129,7 @@ class ItemImageAdmin(admin.ModelAdmin):
 # ['ImageID','Products','Image_path']
 @admin.register(Branch_Inventory)
 class Branch_InventoryAdmin(admin.ModelAdmin):
-    list_display = ['Products','Number','Branch']
+    list_display = ['Products','Number','Branch','display_inventory_status']
     search_fields = ['Products','Number','Branch']
     list_filter = ['Products','Number','Branch']
     ordering = ['Products']
@@ -145,6 +145,11 @@ class Branch_InventoryAdmin(admin.ModelAdmin):
         if not request.user.is_superuser:
             obj.Branch = request.user.branch  
         super(Branch_InventoryAdmin, self).save_model(request, obj, form, change)
+    def display_inventory_status(self, obj):
+
+        return "現貨" if obj.Number >= 0 else "預售"
+    display_inventory_status.short_description = "庫存狀態" 
+    display_inventory_status.admin_order_field = 'Number'
 
 
 # ['Products','ExpiryDate','Number','Branch',]
@@ -203,8 +208,16 @@ class RestockAdmin(admin.ModelAdmin):
         if request.method == "POST":
             csv_file = request.FILES["csv_file"]
 
+            now = datetime.datetime.now()
+            date_time = now.strftime("%Y%m%d_%H%M%S")
+
+            # 取得原始檔案副檔名
+            _, file_extension = os.path.splitext(csv_file.name)
+
+            # 組合新檔案名稱
+            filename = f"{branch_id}_{user_id}_{date_time}{file_extension}"
             fs = FileSystemStorage(location=os.path.join(settings.CSV_ROOT, 'restock'))
-            filename = fs.save(csv_file.name, csv_file)
+            filename = fs.save(filename, csv_file)
             file_path = fs.path(filename)
 
             import_csv_data(file_path, user_id, branch_id)

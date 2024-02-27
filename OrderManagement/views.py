@@ -11,6 +11,7 @@ from django.views.decorators.csrf import csrf_exempt
 from collections import defaultdict
 from django.contrib import messages
 from django.contrib.contenttypes.models import ContentType
+from .models import Payment_CHOICES,Delivery_CHOICES,State_CHOICES
 
 # Create your views here.
 def cart(request):
@@ -49,14 +50,17 @@ def cartorder(request):
         else:
             cart_details=None
             total=0
-
+        Pay_list = Payment_CHOICES
+        Delivery_list = Delivery_CHOICES
         addresses=Address.objects.filter(user=current_user)
         context={
             'title':'訂單確認',
             'user':current_user,
             'addresses':addresses,
             'cartlist':cart_details,
-            'total':total
+            'total':total,
+            'Pay_list':Pay_list,
+            'Delivery_list':Delivery_list,
         }
         return render(request, 'cartorder.html',context )
 def cartok(request):
@@ -171,26 +175,15 @@ def past_orders(request,stateId=None):
     orders_with_details = {}
     for order in orders:
         # order_details = OrderDetails.objects.filter(Order=order) 
-        if stateId:
+        if stateId is not None:
             order_details = OrderDetails.objects.filter(Order=order,Delivery_state=stateId).values('Products__Item_name', 'Number', 'Price','Total')
         else:
             order_details = OrderDetails.objects.filter(Order=order).values('Products__Item_name', 'Number', 'Price','Total')
         orders_with_details[order.id] = list(order_details)
-    print(orders_with_details)
-    State_CHOICES = (
-        (0, '未處理'),
-        (1, '待出貨'),
-        (2, '待付款'),
-        (3, '代收貨'),
-        (4, '完成訂單'),
-        (5, '退貨'),
-        (6, '退款'),
-        # (7, '全部'),
-    )
-    
+    state_CHOICES=State_CHOICES
     context = {
         'orders_with_details': orders_with_details,
-        'State_CHOICES': State_CHOICES,
+        'State_CHOICES': state_CHOICES,
     }
     return render(request, 'past_orders.html', context)
 
