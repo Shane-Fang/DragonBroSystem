@@ -13,6 +13,10 @@ def products_view(request,branch=None,detail=None):
     products = Branch_Inventory.objects.filter(Branch_id=branch)
     products_detail = {}
     categories = Categories.objects.all()
+    categories_modified=[]
+    for categorie in categories:
+        categories_last5 = categorie.Category_name[:-5]
+        categories_modified.append({'id': categorie.id, 'Category_name': categories_last5})
     page_number=None
     page_obj=None
 
@@ -40,7 +44,7 @@ def products_view(request,branch=None,detail=None):
         'branch':branch,
         'title':f"榮哥海鮮-{branch.Name}",
         'products_detail':products_detail,
-        'categories': categories,
+        'categories_modified': categories_modified,
         'page_number': page_number,
         'page_obj': page_obj,
     }

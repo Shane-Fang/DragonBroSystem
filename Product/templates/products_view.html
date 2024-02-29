@@ -16,9 +16,9 @@
         <div class="col d-flex justify-content-center"><button class="number-btn  text-center mb-2 btn-info" data-category='0'> 預售 </button></div>        
     </div>
     </div>
-    <div class="container" style="margin-top: 30px;">
+    <div class="container" style="margin-top: 30px; text-align: center;">
         <button class="category-all-btn text-center mb-2 btn-info" data-category="all"> 全部 </button>
-        {% for category in categories %}
+        {% for category in categories_modified %}
         <button class="category-btn text-center mb-2 btn-info" data-category="{{ category.id }}">{{ category.Category_name }}</button>
         {% endfor %}
     </div>
