@@ -38,26 +38,28 @@ def cartorder(request):
     if request.user.is_authenticated:
         current_user = request.user
         member_carts = ShoppingCart.objects.filter(User=current_user)
-    
+
         if member_carts.count() > 1:
             messages.error(request, '一次只能選一個店家，請把多的店家商品刪除')
             return redirect('OrderManagement:cart')
         if member_carts.count() == 1:
-            
             member_cart = member_carts.first()
             cart_details = member_cart.details.all()
             total=member_cart.Total
+            branch=member_cart.branch
         else:
             cart_details=None
             total=0
         Pay_list = Payment_CHOICES
         Delivery_list = Delivery_CHOICES
         addresses=Address.objects.filter(user=current_user)
+        
         context={
             'title':'訂單確認',
             'user':current_user,
             'addresses':addresses,
             'cartlist':cart_details,
+            'branch':branch,
             'total':total,
             'Pay_list':Pay_list,
             'Delivery_list':Delivery_list,

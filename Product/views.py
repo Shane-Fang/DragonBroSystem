@@ -74,9 +74,7 @@ def add_to_cart_view(request,branch ,product_id):
         quantity = request.POST.get('quantity', 1)
         user = request.user 
         # 新增購物車function
-
         add_to_cart(user, branch,product_id, quantity)
-
         return redirect('OrderManagement:cart')
 
     return redirect('OrderManagement:cart')

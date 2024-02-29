@@ -98,9 +98,9 @@
             {% endfor %}
           </select>
         </div>
-        <button type="button" class="btn btn-danger"onclick="window.history.go(-3);">繼續購物</button>
+        <button type="button" class="btn btn-danger"onclick="location.href='{% url 'OrderManagement:cart' %}'">繼續購物</button>
         <button type="button" class="btn btn-danger"
-        onclick="location.href='{% url 'OrderManagement:cart' %}'">修改購物車內容</button>
+        onclick="location.href='{% url 'Product:products_view' branch.id %}'">修改購物車內容</button>
         <button type="button" id="add-address" class="btn btn-danger">新增地址</button>
         <div>
           <button type="button" id="submitOrderBtn" class="mt-3 btn btn-danger" style="width: 100%;">送出</button>
