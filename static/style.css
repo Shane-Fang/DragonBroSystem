@@ -1,3 +1,34 @@
+
+.btn-primary {
+    --bs-btn-color: black;
+    --bs-btn-bg: #ff9a9e;
+    --bs-btn-border-color: #ff9a9e;
+    --bs-btn-hover-color: #fff;
+    --bs-btn-hover-bg: #fad0c4;
+    --bs-btn-hover-border-color: #fad0c4;
+    --bs-btn-focus-shadow-rgb: 49,132,253;
+    --bs-btn-active-color: #fff;
+    --bs-btn-active-bg: #fad0c4;
+    --bs-btn-active-border-color: #fad0c4;
+    --bs-btn-active-shadow: inset 0 3px 5px rgba(0, 0, 0, 0.125);
+    --bs-btn-disabled-color: #fff;
+    --bs-btn-disabled-bg: #ccc;
+    --bs-btn-disabled-border-color: #ccc;
+}
+
+.btn-primary {
+    color: black;
+    font-weight: 600;
+    background-color: #ff9a9e;
+    border-color: #ff9a9e;
+}
+
+    .btn-primary:hover {
+        color: black;
+        background-color: #fad0c4;
+        border-color: #fad0c4;
+    }
+
 label{
     margin: 0px;
 }
@@ -5,6 +36,15 @@ label{
 .control-label{
     text-align: right;
     font-weight: 600;
+    padding-top: 5px;
+    font-size: 18px;
+}
+
+.form-group {
+    margin-bottom: 15px;
+}
+
+div.form-check {
     padding-top: 5px;
 }
 
@@ -27,4 +67,13 @@ label{
         padding-top: 5px;
     }
 
+}
+
+@media (max-width: 992px) {
+
+    .control-label {
+        text-align: left;
+        font-weight: 600;
+        padding-top: 5px;
+    }
 }

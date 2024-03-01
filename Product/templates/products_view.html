@@ -5,38 +5,58 @@
 {% endblock %}
 {% block content %}
 <div class="row" style="margin-top: 30px;">
-    <div class="col d-flex justify-content-center">
-        <div class="form-check form-check-inline">
-            <input class="form-check-input" type="radio" name="category" id="category" value="" onchange="refresh_Product()" checked>
-            <label class="form-check-label" for="category">
-                全部
-            </label>
-        </div>
-        <div class="form-check form-check-inline">
-            <input class="form-check-input" type="radio" name="category" id="category_1" value="1" onchange="refresh_Product()">
-            <label class="form-check-label" for="category_1">
-                現貨
-            </label>
-        </div>
-        <div class="form-check  form-check-inline">
-            <input class="form-check-input" type="radio" name="category" id="category_0" value="0" onchange="refresh_Product()">
-            <label class="form-check-label" for="category_0">
-                預售
-            </label>
+    <div class="col-lg-12">
+        <div class="form-group">
+            <div class="row">
+                <label class="col-lg-2 form-label control-label" for="productSearch">分類：</label>
+                <div class="col-lg-10">
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="radio" name="category" id="category" value="" onchange="refresh_Product()" checked>
+                        <label class="form-check-label" for="category">
+                            全部
+                        </label>
+                    </div>
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="radio" name="category" id="category_1" value="1" onchange="refresh_Product()">
+                        <label class="form-check-label" for="category_1">
+                            現貨
+                        </label>
+                    </div>
+                    <div class="form-check  form-check-inline">
+                        <input class="form-check-input" type="radio" name="category" id="category_0" value="0" onchange="refresh_Product()">
+                        <label class="form-check-label" for="category_0">
+                            預售
+                        </label>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
-    <div class="col d-flex justify-content-center">
-        <select class="form-select" aria-label="Default select example" id="sel_category" onchange="refresh_Product()">
-            <option value="">全部</option>
-            {% for category in categories_modified %}
-            <option value="{{ category.id }}">{{ category.Category_name }}</option>
-            {% endfor %}
-        </select>
+    <div class="col-lg-12">
+        <div class="form-group">
+            <div class="row">
+                <label class="col-lg-2 form-label control-label" for="productSearch">種類：</label>
+                <div class="col-lg-10">
+                    <select class="form-select" aria-label="Default select example" id="sel_category" onchange="refresh_Product()" style="max-width: 400px;">
+                        <option value="">全部</option>
+                        {% for category in categories_modified %}
+                        <option value="{{ category.id }}">{{ category.Category_name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+        </div>
     </div>
-    <div class="col d-flex justify-content-center">
-        <label for="productSearch">產品搜尋:</label>
-        <input type="text" id="productSearch" name="productSearch">
-        <button onclick="filterProducts()">搜尋</button>
+    <div class="col-lg-12">
+        <div class="form-group">
+            <div class="row">
+                <label class="col-lg-2 form-label control-label" for="productSearch">產品搜尋:</label>
+                <div class="col-lg-10">
+                    <input class="col-lg-8 form-control" type="text" id="productSearch" name="productSearch" style="max-width: 337px;display:inline-block">
+                    <button class="btn btn-primary" style="min-width: 58px; display: inline-block" onclick="filterProducts()">搜尋</button>
+                </div>
+            </div>
+        </div>
     </div>
 
     <div class="container" style="margin-top: 30px;">
