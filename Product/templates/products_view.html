@@ -53,7 +53,7 @@
                 <label class="col-lg-2 form-label control-label" for="productSearch">產品搜尋:</label>
                 <div class="col-lg-10">
                     <input class="col-lg-8 form-control" type="text" id="productSearch" name="productSearch" style="max-width: 337px;display:inline-block">
-                    <button class="btn btn-primary" style="min-width: 58px; display: inline-block" onclick="filterProducts()">搜尋</button>
+                    <button class="btn btn-primary" style="min-width: 58px; display: inline-block" onclick="refresh_Product()">搜尋</button>
                 </div>
             </div>
         </div>
@@ -114,13 +114,24 @@
 </div>
 <script>
 
+    $(function () {
+        $('#productSearch').keypress(function (e) {
+            var key = window.event ? e.keyCode : e.which;
+            if (key == 13)
+                refresh_Product();
+        });
+    });
+
     function refresh_Product() {
         $('div.product').show()
-        $('div.product').each(function(){
+        $('div.product').each(function () {
             if ($('input[name=category]:checked').val() != '' && (($('input[name=category]:checked').val() == '0' && $(this).data('number') > 0) || ($('input[name=category]:checked').val() == '1' && $(this).data('number')  <= 0))) {
                 $(this).hide();
             }
             else if ($('#sel_category').val() != '' && $('#sel_category').val() != $(this).data('categoryId')) {
+                $(this).hide();
+            }
+            else if ($('#productSearch').val() != '' && $(this).find('.card-title').html().indexOf($('#productSearch').val()) < 0) {
                 $(this).hide();
             }
         });
