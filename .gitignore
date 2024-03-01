@@ -11,3 +11,5 @@ csvfile/**
 *.jpg
 *.sqlite3
 db.sqlite3
+/Product/migrations/__pycache__
+/member/migrations/__pycache__
