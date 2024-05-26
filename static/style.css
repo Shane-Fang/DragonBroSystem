@@ -1,3 +1,50 @@
+:root {
+    --primary-color: #00CCff;
+    --secondary-color: #999;
+    --bs-body-color: #999;
+}
+
+@font-face {
+    font-family: 'Noto Sans TC';
+    font-style: normal;
+    font-weight: 100;
+    src: url(//fonts.gstatic.com/ea/notosanstc/v1/NotoSansTC-Thin.woff2) format('woff2'), url(//fonts.gstatic.com/ea/notosanstc/v1/NotoSansTC-Thin.woff) format('woff'), url(//fonts.gstatic.com/ea/notosanstc/v1/NotoSansTC-Thin.otf) format('opentype');
+}
+
+@font-face {
+    font-family: 'Noto Sans TC';
+    font-style: normal;
+    font-weight: 300;
+    src: url(//fonts.gstatic.com/ea/notosanstc/v1/NotoSansTC-Light.woff2) format('woff2'), url(//fonts.gstatic.com/ea/notosanstc/v1/NotoSansTC-Light.woff) format('woff'), url(//fonts.gstatic.com/ea/notosanstc/v1/NotoSansTC-Light.otf) format('opentype');
+}
+
+@font-face {
+    font-family: 'Noto Sans TC';
+    font-style: normal;
+    font-weight: 400;
+    src: url(//fonts.gstatic.com/ea/notosanstc/v1/NotoSansTC-Regular.woff2) format('woff2'), url(//fonts.gstatic.com/ea/notosanstc/v1/NotoSansTC-Regular.woff) format('woff'), url(//fonts.gstatic.com/ea/notosanstc/v1/NotoSansTC-Regular.otf) format('opentype');
+}
+
+@font-face {
+    font-family: 'Noto Sans TC';
+    font-style: normal;
+    font-weight: 500;
+    src: url(//fonts.gstatic.com/ea/notosanstc/v1/NotoSansTC-Medium.woff2) format('woff2'), url(//fonts.gstatic.com/ea/notosanstc/v1/NotoSansTC-Medium.woff) format('woff'), url(//fonts.gstatic.com/ea/notosanstc/v1/NotoSansTC-Medium.otf) format('opentype');
+}
+
+@font-face {
+    font-family: 'Noto Sans TC';
+    font-style: normal;
+    font-weight: 700;
+    src: url(//fonts.gstatic.com/ea/notosanstc/v1/NotoSansTC-Bold.woff2) format('woff2'), url(//fonts.gstatic.com/ea/notosanstc/v1/NotoSansTC-Bold.woff) format('woff'), url(//fonts.gstatic.com/ea/notosanstc/v1/NotoSansTC-Bold.otf) format('opentype');
+}
+
+@font-face {
+    font-family: 'Noto Sans TC';
+    font-style: normal;
+    font-weight: 900;
+    src: url(//fonts.gstatic.com/ea/notosanstc/v1/NotoSansTC-Black.woff2) format('woff2'), url(//fonts.gstatic.com/ea/notosanstc/v1/NotoSansTC-Black.woff) format('woff'), url(//fonts.gstatic.com/ea/notosanstc/v1/NotoSansTC-Black.otf) format('opentype');
+}
 
 .btn-primary {
     --bs-btn-color: black;
@@ -14,6 +61,11 @@
     --bs-btn-disabled-color: #fff;
     --bs-btn-disabled-bg: #ccc;
     --bs-btn-disabled-border-color: #ccc;
+    --bs-font-sans-serif: 'Noto Sans TC';
+}
+
+body {
+    font-family: 'Noto Sans TC';
 }
 
 .btn-primary {
@@ -29,7 +81,34 @@
         border-color: #fad0c4;
     }
 
-label{
+.btn-price {
+    width: 38px;
+    height: 38px;
+    background-color: rgba(0, 0, 0, 0);
+    border: 1px solid var(--secondary-color);
+}
+
+    .btn-price:hover {
+        background-color: rgba(0, 0, 0, 0);
+        border: 1px solid var(--secondary-color);
+    }
+
+.form-select {
+    border: 1px solid var(--secondary-color);
+}
+
+.btn.btn-primary {
+    background-color: rgba(0, 0, 0, 0);
+    border: 1px solid var(--secondary-color);
+}
+
+    .btn.btn-primary:hover {
+        background-color: rgba(0, 0, 0, 0);
+        border: 1px solid var(--secondary-color);
+    }
+
+
+label {
     margin: 0px;
 }
 
@@ -49,18 +128,164 @@ div.form-check {
 }
 
 .navbar-dark .navbar-brand {
-    color: black;
+    color: #999;
 }
 
 .navbar-dark .navbar-nav .nav-link.active, .navbar-dark .navbar-nav .show > .nav-link {
-    color: black;
+    color: #999;
 }
+
 .navbar-dark .navbar-nav .nav-link {
-    color: black;
+    color: #999;
+    font-size: larger;
+    margin-left: 10px;
+    margin-right: 10px;
 }
+
+    .navbar-dark .navbar-nav .nav-link:hover {
+        color: var(--primary-color);
+    }
+
+    .navbar-dark .navbar-nav .nav-link:nth-child(n+2):hover {
+        border-bottom: 2px solid var(--primary-color);
+    }
+
+    .navbar-dark .navbar-nav .nav-link.active {
+        color: var(--primary-color);
+        border-bottom: 2px solid var(--primary-color);
+    }
+
+.dv-portal .dv-title {
+    display: flex;
+}
+
+    .dv-portal .dv-title a.btn-store {
+        color: var(--primary-color);
+        font-size: 36px;
+        font-weight: 600;
+        width: 300px;
+        margin: auto;
+    }
+
+    .dv-portal .dv-title a.btn-store:hover {
+        background-color: #888;
+    }
+
+    .card-noborder{
+        border: none;
+    }
+
+.btn-primary.btn-productType {
+    background-color: rgba(0,0,0,0);
+    background-size: cover;
+    border: none;
+    padding: 0px;
+    margin: 0px;
+    width: 150px;
+    height: 60px;
+}
+
+    .btn-primary.btn-productType.btn-meat {
+        background-image: url('/static/img/productType/meat.png');
+    }
+
+    .btn-primary.btn-productType.btn-fish {
+        background-image: url('/static/img/productType/fish.png');
+    }
+
+    .btn-primary.btn-productType.btn-other {
+        background-image: url('/static/img/productType/other.png');
+    }
+
+    .btn-primary.btn-productType.btn-soldout {
+        background-image: url('/static/img/productType/soldout.png');
+    }
+
+    .btn-primary.btn-productType.btn-vegetable {
+        background-image: url('/static/img/productType/vegetable.png');
+    }
+
+.form-check-input {
+    margin-top: 3px;
+    width: 22px;
+    height: 22px;
+    margin-right: 10px;
+}
+
+.form-check-label {
+    font-size: 18px;
+}
+
+.form-control {
+    border: 1px solid #999;
+}
+
+.form-check-input {
+    border: 1px solid #999;
+    background-color: rgba(0, 0, 0,0);
+}
+
+    .form-check-input:checked {
+        border: 1px solid #999;
+        background-color: rgba(0, 0, 0,0);
+    }
+
+
+input[type='radio'].form-check-input:checked:after {
+    width: 20px;
+    height: 20px;
+    border-radius: 15px;
+    position: relative;
+    border: 5px solid var(--primary-color);
+    background-color: rgba(0, 0, 0, 0);
+    content: '';
+    display: inline-block;
+    visibility: visible;
+}
+
+.m-r-5{
+    margin-right: 5px;
+}
+.m-r-10 {
+    margin-right: 10px;
+}
+.m-r-15 {
+    margin-right: 15px;
+}
+.m-r-20 {
+    margin-right: 20px;
+}
+
+
+.m-l-5 {
+    margin-left: 5px;
+}
+.m-l-10 {
+    margin-left: 10px;
+}
+.m-l-15 {
+    margin-left: 15px;
+}
+.m-l-20 {
+    margin-left: 20px;
+}
+
+.m-t-5 {
+    margin-top: 5px;
+}
+.m-t-10 {
+    margin-top: 10px;
+}
+.m-t-15 {
+    margin-top: 15px;
+}
+.m-t-20 {
+    margin-top: 20px;
+}
+
+
 
 @media (max-width: 768px) {
-
     .control-label {
         text-align: left;
         font-weight: 600;

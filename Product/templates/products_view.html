@@ -4,113 +4,123 @@
 <title>{{title}}</title>
 {% endblock %}
 {% block content %}
-<div class="row" style="margin-top: 30px;">
-    <div class="col-lg-12">
-        <div class="form-group">
+<div class="container">
+    <div class="row" style="margin-top: 30px;">
+        <div class="col-lg-4">
+            <div class="dv-title" style="width: 100%;">
+                <a href="javascript:void(0)" class="btn btn-outline-secondary btn-lg btn-block btn-store" style="width: 100%; height: 150px; display: flex; width: 100%; align-items: center; justify-content: center; background: white; " >
+                    <div style="font-size: 36px; color: var(--primary-color);font-weight: 600">永和永利店</div>
+                </a>
+            </div>
+        </div>
+        <div class="col-lg-8" style="max-width: 650px;">
+            <div class="col-lg-12">
+                <div class="form-group">
+                    <div class="row">
+                        <label class="col-lg-2 form-label control-label" for="productSearch">分類：</label>
+                        <div class="col-lg-10" style="display: flex; justify-content: space-between;">
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" name="category" id="category" value="" onchange="refresh_Product()" checked>
+                                <label class="form-check-label" for="category">
+                                    全部
+                                </label>
+                            </div>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" name="category" id="category_1" value="1" onchange="refresh_Product()">
+                                <label class="form-check-label" for="category_1">
+                                    現貨
+                                </label>
+                            </div>
+                            <div class="form-check  form-check-inline">
+                                <input class="form-check-input" type="radio" name="category" id="category_0" value="0" onchange="refresh_Product()">
+                                <label class="form-check-label" for="category_0">
+                                    預售
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-12">
+                <div class="form-group">
+                    <div class="row">
+                        <label class="col-lg-2 form-label control-label" for="productSearch">種類：</label>
+                        <div class="col-lg-10">
+                            <select class="form-select" aria-label="Default select example" id="sel_category" onchange="refresh_Product()" style="width: 100%;">
+                                <option value="">全部</option>
+                                {% for category in categories_modified %}
+                                <option value="{{ category.id }}">{{ category.Category_name }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-12">
+                <div class="form-group">
+                    <div class="row">
+                        <label class="col-lg-2 form-label control-label" for="productSearch">產品搜尋:</label>
+                        <div class="col-lg-10">
+                            <input class="col-lg-8 form-control" type="text" id="productSearch" name="productSearch" style="width: calc(100% - 62px); float: left">
+                            <button class="btn btn-primary" style="min-width: 58px; float: right; background: white; border-color: #999;color: black" onclick="refresh_Product()">搜尋</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div style="margin-top: 30px;">
             <div class="row">
-                <label class="col-lg-2 form-label control-label" for="productSearch">分類：</label>
-                <div class="col-lg-10">
-                    <div class="form-check form-check-inline">
-                        <input class="form-check-input" type="radio" name="category" id="category" value="" onchange="refresh_Product()" checked>
-                        <label class="form-check-label" for="category">
-                            全部
-                        </label>
-                    </div>
-                    <div class="form-check form-check-inline">
-                        <input class="form-check-input" type="radio" name="category" id="category_1" value="1" onchange="refresh_Product()">
-                        <label class="form-check-label" for="category_1">
-                            現貨
-                        </label>
-                    </div>
-                    <div class="form-check  form-check-inline">
-                        <input class="form-check-input" type="radio" name="category" id="category_0" value="0" onchange="refresh_Product()">
-                        <label class="form-check-label" for="category_0">
-                            預售
-                        </label>
+
+                {% for product_info in page_obj %} <!-- 迭代分頁對象中的每個產品信息 -->
+                <div class="col-lg-3 col-md-4 mb-4 product" data-category-id="{{ product_info.Category_id }}" data-number="{{ product_info.Number }}">
+                    <div class="card text-center card-noborder">
+                        <img src="{{ product_info.Picture.0 }}" style="margin: auto;" class="card-img-top" alt="...">
+                        <div class="card-body">
+                            <h5 class="card-title">{{ product_info.Product }}</h5> <!-- 設置產品名稱 -->
+                            <p class="card-text">{{ product_info.Price }}</p>
+                            <p class="card-text">{{ product_info.Specification }}</p>
+                            <a href="{% url 'Product:detail' branch=branch.id detail=product_info.id  %}"
+                               class="btn btn-primary btn-productType btn-meat"></a>
+                        </div>
                     </div>
                 </div>
+                {% endfor %}
+
             </div>
         </div>
     </div>
-    <div class="col-lg-12">
-        <div class="form-group">
-            <div class="row">
-                <label class="col-lg-2 form-label control-label" for="productSearch">種類：</label>
-                <div class="col-lg-10">
-                    <select class="form-select" aria-label="Default select example" id="sel_category" onchange="refresh_Product()" style="max-width: 400px;">
-                        <option value="">全部</option>
-                        {% for category in categories_modified %}
-                        <option value="{{ category.id }}">{{ category.Category_name }}</option>
-                        {% endfor %}
-                    </select>
-                </div>
-            </div>
-        </div>
-    </div>
-    <div class="col-lg-12">
-        <div class="form-group">
-            <div class="row">
-                <label class="col-lg-2 form-label control-label" for="productSearch">產品搜尋:</label>
-                <div class="col-lg-10">
-                    <input class="col-lg-8 form-control" type="text" id="productSearch" name="productSearch" style="max-width: 337px;display:inline-block">
-                    <button class="btn btn-primary" style="min-width: 58px; display: inline-block" onclick="refresh_Product()">搜尋</button>
-                </div>
-            </div>
-        </div>
-    </div>
+    <div class="text-center">
 
-    <div class="container" style="margin-top: 30px;">
-        <div class="row">
+        {% if page_obj.has_previous %}
+        <a href="?page={{ page_obj.previous_page_number }}">« Previous page</a>
 
-            {% for product_info in page_obj %} <!-- 迭代分頁對象中的每個產品信息 -->
-            <div class="col-lg-3 col-md-4 mb-4 product" data-category-id="{{ product_info.Category_id }}" data-number="{{ product_info.Number }}">
-                <div class="card text-center">
-                    <img src="{{ product_info.Picture.0 }}" style="margin: auto;" class="card-img-top" alt="...">
-                    <div class="card-body">
-                        <h5 class="card-title">{{ product_info.Product }}</h5> <!-- 設置產品名稱 -->
-                        <p class="card-text">{{ product_info.Price }}</p>
-                        <p class="card-text">{{ product_info.Specification }}</p>
-                        <a href="{% url 'Product:detail' branch=branch.id detail=product_info.id  %}"
-                           class="btn btn-primary">商品資訊</a>
-                    </div>
-                </div>
-            </div>
-            {% endfor %}
+        {% endif %}
+        {% if page_obj.number > 3 %}
 
-        </div>
-    </div>
-</div>
-<div class="text-center">
+        <a href="?page=1">1</a>
+        {% endif %}
+        {% if page_obj.number > 4 %}
+        <span>...</span>
+        {% endif %}
 
-    {% if page_obj.has_previous %}
-    <a href="?page={{ page_obj.previous_page_number }}">« Previous page</a>
-
-    {% endif %}
-    {% if page_obj.number > 3 %}
-
-    <a href="?page=1">1</a>
-    {% endif %}
-    {% if page_obj.number > 4 %}
-    <span>...</span>
-    {% endif %}
-
-    {% for num in page_obj.paginator.page_range %}
-    {% if page_obj.number == num %}
-    <a href="?page={{ num }}">{{ num }}</a>
-    {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %} <a href="?page={{ num }}">{{ num }}</a>
+        {% for num in page_obj.paginator.page_range %}
+        {% if page_obj.number == num %}
+        <a href="?page={{ num }}">{{ num }}</a>
+        {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %} <a href="?page={{ num }}">{{ num }}</a>
         {% endif %}
         {% endfor %}
 
         {% if page_obj.has_next %}
         {% if page_obj.number < page_obj.paginator.num_pages|add:'-3' %} <span>...</span>
-            <a href="?page={{ page_obj.paginator.num_pages }}">{{ page_obj.paginator.num_pages }}</a>
-            {% elif page_obj.number < page_obj.paginator.num_pages|add:'-2' %} <a
-                href="?page={{ page_obj.paginator.num_pages }}">{{ page_obj.paginator.num_pages }}</a>
-                {% endif %}
+        <a href="?page={{ page_obj.paginator.num_pages }}">{{ page_obj.paginator.num_pages }}</a>
+        {% elif page_obj.number < page_obj.paginator.num_pages|add:'-2' %} <a href="?page={{ page_obj.paginator.num_pages }}">{{ page_obj.paginator.num_pages }}</a>
+        {% endif %}
 
-                <a href="?page={{ page_obj.next_page_number }}">Next Page »</a>
+        <a href="?page={{ page_obj.next_page_number }}">Next Page »</a>
 
-                {% endif %}
+        {% endif %}
+    </div>
 </div>
 <script>
 

@@ -4,44 +4,53 @@
 <title>{{title}}</title>
 {% endblock %}
 {% block content %}
-<div class="container-fluid text-center">
-  <div class="row ">
-    
-    <div class="col-12 col-md-6 my-5">
-      <div id="carouselExampleControls" class="carousel slide" data-bs-ride="carousel">
-        <div class="carousel-inner">
-          {% for image_path in image_paths%}
-          <div class="carousel-item active">
-            <img style="width:200px;height: 200px;"  src="{{image_path}}" class="" alt="...">
-          </div>
-          {%endfor%}
+<div class="container">
+    <div class="row ">
+
+        <div class="col-12 col-lg-6 my-5">
+            <div id="carouselExampleControls" class="carousel slide" data-bs-ride="carousel">
+                <div class="carousel-inner">
+                    {% for image_path in image_paths%}
+                    <div class="carousel-item active" style="text-align: center;">
+                        <img style="max-width: 500px; max-height: 500px; width: 100%;" src="{{image_path}}" class="" alt="...">
+                    </div>
+                    {%endfor%}
+                </div>
+                <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleControls" data-bs-slide="prev">
+                    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                    <span class="visually-hidden">Previous</span>
+                </button>
+                <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleControls" data-bs-slide="next">
+                    <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                    <span class="visually-hidden">Next</span>
+                </button>
+            </div>
+
+
         </div>
-        <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleControls" data-bs-slide="prev">
-          <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-          <span class="visually-hidden">Previous</span>
-        </button>
-        <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleControls" data-bs-slide="next">
-          <span class="carousel-control-next-icon" aria-hidden="true"></span>
-          <span class="visually-hidden">Next</span>
-        </button>
-      </div>
-      
+        <div class="col-12 col-lg-6 my-5 text-center">
+            <h1 style="border-bottom: 1px solid var(--bs-body-color);padding-bottom: 10px;">{{branch.Products.Item_name}}</h1><br>
+            <!-- <h3>商品介紹</h3> -->
+            <h5 style="text-align: left;font-weight: 400;">
+                堪察加擬石蟹，又稱為北海道帝王蟹、阿拉斯加帝王蟹、鱈場蟹、北方帝王蟹，屬於石蟹科的一種，和短足擬石蟹一樣，堪察加擬石蟹不是螃蟹，而是寄居蟹的親戚物種，其外觀只有六隻腳而非八隻，另外兩隻腳已經退化縮在殼裡。因為其肉質非常鮮美，再加上外形和螃蟹極度相似，已成為重要的商業捕撈蟹種。
+                {{branch.Products.Specification}}
+            </h5>
+            <h3 style="text-align: right;margin-top: 30px;">促銷價： NT${{branch.Products.Price}}</h3>
+            <form action="{% url 'Product:add_to_cart_view' branch=branch.Branch.pk product_id=branch.Products.id %}" method="post">
+                {% csrf_token %}
 
+                <h5 class="col-lg-12" style="text-align: left;margin-top: 30px;">
+                    數量：
+                    <button type="button" class="btn btn-primary btn-price" style="color: var(--secondary-color)" onclick="if (parseInt($('#quantity').val()) > 1) { $('#quantity').val(parseInt($('#quantity').val()) - 1); }">-</button>
+                    <input class="form-control" style="width: 60px; display: inline-block; vertical-align: middle;" type="number" id="quantity" name="quantity" value="1" min="1">
+                    <button type="button" class="btn btn-primary btn-price" style="color: var(--secondary-color)" onclick="$('#quantity').val(parseInt($('#quantity').val()) + 1)">+</button>
+                    <span class="m-l-20">還有{{branch.Number}}件</span>
+                </h5>
+                <button type="submit" class="btn btn-primary m-r-5 m-t-10" style="color: var(--primary-color); width: 200px; color: #00CCFF">加入購物車</button>
+                <button type="button" class="btn btn-primary m-l-5 m-t-10" style="color: var(--primary-color); width: 200px; color: #EDB5A4" onclick="history.go(-1)">加入購物車</button>
+
+            </form>
+        </div>
     </div>
-    <div class="col-12 col-md-6 my-5 text-start">
-      <h2>{{branch.Products.Item_name}}</h2><br>
-      <h5>價格： {{branch.Products.Price}}</h5>
-      <!-- <h3>商品介紹</h3> -->
-      <h5>備註： {{branch.Products.Specification}}</h5>
-      {% comment %} <h5>庫存： {{branch.Number}}</h5> {% endcomment %}
-      <form action="{% url 'Product:add_to_cart_view' branch=branch.Branch.pk product_id=branch.Products.id %}" method="post">
-        {% csrf_token %}
-
-        <h5>數量 <input style="width: 60px;" type="number" id="quantity" name="quantity" value="1" min="1"></h5>
-        <button type="submit" class="btn btn-danger">加入購物車</button>
-
-      </form>
-    </div>
-  </div>
 </div>
 {% endblock %}

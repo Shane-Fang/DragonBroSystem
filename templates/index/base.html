@@ -49,22 +49,23 @@
     <script src="{% static 'js/jquery-ui.min.js' %}"></script>
 </head>
 
-<body style="font-family: Arial, sans-serif;">
-    <nav class="navbar navbar-expand-lg navbar-dark bg-dark" style="background: linear-gradient(135deg, #ffffff, #8bc5ed, #949ce4);">
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark" style="background-color: white"><!--background: linear-gradient(135deg, #ffffff, #8bc5ed, #949ce4);-->
         <div class="container-fluid">
-            <a class="navbar-brand" href="{% url 'home' %}">捌貨</a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavAltMarkup"
                     aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
             </button>
-            <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
-                <div class="navbar-nav">
-                    <a class="nav-link active" aria-current="page" href="{% url 'OrderManagement:past_orders' %}">過往訂單查詢</a>
-                    <a class="nav-link active" aria-current="page" href="{% url 'OrderManagement:cart' %}">購物車</a>
-                    <a class="nav-link active" aria-current="page" href="{% url 'member:memberprofile' %}">個人資料更新</a>
+            <div class="collapse navbar-collapse" id="navbarNavAltMarkup" style="justify-content: center;">
+                <div class="navbar-nav" style="align-items: center;">
+                    <a class="nav-link navbar-brand" href="{% url 'home' %}" style="padding-left: 13px;"><img src="/static/img/login/logo.png" style="height: 50px; scale: 1.2;"></a>
+                    <a class="nav-link" href="{% url 'home' %}">捌貨首頁</a>
+                    <a class="nav-link" href="{% url 'OrderManagement:past_orders' %}">歷史訂單</a>
+                    <a class="nav-link" href="{% url 'OrderManagement:cart' %}">資料更新</a>
+                    <a class="nav-link" href="{% url 'member:memberprofile' %}">購物車</a>
+                    <a class="nav-link" href="{% url 'admin:index' %}">後臺</a>
                     <a class="nav-link" href="{% url 'member:logout' %}">登出</a>
                     <!-- <a class="nav-link" href="">工作記憶匯入excel功能</a> -->
-                    <a class="nav-link" href="{% url 'admin:index' %}">後臺管理</a>
                 </div>
             </div>
         </div>
