@@ -91,9 +91,9 @@ class ItemImageDetailInline(admin.TabularInline):  # 或者使用 admin.StackedI
 @admin.register(Categories)
 class CategoriesAdmin(ImportExportModelAdmin):
     resource_class=CategoriesResource
-    list_display = ['Category_name','Describe']
+    list_display = ['Category_name','Describe','Category_images']
     search_fields = ['Category_name','Describe']
-    list_filter = ['Category_name','Describe']
+    list_filter = ['Category_name','Describe','Category_images']
     ordering = ['Category_name']
 # 'Category_name','Describe'
 @admin.register(Products)

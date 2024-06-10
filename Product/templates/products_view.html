@@ -81,7 +81,8 @@
                             <p class="card-text">{{ product_info.Price }}</p>
                             <p class="card-text">{{ product_info.Specification }}</p>
                             <a href="{% url 'Product:detail' branch=branch.id detail=product_info.id  %}"
-                               class="btn btn-primary btn-productType btn-meat"></a>
+                               class="btn btn-primary btn-productType {{product_info.Category_images}}"></a>
+                            
                         </div>
                     </div>
                 </div>

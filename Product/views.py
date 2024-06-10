@@ -29,6 +29,7 @@ def products_view(request,branch=None,detail=None):
         product_info['Specification'] = product.Specification
         product_info['id'] = inventory_item.id
         product_info['Category_id'] = product.Category_id
+        product_info['Category_images'] = f"btn-{product.Category.get_Category_images_display()}"
         product_images = ItemImage.objects.filter(Products=product)
         image_paths = []
         for image in product_images:
@@ -40,6 +41,7 @@ def products_view(request,branch=None,detail=None):
         # paginator = Paginator(products_detail_list, 5)
         page_number = request.GET.get('page')
         page_obj = paginator.get_page(page_number)
+    
     context={
         'branch':branch,
         'title':f"榮哥海鮮-{branch.Name}",
