@@ -48,7 +48,7 @@ class UploadToPathAndRename(object):
         return os.path.join(self.sub_path, filename)
 # Create your models here.
 class Categories(models.Model):
-    IMAGES_CHOICES=((0,'maet'),(1,'fish'),(2,'other'),(3,'soldout'),(4,'vegetable'))
+    IMAGES_CHOICES=((0,'meat'),(1,'fish'),(2,'other'),(3,'soldout'),(4,'vegetable'))
     Category_name=models.CharField(max_length=99,verbose_name="類別名稱")
     Describe=models.CharField(max_length=99,verbose_name="類別描述",null=True,blank=True)
     Category_images=models.IntegerField(choices=IMAGES_CHOICES,default=2,verbose_name="類別圖片")
