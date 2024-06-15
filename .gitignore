@@ -1,5 +1,6 @@
 sql/**
 csvfile/**
+media/**
 
 *.log
 *.csv
@@ -7,8 +8,6 @@ csvfile/**
 *.root
 *.zip
 *.7z
-*.png
-*.jpg
 *.sqlite3
 db.sqlite3
 /Product/migrations/__pycache__
