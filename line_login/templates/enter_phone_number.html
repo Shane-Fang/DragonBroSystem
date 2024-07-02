@@ -1,0 +1,15 @@
+<!-- enter_phone_number.html -->
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Enter Phone Number</title>
+</head>
+<body>
+    <h2>Enter your phone number</h2>
+    <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit">Submit</button>
+    </form>
+</body>
+</html>

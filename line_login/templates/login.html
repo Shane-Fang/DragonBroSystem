@@ -1,0 +1,16 @@
+{% extends 'base.html' %}
+{% load socialaccount %}
+
+
+{% block content %}
+<br>
+
+
+<div class="container">
+  <h3>請使用第三方帳號登入</h3>
+
+  <a href="{% provider_login_url 'line' method='oauth2' %}" class="btn btn-success">Login with LINE</a>
+
+</div>
+
+  {% endblock %}

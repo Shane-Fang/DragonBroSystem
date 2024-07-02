@@ -25,9 +25,15 @@ SECRET_KEY = 'django-insecure-h434spky+u3h_83)ctbp@%0lylg9^^ol(%h7o_u&31m1y*uf-)
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 # DEBUG = False
-ALLOWED_HOSTS = ['35.221.252.0', '34.111.22.133' , 'bathue88.com', 'www.bathue88.com' , 'google.com', '127.0.0.1']
-CSRF_TRUSTED_ORIGINS = [ 'https://bathue88.com', ]
-CORS_ORIGIN_WHITELIST = ['http://bathue88.com',]
+ALLOWED_HOSTS = ['35.221.252.0',
+                 '34.111.22.133',
+                 'bathue88.com',
+                 'www.bathue88.com',
+                 'google.com',
+                 '127.0.0.1',
+                 'c88c-2402-7500-577-73bc-89bf-4576-bcf3-8fbf.ngrok-free.app']
+CSRF_TRUSTED_ORIGINS = [ 'https://bathue88.com', 'https://c88c-2402-7500-577-73bc-89bf-4576-bcf3-8fbf.ngrok-free.app']
+CORS_ORIGIN_WHITELIST = ['http://bathue88.com', 'https://c88c-2402-7500-577-73bc-89bf-4576-bcf3-8fbf.ngrok-free.app']
 # ALLOWED_HOSTS = ['*']
 # AUTH_USER_MODEL = 'member.User'
 
@@ -45,6 +51,16 @@ INSTALLED_APPS = [
     'Product',
     'OrderManagement',
     'import_export',
+    'line_login',
+
+    # allauth
+    'django.contrib.sites',
+    'allauth',
+    'allauth.account',
+    'allauth.socialaccount',
+
+    # providers
+    'allauth.socialaccount.providers.line',
 ]
 
 MIDDLEWARE = [
@@ -149,6 +165,37 @@ FILE_UPLOAD_HANDLERS = [
     "django.core.files.uploadhandler.MemoryFileUploadHandler",
     "django.core.files.uploadhandler.TemporaryFileUploadHandler",
 ]
+
+### LINE第三方登入需要的參數 ###
+
+SOCIALACCOUNT_PROVIDERS = {
+    "line": {
+        'APP': {
+                  'client_id': '2005688134',
+                  'secret': '8adb8bd34bde415c0b30631a0c8129de'
+              },
+        "SCOPE": [
+            "profile",
+            "openid",
+            'email',
+            'phone',
+        ]
+    }
+}
+
+SOCIALACCOUNT_ADAPTER = 'line_login.adapters.CustomSocialAccountAdapter'
+ACCOUNT_USER_MODEL_USERNAME_FIELD = None
+ACCOUNT_EMAIL_REQUIRED = False
+ACCOUNT_USERNAME_REQUIRED = False
+ACCOUNT_AUTHENTICATION_METHOD = 'user_name'
+ACCOUNT_USER_MODEL_EMAIL_FIELD = 'email'
+SOCIALACCOUNT_EMAIL_VERIFICATION = False
+
+SITE_ID = 1 # 其實1好像也可以
+LOGIN_REDIRECT_URL = '/'
+ACCOUNT_LOGOUT_REDIRECT_URL = '/'
+
+### LINE第三方登入需要的參數 ###
 
 # LOGGING = {
 #     "version": 1,

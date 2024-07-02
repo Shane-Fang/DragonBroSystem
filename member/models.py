@@ -40,6 +40,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     # address = models.CharField(max_length=255,verbose_name='地址')
     bonus_points = models.IntegerField(default=0,verbose_name='點數')
     branch = models.ForeignKey(Branchs,on_delete=models.DO_NOTHING,verbose_name='店家',null=True, blank=True)
+    LINE_token=models.CharField(max_length=512,verbose_name='LINE token')
     # 以下是 AbstractBaseUser 已經提供的欄位
     # password 字段由 AbstractBaseUser 自動處理
     # last_login 也是由 AbstractBaseUser 提供
