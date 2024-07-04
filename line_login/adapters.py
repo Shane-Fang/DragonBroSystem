@@ -18,12 +18,8 @@ class CustomSocialAccountAdapter(DefaultSocialAccountAdapter):
             user.user_name = user_name
 
         if line_token:
-            user.line_token = line_token
+            user.LINE_token = line_token
             
         user.save()
-            
-        if not user.phone_number:
-            request.session['socialaccount_sociallogin'] = sociallogin.serialize()
-            return redirect('enter_phone_number')
 
         return user

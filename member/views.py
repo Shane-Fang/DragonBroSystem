@@ -7,12 +7,27 @@ from .models import User,Address
 from .forms import RegisterModelForm,UserUpdateForm, RegisterAddressForm, AddressFormSet
 from django.views.decorators.http import require_POST
 from django.contrib.auth.decorators import login_required
+from allauth.socialaccount.models import SocialAccount
+
 
 # Create your views here.
 def index(request):
     context={
         'title':'榮哥海鮮'
     }
+
+    if not request.user.is_authenticated:
+        return redirect('member:login')
+
+    try:
+        social_auth_user = SocialAccount.objects.get(user=request.user)
+        extra_data = social_auth_user.extra_data
+        user = User.objects.get(LINE_token=extra_data.get('sub'))
+        if not user.phone_number:
+            return redirect('enter_phone_number')
+    except SocialAccount.DoesNotExist:
+        print(f"Object with id {request.user} does not exist")
+    
     return render(request, 'index/index.html',context)
 def memberprofile(request):
     if not request.user.is_authenticated:
