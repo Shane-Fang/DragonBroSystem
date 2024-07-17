@@ -31,9 +31,9 @@ ALLOWED_HOSTS = ['35.221.252.0',
                  'www.bathue88.com',
                  'google.com',
                  '127.0.0.1',
-                 'c88c-2402-7500-577-73bc-89bf-4576-bcf3-8fbf.ngrok-free.app']
-CSRF_TRUSTED_ORIGINS = [ 'https://bathue88.com', 'https://c88c-2402-7500-577-73bc-89bf-4576-bcf3-8fbf.ngrok-free.app']
-CORS_ORIGIN_WHITELIST = ['http://bathue88.com', 'https://c88c-2402-7500-577-73bc-89bf-4576-bcf3-8fbf.ngrok-free.app']
+                 '22bf-124-109-116-168.ngrok-free.app']
+CSRF_TRUSTED_ORIGINS = [ 'https://bathue88.com', 'https://22bf-124-109-116-168.ngrok-free.app']
+CORS_ORIGIN_WHITELIST = ['http://bathue88.com', 'https://22bf-124-109-116-168.ngrok-free.app']
 # ALLOWED_HOSTS = ['*']
 # AUTH_USER_MODEL = 'member.User'
 
@@ -191,7 +191,7 @@ ACCOUNT_AUTHENTICATION_METHOD = 'user_name'
 ACCOUNT_USER_MODEL_EMAIL_FIELD = 'email'
 SOCIALACCOUNT_EMAIL_VERIFICATION = False
 
-SITE_ID = 2 # 其實1好像也可以
+SITE_ID = 1 # 其實1好像也可以
 LOGIN_REDIRECT_URL = '/'
 ACCOUNT_LOGOUT_REDIRECT_URL = '/'
 
