@@ -63,7 +63,9 @@
                     <a class="nav-link" href="{% url 'OrderManagement:past_orders' %}">歷史訂單</a>
                     <a class="nav-link" href="{% url 'OrderManagement:cart' %}">購物車</a>
                     <a class="nav-link" href="{% url 'member:memberprofile' %}">資料更新</a>
-                    <a class="nav-link" href="{% url 'admin:index' %}">後臺</a>
+                    {% if user.is_staff %}
+                        <a class="nav-link" href="{% url 'admin:index' %}">後臺</a>
+                        {% endif %}
                     <a class="nav-link" href="{% url 'member:logout' %}">登出</a>
                     <!-- <a class="nav-link" href="">工作記憶匯入excel功能</a> -->
                 </div>
