@@ -65,3 +65,14 @@ def line_notify_callback(request):
         print(f"Error: {response.status_code} - {response.text}")
         return None
     
+def LINE_notify_send_msg(user_LINE_token, msg):
+
+    headers = {
+        "Authorization": "Bearer " + user_LINE_token, 
+        "Content-Type" : "application/x-www-form-urlencoded"
+    }
+
+    payload = {'message': msg}
+    r = requests.post("https://notify-api.line.me/api/notify", headers = headers, params = payload)
+    print(f"LINE notify message return: {r}")
+    

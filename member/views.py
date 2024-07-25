@@ -8,13 +8,13 @@ from .forms import RegisterModelForm,UserUpdateForm, RegisterAddressForm, Addres
 from django.views.decorators.http import require_POST
 from django.contrib.auth.decorators import login_required
 from allauth.socialaccount.models import SocialAccount
-from line_login.views import line_notify_callback, line_notify_login
+from line_login.views import line_notify_callback, line_notify_login, LINE_notify_send_msg
 
 
 # Create your views here.
 def index(request):
     context={
-        'title':'榮哥海鮮'
+        'title':'捌貨生鮮'
     }
 
     if not request.user.is_authenticated:
@@ -33,6 +33,7 @@ def index(request):
                 print(f"request code: {request.GET.get('code')}")
                 user.LINE_access_token = line_notify_callback(request)
                 user.save()
+                LINE_notify_send_msg(user.LINE_access_token, "感謝您用LINE註冊捌貨生鮮~~使用LINE就可以收到我們最新上架的商品呦")
 
         if not user.phone_number:
             return redirect('enter_phone_number')

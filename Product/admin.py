@@ -16,6 +16,8 @@ from django.urls import path
 from django.shortcuts import redirect, render
 import csv
 from django.core.files.storage import FileSystemStorage
+from django.db.models import Q
+from line_login.views import LINE_notify_send_msg
 
 def import_csv_data(file_path, user_id, branch_id):
         
@@ -33,6 +35,8 @@ def import_csv_data(file_path, user_id, branch_id):
             User_id=user_id,
             Type=0,
         )
+    
+    Item_list_str = ''
     
     for index, row in data.iterrows():
         if row['名稱'] != '' or not pd.isna(row['名稱']):
@@ -60,6 +64,17 @@ def import_csv_data(file_path, user_id, branch_id):
                     Import_price=import_price,
                     Branch_id=branch_id
                 )
+            
+            Item_list_str = Item_list_str + f" {row['名稱']} "
+            
+    all_User_line_token = User.objects.filter(~Q(LINE_access_token__isnull=True), ~Q(LINE_access_token=''), ~Q(LINE_access_token=0)).values_list('LINE_access_token', flat=True)
+    print(f"all_User_line_token: {all_User_line_token}")
+    branch_name = Branchs.objects.get(pk=branch_id).Name
+    msg = f"捌貨生鮮的 {branch_name} 已經上架了 {Item_list_str}，要買要快呦~~"
+    for user_token in all_User_line_token:
+        print(user_token)
+        print(msg)
+        LINE_notify_send_msg(user_LINE_token=user_token, msg=msg)
 
 class CategoriesResource(resources.ModelResource):
     class Meta:
