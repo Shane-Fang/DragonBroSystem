@@ -1,5 +1,6 @@
 from allauth.socialaccount.adapter import DefaultSocialAccountAdapter
 from django.shortcuts import redirect
+from .views import line_notify_callback, line_notify_login
 
 class CustomSocialAccountAdapter(DefaultSocialAccountAdapter):
     def save_user(self, request, sociallogin, form=None):
@@ -18,7 +19,7 @@ class CustomSocialAccountAdapter(DefaultSocialAccountAdapter):
             user.user_name = user_name
 
         if line_token:
-            user.LINE_token = line_token
+            user.LINE_token  = line_token
             
         user.save()
 

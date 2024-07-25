@@ -26,7 +26,7 @@ class UserAdmin(BaseUserAdmin):
     # 定义在添加和更改用户时显示的字段
     fieldsets = (
         ('登入帳號', {'fields': ('phone_number', 'password')}),
-        ('使用者資訊', {'fields': ('user_name', 'email', 'birthday', 'bonus_points', 'branch', 'LINE_token')}),
+        ('使用者資訊', {'fields': ('user_name', 'email', 'birthday', 'bonus_points', 'branch', 'LINE_token', 'LINE_access_token')}),
         ('權限', {'fields': ('is_active', 'is_staff', 'is_superuser', 'groups', 'user_permissions')}),
         ('日期相關', {'fields': ('last_login', 'date_joined')}),
     )

@@ -8,6 +8,7 @@ from .forms import RegisterModelForm,UserUpdateForm, RegisterAddressForm, Addres
 from django.views.decorators.http import require_POST
 from django.contrib.auth.decorators import login_required
 from allauth.socialaccount.models import SocialAccount
+from line_login.views import line_notify_callback, line_notify_login
 
 
 # Create your views here.
@@ -23,8 +24,19 @@ def index(request):
         social_auth_user = SocialAccount.objects.get(user=request.user)
         extra_data = social_auth_user.extra_data
         user = User.objects.get(LINE_token=extra_data.get('sub'))
+
+        if not user.LINE_access_token:
+            if not request.GET.get('code'):
+                print(f"request no code: {request.GET.get('code')}")
+                return line_notify_login(request)
+            else:
+                print(f"request code: {request.GET.get('code')}")
+                user.LINE_access_token = line_notify_callback(request)
+                user.save()
+
         if not user.phone_number:
             return redirect('enter_phone_number')
+        
     except SocialAccount.DoesNotExist:
         print(f"Object with id {request.user} does not exist")
     
